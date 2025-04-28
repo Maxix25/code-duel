@@ -1,11 +1,14 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import Layout from './components/Layout'; // Adjust path if needed
-import HomePage from './pages/HomePage'; // Adjust path if needed
-import LoginPage from './pages/LoginPage'; // Adjust path if needed
-import RegisterPage from './pages/RegisterPage'; // Adjust path if needed
-import { CustomThemeProvider } from './context/ThemeContext'; // Adjust path if needed
-import { Container } from '@mui/material'; // Import Container for layout
-// Import other pages as needed
+import Layout from './components/Layout';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import { CustomThemeProvider } from './context/ThemeContext';
+import { Container } from '@mui/material';
+import DashboardPage from './pages/DashboardPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import CssBaseline from '@mui/material/CssBaseline';
+import Room from './pages/Room';
 
 function App() {
     return (
@@ -18,18 +21,30 @@ function App() {
             }}
         >
             <CustomThemeProvider>
-                {/* Wrap the application with the Theme Provider */}
+                <CssBaseline />
                 <BrowserRouter>
                     <Routes>
                         <Route path='/' element={<Layout />}>
-                            {/* Child routes are rendered inside Layout's Outlet */}
                             <Route index element={<HomePage />} />
                             <Route path='login' element={<LoginPage />} />
                             <Route path='register' element={<RegisterPage />} />
-                            {/* Add other routes here */}
-                            {/* Example: <Route path="dashboard" element={<DashboardPage />} /> */}
+                            <Route
+                                path='dashboard'
+                                element={
+                                    <ProtectedRoute>
+                                        <DashboardPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path='room'
+                                element={
+                                    <ProtectedRoute>
+                                        <Room />
+                                    </ProtectedRoute>
+                                }
+                            />
                         </Route>
-                        {/* You could add routes outside the main Layout here if needed */}
                     </Routes>
                 </BrowserRouter>
             </CustomThemeProvider>

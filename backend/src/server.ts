@@ -26,6 +26,9 @@ const startServer = async () => {
             socket.on('disconnect', () => {
                 console.log('User disconnected:', socket.id);
             });
+            socket.on('message', (message) => {
+                console.log('Message received:', message);
+            });
         });
 
         // 4. Iniciar el servidor HTTP

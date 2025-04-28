@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import Player from '../models/Player';
 import { generateToken } from '../utils/jwtHelper';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../utils/jwtHelper';
 const { Types } = mongoose;
 
 export const loginPlayer = async (
@@ -27,7 +29,10 @@ export const loginPlayer = async (
             res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = generateToken(player._id as mongoose.Types.ObjectId);
+        const token = generateToken(
+            player._id as mongoose.Types.ObjectId,
+            username
+        );
 
         res.status(200).json({
             message: 'Login successful',
@@ -50,10 +55,12 @@ export const registerPlayer = async (
     }
 
     try {
-        const existingPlayer = await Player.findOne({ username });
+        const existingPlayer = await Player.findOne({ username, email });
 
         if (existingPlayer) {
-            return res.status(409).json({ message: 'Username already exists' });
+            return res
+                .status(409)
+                .json({ message: 'Username or email already registered' });
         }
 
         const newPlayer = new Player({
@@ -64,22 +71,35 @@ export const registerPlayer = async (
 
         await newPlayer.save();
 
-        const token = generateToken(newPlayer._id as mongoose.Types.ObjectId);
+        const token = generateToken(
+            newPlayer._id as mongoose.Types.ObjectId,
+            username
+        );
 
         res.status(201).json({
             message: 'Registration successful',
             token: token,
-            player: {
-                id: newPlayer._id,
-                username: newPlayer.username,
-                score: newPlayer.score,
-                roomId: newPlayer.roomId,
-            },
         });
     } catch (error) {
         console.error('Registration error:', error);
         return res
             .status(500)
             .json({ message: 'Server error during registration' });
+    }
+};
+
+export const verifyAuth = async (req: Request, res: Response): Promise<any> => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        res.status(200).json({ message: 'Token is valid', decoded });
+    } catch (error) {
+        console.error('Token verification error:', error);
+        return res.status(401).json({ message: 'Invalid token' });
     }
 };

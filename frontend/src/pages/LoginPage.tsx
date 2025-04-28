@@ -7,27 +7,38 @@ import {
     Box,
     Paper,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom'; // For linking to register page
+import { Link as RouterLink } from 'react-router-dom';
+import login from '../api/auth/login';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // TODO: Implement login logic here
-        console.log('Login attempt:', { email, password });
-        alert('Login functionality not implemented yet.');
+        login({ username, password })
+            .then((response) => {
+                localStorage.setItem('token', response.data.token);
+                console.log(response.status);
+                if (response.status === 200) {
+                    navigate('/dashboard');
+                }
+            })
+            .catch((error) => {
+                console.error('Login failed:', error);
+            });
     };
 
     return (
         <Container
-            maxWidth='xs'
+            maxWidth='sm'
             sx={{
-                display: 'flex', // Make Container a flex container
-                flexDirection: 'column', // Stack children vertically
-                justifyContent: 'center', // Center children vertically
-                alignItems: 'center', // Center children horizontally (for the Paper itself)
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
             }}
         >
             <Paper
@@ -37,7 +48,7 @@ const LoginPage: React.FC = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    width: '100%', // Ensure Paper takes full width of the Container
+                    width: '100%',
                 }}
             >
                 <Typography component='h1' variant='h5'>
@@ -47,19 +58,18 @@ const LoginPage: React.FC = () => {
                     component='form'
                     onSubmit={handleSubmit}
                     noValidate
-                    sx={{ mt: 1, width: '100%' }} // Ensure form Box takes full width
+                    sx={{ mt: 1, width: '100%' }}
                 >
                     <TextField
                         margin='normal'
                         required
                         fullWidth
-                        id='email'
-                        label='Email Address'
-                        name='email'
-                        autoComplete='email'
+                        id='username'
+                        label='Username'
+                        name='username'
                         autoFocus
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                     <TextField
                         margin='normal'
@@ -73,7 +83,7 @@ const LoginPage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                    {/* Add Remember me checkbox if needed */}
+
                     <Button
                         type='submit'
                         fullWidth

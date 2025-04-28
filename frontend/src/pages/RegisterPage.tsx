@@ -6,28 +6,61 @@ import {
     Button,
     Box,
     Paper,
+    Snackbar,
+    Alert,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom'; // For linking to login page
+import { Link as RouterLink } from 'react-router-dom';
+import register from '../api/auth/register';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage: React.FC = () => {
-    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (password !== confirmPassword) {
-            alert("Passwords don't match!");
+            setSnackbarOpen(true);
             return;
         }
-        // TODO: Implement registration logic here
-        console.log('Register attempt:', { name, email, password });
-        alert('Registration functionality not implemented yet.');
+        register({ username, email, password }).then((response) => {
+            localStorage.setItem('token', response.data.token);
+            console.log(response.status);
+            if (response.status === 201) {
+                navigate('/dashboard');
+            }
+        });
     };
 
     return (
         <Container component='main' maxWidth='xs'>
+            <Snackbar
+                open={snackbarOpen}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                autoHideDuration={4000}
+                onClose={() => setSnackbarOpen(false)}
+                message='Passwords do not match'
+                action={
+                    <Button
+                        color='inherit'
+                        onClick={() => setSnackbarOpen(false)}
+                    >
+                        Close
+                    </Button>
+                }
+            >
+                <Alert
+                    onClose={() => setSnackbarOpen(false)}
+                    severity='error'
+                    sx={{ width: '100%' }}
+                >
+                    Passwords do not match
+                </Alert>
+            </Snackbar>
             <Paper
                 elevation={3}
                 sx={{
@@ -51,13 +84,12 @@ const RegisterPage: React.FC = () => {
                         margin='normal'
                         required
                         fullWidth
-                        id='name'
-                        label='Name'
-                        name='name'
-                        autoComplete='name'
+                        id='username'
+                        label='Username'
+                        name='username'
                         autoFocus
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                     <TextField
                         margin='normal'

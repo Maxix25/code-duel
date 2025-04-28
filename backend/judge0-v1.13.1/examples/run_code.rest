@@ -1,0 +1,26 @@
+GET http://localhost:2358/languages/
+
+###
+POST http://localhost:2358/submissions/
+Content-Type: application/json
+
+{
+  "source_code": "#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\n\", name);\n  return 0;\n}",
+  "language_id": 75,
+  "stdin": "world"
+}
+
+###
+GET http://localhost:2358/submissions/
+
+###
+POST http://localhost:2358/authorize
+Content-Type: application/json
+X-Auth-User: a1133bc6-a0f6-46bf-a2d8-6157418c6fe2
+
+###
+# For cloud api
+GET https://judge0-ce.p.rapidapi.com/languages/
+X-Rapidapi-Key: 5ed6999a95mshf46c86df3d7e6e1p148baejsn257432a44a8b
+X-Rapidapi-Host: judge0-ce.p.rapidapi.com
+Host: judge0-ce.p.rapidapi.com

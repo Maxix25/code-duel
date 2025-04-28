@@ -9,10 +9,11 @@ export interface Player extends Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-// Crear el Schema de Mongoose
 const playerSchema: Schema = new Schema({
     username: { type: String, required: true, unique: true },
-    score: { type: Number, default: 0 },
+    wins: { type: Number, default: 0 },
+    losses: { type: Number, default: 0 },
+    ties: { type: Number, default: 0 },
     roomId: { type: Schema.Types.ObjectId, ref: 'Room' },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -35,12 +36,10 @@ playerSchema.pre<Player>('save', async function (next) {
     }
 });
 
-// Método para comparar contraseñas
 playerSchema.methods.comparePassword = function (
     candidatePassword: string
 ): Promise<boolean> {
     return compare(candidatePassword, this.password);
 };
 
-// Crear y exportar el modelo
 export default mongoose.model<Player>('Player', playerSchema);

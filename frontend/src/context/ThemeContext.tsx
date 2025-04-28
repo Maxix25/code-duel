@@ -10,7 +10,7 @@ import {
     ThemeProvider as MuiThemeProvider,
     PaletteMode,
 } from '@mui/material';
-import { grey } from '@mui/material/colors'; // Keep grey
+import { grey, blue } from '@mui/material/colors'; // Import blue
 
 interface ThemeContextType {
     toggleTheme: () => void;
@@ -39,55 +39,57 @@ export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({
                     mode,
                     ...(mode === 'light'
                         ? {
-                              // Neutral palette for light mode
+                              // Modern light mode palette
                               primary: {
-                                  main: grey[800], // Darker grey for primary elements
+                                  main: blue[600], // Use a nice blue shade
                               },
                               secondary: {
-                                  main: grey[500], // Medium grey for secondary elements
+                                  main: grey[500], // Keep secondary grey for now
                               },
                               background: {
-                                  default: grey[100], // Very light grey background
+                                  default: grey[50], // Slightly off-white background
                                   paper: '#ffffff', // White paper background
                               },
                               text: {
-                                  primary: grey[900], // Almost black text
-                                  secondary: grey[700], // Dark grey secondary text
+                                  primary: grey[900],
+                                  secondary: grey[700],
                               },
-                              divider: grey[300], // Light grey divider
+                              divider: grey[300],
                           }
                         : {
-                              // Neutral palette for dark mode
+                              // Modern dark mode palette
                               primary: {
-                                  main: grey[400], // Lighter grey for primary elements in dark mode
+                                  main: blue[300], // Lighter blue for dark mode contrast
                               },
                               secondary: {
-                                  main: grey[600], // Slightly darker grey for secondary
+                                  main: grey[600],
                               },
                               background: {
-                                  default: grey[900], // Very dark grey background
-                                  paper: grey[800], // Dark grey paper background
+                                  default: '#121212', // Standard dark background
+                                  paper: grey[900], // Darker paper background
                               },
                               text: {
-                                  primary: '#ffffff', // White text
-                                  secondary: grey[400], // Light grey secondary text
+                                  primary: '#ffffff',
+                                  secondary: grey[400],
                               },
-                              divider: grey[700], // Dark grey divider
+                              divider: grey[700],
                           }),
                 },
-                // You can customize other theme aspects here (typography, components, etc.)
+                // You can further customize typography, component styles etc. here
+                // Example: Add slightly rounded corners to buttons
                 components: {
-                    // Add component overrides for centering if applicable globally
+                    MuiButton: {
+                        styleOverrides: {
+                            root: {
+                                borderRadius: 8, // Example: Rounded corners
+                            },
+                        },
+                    },
                     MuiContainer: {
                         styleOverrides: {
                             root: {
-                                // Apply to the root of all Container components
                                 marginLeft: 'auto',
                                 marginRight: 'auto',
-                                // Optionally add padding or max-width
-                                // paddingLeft: '16px',
-                                // paddingRight: '16px',
-                                // maxWidth: 'lg' // Example max-width
                             },
                         },
                     },
