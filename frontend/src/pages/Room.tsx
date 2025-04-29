@@ -1,4 +1,4 @@
-import { FC, useState, SyntheticEvent } from 'react';
+import { FC, useState, SyntheticEvent, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import {
     Box,
@@ -13,13 +13,21 @@ import {
     Tab,
     SelectChangeEvent,
 } from '@mui/material';
-import runCode from '../api/compiler/runCode';
-import { LANGUAGES } from '../api/compiler';
+import socket from '../services/socket';
+import roomSetup from '../services/roomSetup';
+import { useNavigate } from 'react-router-dom';
+
+const LANGUAGES = {
+    python: { id: 71, name: 'Python', monaco: 'python' },
+    javascript: { id: 63, name: 'JavaScript', monaco: 'javascript' },
+};
 
 type LanguageName = keyof typeof LANGUAGES;
 
 const Room: FC = () => {
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
+    const urlparams = new URLSearchParams(window.location.search);
+    const roomId = urlparams.get('roomId');
     const [code, setCode] = useState<string>('# Write your code here');
     const [output, setOutput] = useState<string>('');
     const [selectedLanguage, setSelectedLanguage] =
@@ -28,8 +36,21 @@ const Room: FC = () => {
     const [problemStatement, setProblemStatement] = useState<string>(
         'Problem statement goes here...'
     );
+    const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState<boolean>(false);
-
+    useEffect(() => {
+        if (!roomId) {
+            navigate('/dashboard');
+            return;
+        }
+        roomSetup(
+            roomId,
+            setOutput,
+            setProblemStatement,
+            setIsRunning,
+            setCode
+        );
+    }, []);
     // Helper: get default comment for each language
     const getDefaultComment = (lang: LanguageName) => {
         switch (lang) {
@@ -67,31 +88,10 @@ const Room: FC = () => {
         setIsRunning(true);
         setOutput('Running...');
         setActiveTab(1);
-
-        runCode(code, selectedLanguage)
-            .then((data) => {
-                console.log('Code execution result:', data);
-                let resultOutput = '';
-                if (data.status.description === 'Accepted') {
-                    resultOutput =
-                        data.stdout || 'Execution completed with no output.';
-                } else {
-                    resultOutput = `Error (${data.status.description}):\n${
-                        data.stderr ||
-                        data.compile_output ||
-                        data.message ||
-                        'Unknown error.'
-                    }`;
-                }
-                setOutput(resultOutput);
-            })
-            .catch((error) => {
-                console.error('Error running code:', error);
-                setOutput(`Error running code: ${error.message}`);
-            })
-            .finally(() => {
-                setIsRunning(false);
-            });
+        socket.emit('submit_solution', {
+            roomId,
+            code,
+        });
     };
 
     return (

@@ -11,7 +11,7 @@ export const verifyToken = (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+): any => {
     const authHeader =
         req.headers['authorization'] || req.headers['Authorization'];
     const token =
@@ -25,7 +25,6 @@ export const verifyToken = (
         if (err) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
-
-        next();
     });
+    next();
 };

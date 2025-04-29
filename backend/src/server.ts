@@ -1,8 +1,10 @@
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { setIO } from './utils/sockets';
 import app from './app';
 import dotenv from 'dotenv';
 import connectDB from './config/database';
+import registerSocketHandlers from './sockets';
 
 dotenv.config();
 
@@ -23,11 +25,9 @@ const startServer = async () => {
 
         io.on('connection', (socket) => {
             console.log('A user connected:', socket.id);
+            registerSocketHandlers(io, socket);
             socket.on('disconnect', () => {
                 console.log('User disconnected:', socket.id);
-            });
-            socket.on('message', (message) => {
-                console.log('Message received:', message);
             });
         });
 

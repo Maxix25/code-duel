@@ -1,4 +1,9 @@
-import compiler, { LANGUAGES } from '../compiler';
+import compiler from './compiler';
+
+export const LANGUAGES = {
+    python: { id: 71, name: 'Python' },
+    javascript: { id: 63, name: 'JavaScript' },
+};
 
 interface Judge0Submission {
     language_id: number;
@@ -41,7 +46,6 @@ const runCode = async (
             '/submissions?base64_encoded=true&wait=true',
             submission
         );
-        console.log('Judge0 Response:', response.data);
 
         const decodedResponse: Judge0Response = {
             ...response.data,
