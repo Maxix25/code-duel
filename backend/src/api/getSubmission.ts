@@ -1,6 +1,6 @@
 import compiler from './compiler';
 
-interface Judge0Response {
+export interface Judge0Response {
     stdout: string | null;
     stderr: string | null;
     compile_output: string | null;
@@ -22,10 +22,9 @@ const getSubmission = async (token: string): Promise<Judge0Response> => {
             error.response?.data || error.message
         );
         throw new Error(
-            `API Error: ${
-                error.response?.data?.message ||
-                error.message ||
-                'Unknown error'
+            `API Error: ${error.response?.data?.message ||
+            error.message ||
+            'Unknown error'
             }`
         );
     }

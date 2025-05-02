@@ -2,6 +2,20 @@ import socket from './socket';
 import { Dispatch, SetStateAction } from 'react';
 import getQuestion from '../api/room/getQuestion';
 
+interface Judge0Response {
+    stdout: string | null;
+    stderr: string | null;
+    compile_output: string | null;
+    message: string | null;
+    status_id: number;
+    token: string;
+}
+export interface SolutionResult {
+    result: Judge0Response;
+    testCase: string;
+    expectedOutput: string;
+}
+
 /**
  * Sets up the room for the user by joining the socket room and fetching the question.
  * @param roomId - The ID of the room to join.
@@ -14,7 +28,7 @@ import getQuestion from '../api/room/getQuestion';
 
 const roomSetup = async (
     roomId: string,
-    setOutput: Dispatch<SetStateAction<string>>,
+    setOutput: Dispatch<SetStateAction<SolutionResult[] | string>>,
     setProblemStatement: Dispatch<SetStateAction<string>>,
     setIsRunning: Dispatch<SetStateAction<boolean>>,
     setCode: Dispatch<SetStateAction<string>>
@@ -24,21 +38,13 @@ const roomSetup = async (
         roomId,
         user_token: localStorage.getItem('token'),
     });
-    socket.on('solution_result', (data) => {
+    socket.on('solution_result', (data: SolutionResult[]) => {
         setIsRunning(false);
-        if (data.error) {
-            setOutput(data.error);
-        } else {
-            setOutput(
-                data.stdout ||
-                    data.stderr ||
-                    data.compile_output ||
-                    data.message
-            );
-        }
+        console.log('Solution result:', data);
+        setOutput(data)
+
     });
     const Question = await getQuestion(roomId);
-    console.log('Question:', Question);
     setProblemStatement(Question.question);
     setCode(Question.startingCode);
     return Question;

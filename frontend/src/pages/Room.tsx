@@ -16,6 +16,8 @@ import {
 import socket from '../services/socket';
 import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
+import { SolutionResult } from '../services/roomSetup';
+
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
@@ -24,12 +26,13 @@ const LANGUAGES = {
 
 type LanguageName = keyof typeof LANGUAGES;
 
+
 const Room: FC = () => {
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
     const [code, setCode] = useState<string>('# Write your code here');
-    const [output, setOutput] = useState<string>('');
+    const [output, setOutput] = useState<SolutionResult[] | string>([]);
     const [selectedLanguage, setSelectedLanguage] =
         useState<LanguageName>(defaultLang);
     const [activeTab, setActiveTab] = useState<number>(0);
@@ -229,7 +232,18 @@ const Room: FC = () => {
                                 component='pre'
                                 sx={{ whiteSpace: 'pre-wrap' }}
                             >
-                                {output || 'Output will appear here...'}
+                                {output === 'Running...' ? (
+                                    <span>Running...</span>
+                                ) : Array.isArray(output) ? (
+                                    output.map((result, index) => (
+                                        <div key={index}>
+                                            <strong>Test Case {index + 1}:</strong>
+                                            <pre>{JSON.stringify(result, null, 2)}</pre>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <span>{output}</span>
+                                )}
                             </Typography>
                         )}
                     </div>
