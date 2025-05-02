@@ -11,9 +11,9 @@ interface QuestionDocument extends Document {
     startingCode: string;
 }
 
-const getQuestion = async (): Promise<QuestionDocument> => {
+const getQuestion = async (roomId: string): Promise<QuestionDocument> => {
     try {
-        const response = await api.get(`/room/question`);
+        const response = await api.get(`/room/question/${roomId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching question:', error);

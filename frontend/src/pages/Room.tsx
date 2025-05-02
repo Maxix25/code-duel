@@ -91,6 +91,7 @@ const Room: FC = () => {
         socket.emit('submit_solution', {
             roomId,
             code,
+            user_token: localStorage.getItem('token'),
         });
     };
 

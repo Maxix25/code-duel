@@ -1,3 +1,4 @@
+import Room from '../models/Room';
 import compiler from './compiler';
 
 export const LANGUAGES = {
@@ -9,55 +10,44 @@ interface Judge0Submission {
     language_id: number;
     source_code: string;
     stdin?: string;
+    expected_output?: string;
 }
 
-interface Judge0Response {
-    stdout: string | null;
-    stderr: string | null;
-    compile_output: string | null;
-    message: string | null;
-    status: {
-        id: number;
-        description: string;
-    };
-    time: string | null;
-    memory: number | null;
+interface Judge0ResponseNoWait {
     token: string;
 }
 
 const runCode = async (
     code: string,
     languageName: keyof typeof LANGUAGES,
-    stdin?: string
-): Promise<Judge0Response> => {
+    roomId: string,
+    stdin?: string,
+    expectedOutput?: string
+): Promise<string> => {
     const language = LANGUAGES[languageName];
     if (!language) {
         throw new Error(`Unsupported language: ${languageName}`);
     }
-
+    const room = await Room.findById(roomId);
+    if (!room) {
+        throw new Error(`Room not found: ${roomId}`);
+    }
     const submission: Judge0Submission = {
         language_id: language.id,
         source_code: btoa(code),
         stdin: stdin ? btoa(stdin) : undefined,
+        expected_output: expectedOutput ? btoa(expectedOutput) : undefined,
     };
+    console.log('Submission:', submission);
 
     try {
-        const response = await compiler.post<Judge0Response>(
-            '/submissions?base64_encoded=true&wait=true',
+        const response = await compiler.post<Judge0ResponseNoWait>(
+            '/submissions?base64_encoded=true&wait=false',
             submission
         );
-
-        const decodedResponse: Judge0Response = {
-            ...response.data,
-            stdout: response.data.stdout ? atob(response.data.stdout) : null,
-            stderr: response.data.stderr ? atob(response.data.stderr) : null,
-            compile_output: response.data.compile_output
-                ? atob(response.data.compile_output)
-                : null,
-            message: response.data.message ? atob(response.data.message) : null,
-        };
-
-        return decodedResponse;
+        console.log('Response:', response.data);
+        const token = response.data.token;
+        return token;
     } catch (error: any) {
         console.error(
             'Error calling Judge0 API:',

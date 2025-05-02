@@ -1,23 +1,18 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface Room extends Document {
-    name: string;
     players: mongoose.Types.ObjectId[];
     status: 'waiting' | 'playing' | 'finished';
-    problemId?: mongoose.Types.ObjectId;
+    problemId: Schema.Types.ObjectId;
     createdAt: Date;
 }
 
 const RoomSchema: Schema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-    },
     players: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Player',
+            default: [],
         },
     ],
     status: {
@@ -27,7 +22,7 @@ const RoomSchema: Schema = new Schema({
     },
     problemId: {
         type: Schema.Types.ObjectId,
-        ref: 'Problem',
+        ref: 'Question',
     },
     createdAt: {
         type: Date,

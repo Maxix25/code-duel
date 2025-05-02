@@ -8,14 +8,17 @@ import {
     Paper,
     Grid,
 } from '@mui/material';
+import createRoom from '../api/room/createRoom';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardPage: React.FC = () => {
     const [roomId, setRoomId] = useState('');
+    const navigate = useNavigate();
 
-    const handleCreateRoom = () => {
-        // TODO: Implement API call to create a new room
-        console.log('Creating a new room...');
-        alert('Create room functionality not implemented yet.');
+    const handleCreateRoom = async () => {
+        const data = await createRoom();
+        console.log(`Room created with ID: ${data.roomId}`);
+        navigate(`/room?roomId=${data.roomId}`);
     };
 
     const handleJoinRoom = (event: React.FormEvent<HTMLFormElement>) => {
