@@ -12,10 +12,15 @@ import {
     Tabs,
     Tab,
     SelectChangeEvent,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import socket from '../services/socket';
 import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
+import { SolutionResult } from '../services/roomSetup';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
@@ -29,7 +34,7 @@ const Room: FC = () => {
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
     const [code, setCode] = useState<string>('# Write your code here');
-    const [output, setOutput] = useState<string>('');
+    const [output, setOutput] = useState<SolutionResult[] | string>([]);
     const [selectedLanguage, setSelectedLanguage] =
         useState<LanguageName>(defaultLang);
     const [activeTab, setActiveTab] = useState<number>(0);
@@ -38,6 +43,7 @@ const Room: FC = () => {
     );
     const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState<boolean>(false);
+
     useEffect(() => {
         if (!roomId) {
             navigate('/dashboard');
@@ -48,7 +54,8 @@ const Room: FC = () => {
             setOutput,
             setProblemStatement,
             setIsRunning,
-            setCode
+            setCode,
+            navigate
         );
     }, []);
     // Helper: get default comment for each language
@@ -229,7 +236,65 @@ const Room: FC = () => {
                                 component='pre'
                                 sx={{ whiteSpace: 'pre-wrap' }}
                             >
-                                {output || 'Output will appear here...'}
+                                {output === 'Running...' ? (
+                                    <span>Running...</span>
+                                ) : Array.isArray(output) ? (
+                                    output.map((result, index) => {
+                                        const statusId = result.result.status_id;
+                                        const stdout = result.result.stdout ? atob(result.result.stdout) : '';
+                                        const stderr = result.result.stderr ? atob(result.result.stderr) : '';
+                                        const compileOutput = result.result.compile_output ? atob(result.result.compile_output) : '';
+                                        const message = result.result.message ? atob(result.result.message) : '';
+                                        const expected = result.expectedOutput;
+                                        let verdict = '';
+                                        let verdictColor = '';
+                                        if (statusId === 3) {
+                                            verdict = 'Correct';
+                                            verdictColor = 'green';
+                                        } else if (statusId === 4) {
+                                            verdict = 'Incorrect';
+                                            verdictColor = 'orange';
+                                        } else if (statusId > 4) {
+                                            verdict = 'Error';
+                                            verdictColor = 'red';
+                                        }
+                                        return (
+                                            <Accordion key={index} sx={{ background: '#23272f', color: 'white', mb: 1 }}>
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+                                                    aria-controls={`panel${index}-content`}
+                                                    id={`panel${index}-header`}
+                                                >
+                                                    <strong>Test Case {index + 1}:</strong>
+                                                    <span style={{ color: verdictColor, fontWeight: 'bold', marginLeft: 12 }}>{verdict}</span>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <div style={{ marginBottom: 8 }}>
+                                                        <strong>Input:</strong>
+                                                        <pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{result.testCase}</pre>
+                                                    </div>
+                                                    <div style={{ marginBottom: 8 }}>
+                                                        <strong>Expected Output:</strong>
+                                                        <pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{expected}</pre>
+                                                    </div>
+                                                    <div style={{ marginBottom: 8 }}>
+                                                        <strong>Your Output:</strong>
+                                                        <pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{stdout}</pre>
+                                                    </div>
+                                                    {statusId > 4 && (
+                                                        <>
+                                                            {stderr && <div><strong>Stderr:</strong><pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{stderr}</pre></div>}
+                                                            {compileOutput && <div><strong>Compile Output:</strong><pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{compileOutput}</pre></div>}
+                                                            {message && <div><strong>Message:</strong><pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{message}</pre></div>}
+                                                        </>
+                                                    )}
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        );
+                                    })
+                                ) : (
+                                    <span>{output}</span>
+                                )}
                             </Typography>
                         )}
                     </div>

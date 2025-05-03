@@ -1,26 +1,35 @@
 import { Server, Socket } from 'socket.io';
 import runCode from '../api/runCode';
 import Room from '../models/Room';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import Player from '../models/Player';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/jwtHelper';
 import getUsernameByToken from '../utils/getUsernameByToken';
 import Question from '../models/Question';
-import getSubmission from '../api/getSubmission';
+import getSubmission, { Judge0Response } from '../api/getSubmission';
 
 const roomSocket = (io: Server, socket: Socket) => {
     socket.on(
         'submit_solution',
         async (data: { code: string; roomId: string; user_token: string }) => {
             const username = getUsernameByToken(data.user_token);
-            const room = await Room.findById(data.roomId);
-
-            if (!room) {
-                console.log('Room not found');
-                socket.emit('error', 'Room not found');
+            let room;
+            if (mongoose.isValidObjectId(data.roomId)) {
+                room = await Room.findById(data.roomId);
+                if (!room) {
+                    console.log('Room not found');
+                    socket.emit('error', 'Room not found');
+                    return;
+                }
+            }
+            else {
+                console.log('Invalid room id');
+                socket.emit('error', 'Invalid room id');
                 return;
             }
+
+
             if (!username) {
                 console.log('Invalid token');
                 socket.emit('error', 'Invalid token');
@@ -34,8 +43,12 @@ const roomSocket = (io: Server, socket: Socket) => {
                 socket.emit('error', 'Question not found');
                 return;
             }
-            const results = [];
-            question.testCases.forEach(async (testCase) => {
+            const results: {
+                result: Judge0Response;
+                testCase: string;
+                expectedOutput: string;
+            }[] = [];
+            for (const testCase of question.testCases) {
                 const token = await runCode(
                     data.code,
                     'python',
@@ -46,6 +59,10 @@ const roomSocket = (io: Server, socket: Socket) => {
                 console.log('Token:', token);
                 let submission = await getSubmission(token);
                 console.log('Submission:', submission);
+                // Only for cloud
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 1500)
+                );
 
                 // Still processing
                 while (true) {
@@ -56,27 +73,27 @@ const roomSocket = (io: Server, socket: Socket) => {
                         );
                         submission = await getSubmission(token);
                     } else {
-                        results.push(submission);
+                        const result = {
+                            result: submission,
+                            testCase: testCase.stdin,
+                            expectedOutput: testCase.expectedOutput,
+                        }
+                        results.push(result);
                         break;
                     }
                 }
-            });
-
-            /*             question.testCases.forEach(async (testCase) => {
-                const response = await runCode(
-                    data.code,
-                    'python',
-                    data.roomId,
-                    testCase.expectedOutput,
-                    testCase.stdin
-                );
-                console.log('Response:', response);
-            }); */
+            };
+            console.log('Results:', results);
+            socket.emit('solution_result', results)
         }
     );
     socket.on(
         'join_room',
         async (data: { roomId: string; user_token: string }) => {
+            if (!mongoose.isValidObjectId(data.roomId)) {
+                socket.emit('error', 'Invalid room id');
+                return;
+            }
             const room = await Room.findById(data.roomId);
             let username: string;
             try {

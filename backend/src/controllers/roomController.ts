@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Question, { getRandomQuestion } from '../models/Question';
 import Room from '../models/Room';
-import { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 export const startRoom = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -27,7 +27,9 @@ export const getRoomQuestion = async (
 ): Promise<any> => {
     try {
         const { roomId } = req.params;
-        console.log('Room ID:', roomId);
+        if (!mongoose.isValidObjectId(roomId)) {
+            return res.status(400).json({ error: 'Invalid room ID' });
+        }
         const room = await Room.findById(roomId);
         if (!room) {
             return res.status(404).json({ error: 'Room not found' });
@@ -36,7 +38,6 @@ export const getRoomQuestion = async (
         if (!question) {
             return res.status(404).json({ error: 'Question not found' });
         }
-
         res.status(200).json({
             question: question.question,
             startingCode: question.startingCode,

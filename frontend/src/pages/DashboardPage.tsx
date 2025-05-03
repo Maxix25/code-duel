@@ -23,16 +23,9 @@ const DashboardPage: React.FC = () => {
 
     const handleJoinRoom = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // TODO: Implement API call to join the room with roomId
         console.log(`Joining room: ${roomId}`);
-        if (roomId.trim()) {
-            alert(
-                `Joining room ${roomId} - functionality not implemented yet.`
-            );
-            // Potentially navigate to the room page: navigate(`/room/${roomId}`);
-        } else {
-            alert('Please enter a Room ID.');
-        }
+        navigate(`/room?roomId=${roomId}`);
+        setRoomId(''); // Clear the input field after joining
     };
 
     return (
