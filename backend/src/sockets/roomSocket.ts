@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import runCode from '../api/runCode';
 import Room from '../models/Room';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import Player from '../models/Player';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/jwtHelper';
@@ -14,13 +14,22 @@ const roomSocket = (io: Server, socket: Socket) => {
         'submit_solution',
         async (data: { code: string; roomId: string; user_token: string }) => {
             const username = getUsernameByToken(data.user_token);
-            const room = await Room.findById(data.roomId);
-
-            if (!room) {
-                console.log('Room not found');
-                socket.emit('error', 'Room not found');
+            let room;
+            if (mongoose.isValidObjectId(data.roomId)) {
+                room = await Room.findById(data.roomId);
+                if (!room) {
+                    console.log('Room not found');
+                    socket.emit('error', 'Room not found');
+                    return;
+                }
+            }
+            else {
+                console.log('Invalid room id');
+                socket.emit('error', 'Invalid room id');
                 return;
             }
+
+
             if (!username) {
                 console.log('Invalid token');
                 socket.emit('error', 'Invalid token');
@@ -81,6 +90,10 @@ const roomSocket = (io: Server, socket: Socket) => {
     socket.on(
         'join_room',
         async (data: { roomId: string; user_token: string }) => {
+            if (!mongoose.isValidObjectId(data.roomId)) {
+                socket.emit('error', 'Invalid room id');
+                return;
+            }
             const room = await Room.findById(data.roomId);
             let username: string;
             try {

@@ -43,6 +43,7 @@ const Room: FC = () => {
     );
     const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState<boolean>(false);
+
     useEffect(() => {
         if (!roomId) {
             navigate('/dashboard');
@@ -53,7 +54,8 @@ const Room: FC = () => {
             setOutput,
             setProblemStatement,
             setIsRunning,
-            setCode
+            setCode,
+            navigate
         );
     }, []);
     // Helper: get default comment for each language

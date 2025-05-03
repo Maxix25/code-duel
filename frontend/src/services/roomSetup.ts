@@ -1,6 +1,7 @@
 import socket from './socket';
 import { Dispatch, SetStateAction } from 'react';
 import getQuestion from '../api/room/getQuestion';
+import { NavigateFunction } from 'react-router-dom';
 
 interface Judge0Response {
     stdout: string | null;
@@ -31,7 +32,8 @@ const roomSetup = async (
     setOutput: Dispatch<SetStateAction<SolutionResult[] | string>>,
     setProblemStatement: Dispatch<SetStateAction<string>>,
     setIsRunning: Dispatch<SetStateAction<boolean>>,
-    setCode: Dispatch<SetStateAction<string>>
+    setCode: Dispatch<SetStateAction<string>>,
+    navigate: NavigateFunction
 ) => {
     socket.connect();
     socket.emit('join_room', {
@@ -43,6 +45,11 @@ const roomSetup = async (
         console.log('Solution result:', data);
         setOutput(data)
 
+    });
+    socket.on('error', (data: string) => {
+        if (data === 'Invalid room id') {
+            navigate('/dashboard');
+        }
     });
     const Question = await getQuestion(roomId);
     setProblemStatement(Question.question);
