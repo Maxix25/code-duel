@@ -18,20 +18,17 @@ const roomSocket = (io: Server, socket: Socket) => {
             if (mongoose.isValidObjectId(data.roomId)) {
                 room = await Room.findById(data.roomId);
                 if (!room) {
-                    console.log('Room not found');
                     socket.emit('error', 'Room not found');
                     return;
                 }
             }
             else {
-                console.log('Invalid room id');
                 socket.emit('error', 'Invalid room id');
                 return;
             }
 
 
             if (!username) {
-                console.log('Invalid token');
                 socket.emit('error', 'Invalid token');
                 return;
             }
@@ -39,7 +36,6 @@ const roomSocket = (io: Server, socket: Socket) => {
                 _id: room.problemId,
             });
             if (!question) {
-                console.log('Question not found');
                 socket.emit('error', 'Question not found');
                 return;
             }
@@ -56,9 +52,7 @@ const roomSocket = (io: Server, socket: Socket) => {
                     testCase.stdin,
                     testCase.expectedOutput
                 );
-                console.log('Token:', token);
                 let submission = await getSubmission(token);
-                console.log('Submission:', submission);
                 // Only for cloud
                 await new Promise((resolve) =>
                     setTimeout(resolve, 1500)
@@ -67,7 +61,6 @@ const roomSocket = (io: Server, socket: Socket) => {
                 // Still processing
                 while (true) {
                     if (submission.status_id <= 2) {
-                        console.log('Still processing...', submission);
                         await new Promise((resolve) =>
                             setTimeout(resolve, 2000)
                         );
@@ -83,7 +76,13 @@ const roomSocket = (io: Server, socket: Socket) => {
                     }
                 }
             };
-            console.log('Results:', results);
+            // Check if all test cases passed
+            const allPassed = results.every((result) => result.result.status_id === 3);
+            if (allPassed) {
+                io.to(data.roomId).emit('winner', {
+                    username
+                })
+            }
             socket.emit('solution_result', results)
         }
     );

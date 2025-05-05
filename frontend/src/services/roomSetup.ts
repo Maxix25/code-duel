@@ -51,6 +51,11 @@ const roomSetup = async (
             navigate('/dashboard');
         }
     });
+    socket.on('winner', (data: { username: string }) => {
+        setIsRunning(false);
+        setOutput('We have a winner! ' + data.username);
+        console.log('Winner:', data.username);
+    });
     const Question = await getQuestion(roomId);
     setProblemStatement(Question.question);
     setCode(Question.startingCode);
