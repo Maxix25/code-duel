@@ -21,12 +21,10 @@ const roomSocket = (io: Server, socket: Socket) => {
                     socket.emit('error', 'Room not found');
                     return;
                 }
-            }
-            else {
+            } else {
                 socket.emit('error', 'Invalid room id');
                 return;
             }
-
 
             if (!username) {
                 socket.emit('error', 'Invalid token');
@@ -54,9 +52,7 @@ const roomSocket = (io: Server, socket: Socket) => {
                 );
                 let submission = await getSubmission(token);
                 // Only for cloud
-                await new Promise((resolve) =>
-                    setTimeout(resolve, 1500)
-                );
+                await new Promise((resolve) => setTimeout(resolve, 1500));
 
                 // Still processing
                 while (true) {
@@ -70,25 +66,30 @@ const roomSocket = (io: Server, socket: Socket) => {
                             result: submission,
                             testCase: testCase.stdin,
                             expectedOutput: testCase.expectedOutput,
-                        }
+                        };
                         results.push(result);
                         break;
                     }
                 }
-            };
-            // Check if all test cases passed
-            const allPassed = results.every((result) => result.result.status_id === 3);
-            if (allPassed) {
-                io.to(data.roomId).emit('winner', {
-                    username
-                })
             }
-            socket.emit('solution_result', results)
+            // Check if all test cases passed
+            const allPassed = results.every(
+                (result) => result.result.status_id === 3
+            );
+            if (allPassed) {
+                console.log('All test cases passed');
+                io.to(data.roomId).emit('winner', {
+                    username,
+                });
+                return;
+            }
+            socket.emit('solution_result', results);
         }
     );
     socket.on(
         'join_room',
         async (data: { roomId: string; user_token: string }) => {
+            let append = true;
             if (!mongoose.isValidObjectId(data.roomId)) {
                 socket.emit('error', 'Invalid room id');
                 return;
@@ -101,6 +102,7 @@ const roomSocket = (io: Server, socket: Socket) => {
                 };
                 username = decoded.username;
             } catch (err) {
+                console.log('Invalid token');
                 socket.emit('error', 'Invalid token');
                 return;
             }
@@ -124,10 +126,13 @@ const roomSocket = (io: Server, socket: Socket) => {
                     .includes(userId.toString())
             ) {
                 socket.emit('error', 'Already in room');
-                return;
+                console.log('Already in room');
+                append = false;
             }
             room.players.push(userId as Types.ObjectId);
-            await room.save();
+            if (append) {
+                await room.save();
+            }
             socket.join(data.roomId);
             console.log(`Player ${socket.id} joined room ${data.roomId}`);
         }

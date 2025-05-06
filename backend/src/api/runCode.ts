@@ -38,14 +38,12 @@ const runCode = async (
         stdin: stdin ? btoa(stdin) : undefined,
         expected_output: expectedOutput ? btoa(expectedOutput) : undefined,
     };
-    console.log('Submission:', submission);
 
     try {
         const response = await compiler.post<Judge0ResponseNoWait>(
             '/submissions?base64_encoded=true&wait=false',
             submission
         );
-        console.log('Response:', response.data);
         const token = response.data.token;
         return token;
     } catch (error: any) {
