@@ -1,11 +1,12 @@
 import { Server, Socket } from 'socket.io';
 import runCode from '../api/runCode';
 import Room from '../models/Room';
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import Player from '../models/Player';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/jwtHelper';
 import getUsernameByToken from '../utils/getUsernameByToken';
+import getUserIdByToken from '../utils/getUserIdByToken';
 import Question from '../models/Question';
 import getSubmission, { Judge0Response } from '../api/getSubmission';
 
@@ -14,6 +15,7 @@ const roomSocket = (io: Server, socket: Socket) => {
         'submit_solution',
         async (data: { code: string; roomId: string; user_token: string }) => {
             const username = getUsernameByToken(data.user_token);
+            const userId = getUserIdByToken(data.user_token);
             let room;
             if (mongoose.isValidObjectId(data.roomId)) {
                 room = await Room.findById(data.roomId);
@@ -82,6 +84,26 @@ const roomSocket = (io: Server, socket: Socket) => {
                     username,
                 });
                 return;
+            } else {
+                // Count testcases passed
+                const passedCount = results.filter(
+                    (result) => result.result.status_id === 3
+                ).length;
+                // Update score in room
+                // Get current score and update only if passedCount is higher
+                const roomDoc = await Room.findOne(
+                    { _id: data.roomId, 'players.player': userId },
+                    { 'players.$': 1 }
+                );
+                const currentScore = roomDoc?.players?.[0]?.score ?? 0;
+                if (passedCount > currentScore) {
+                    await Room.updateOne(
+                        { _id: data.roomId, 'players.player': userId },
+                        { $set: { 'players.$.score': passedCount } }
+                    ).catch((err) => {
+                        console.error('Error updating score:', err);
+                    });
+                }
             }
             socket.emit('solution_result', results);
         }
@@ -121,15 +143,18 @@ const roomSocket = (io: Server, socket: Socket) => {
                 return;
             }
             if (
+                userId &&
                 room.players
-                    .map((id: any) => id.toString())
+                    .map((p: any) => p.player.toString())
                     .includes(userId.toString())
             ) {
                 socket.emit('error', 'Already in room');
-                console.log('Already in room');
                 append = false;
             }
-            room.players.push(userId as Types.ObjectId);
+            room.players.push({
+                player: userId as mongoose.Schema.Types.ObjectId,
+                score: 0,
+            });
             if (append) {
                 await room.save();
             }

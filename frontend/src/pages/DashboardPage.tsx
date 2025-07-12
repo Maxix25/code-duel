@@ -16,14 +16,19 @@ const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
 
     const handleCreateRoom = async () => {
-        const data = await createRoom();
-        console.log(`Room created with ID: ${data.roomId}`);
-        navigate(`/room?roomId=${data.roomId}`);
+        const response = await createRoom();
+        if (response.status === 400) {
+            alert(
+                'Error creating room: Already in room with ID ' +
+                    response.roomId
+            );
+            return;
+        }
+        navigate(`/room?roomId=${response.roomId}`);
     };
 
     const handleJoinRoom = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(`Joining room: ${roomId}`);
         navigate(`/room?roomId=${roomId}`);
         setRoomId(''); // Clear the input field after joining
     };

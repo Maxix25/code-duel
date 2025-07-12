@@ -99,7 +99,6 @@ export const verifyAuth = async (req: Request, res: Response): Promise<any> => {
         const decoded = jwt.verify(token, JWT_SECRET);
         res.status(200).json({ message: 'Token is valid', decoded });
     } catch (error) {
-        console.error('Token verification error:', error);
         return res.status(401).json({ message: 'Invalid token' });
     }
 };
