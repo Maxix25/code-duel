@@ -30,11 +30,17 @@ const ResultsPage = () => {
             setLoading(false);
             return;
         }
-        getResult(roomId).then((data) => {
-            console.log(data);
-            setResults(data.results);
-            setLoading(false);
-        });
+        getResult(roomId)
+            .then((data) => {
+                console.log(data);
+                setResults(data.results);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error(err);
+                setError('Failed to fetch results. Please try again later.');
+                setLoading(false);
+            });
     }, [roomId]);
 
     // Find the highest score
