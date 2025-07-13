@@ -92,7 +92,7 @@ const roomSocket = (io: Server, socket: Socket) => {
                     socket.emit('error', 'Player not found');
                     return;
                 }
-                room.players.forEach(async (p) => {
+                for (const p of room.players) {
                     // Check if player is the one who submitted
                     if (p.player.toString() === userId.toString()) {
                         const problem = await getQuestionById(
