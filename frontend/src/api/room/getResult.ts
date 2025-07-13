@@ -8,7 +8,7 @@ import api from '../api';
 
 const getResult = async (roomId: string): Promise<any> => {
     try {
-        const response = await api.get(`/room/${roomId}/results`);
+        const response = await api.get(`/room/results/${roomId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching results:', error);

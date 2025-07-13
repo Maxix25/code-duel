@@ -9,6 +9,7 @@ import getUsernameByToken from '../utils/getUsernameByToken';
 import getUserIdByToken from '../utils/getUserIdByToken';
 import Question from '../models/Question';
 import getSubmission, { Judge0Response } from '../api/getSubmission';
+import getQuestionById from '../utils/getQuestionById';
 
 const roomSocket = (io: Server, socket: Socket) => {
     socket.on(
@@ -79,7 +80,32 @@ const roomSocket = (io: Server, socket: Socket) => {
                 (result) => result.result.status_id === 3
             );
             if (allPassed) {
-                console.log('All test cases passed');
+                // Add score to player
+                if (!userId) {
+                    socket.emit('error', 'Invalid token');
+                    return;
+                }
+                const player = await Player.findOne({
+                    _id: userId,
+                });
+                if (!player) {
+                    socket.emit('error', 'Player not found');
+                    return;
+                }
+                for (const p of room.players) {
+                    // Check if player is the one who submitted
+                    if (p.player.toString() === userId.toString()) {
+                        const problem = await getQuestionById(
+                            room.problemId.toString()
+                        );
+                        if (problem) {
+                            // Set score to number of test cases
+                            p.score = problem.testCases.length;
+                            await room.save();
+                        }
+                    }
+                    return p;
+                });
                 io.to(data.roomId).emit('winner', {
                     username,
                 });
@@ -148,8 +174,12 @@ const roomSocket = (io: Server, socket: Socket) => {
                     .map((p: any) => p.player.toString())
                     .includes(userId.toString())
             ) {
-                socket.emit('error', 'Already in room');
-                append = false;
+                // User is already in the room, just join socket
+                socket.join(data.roomId);
+                console.log(
+                    `Player ${socket.id} re-joined room ${data.roomId}`
+                );
+                return;
             }
             room.players.push({
                 player: userId as mongoose.Schema.Types.ObjectId,
@@ -160,6 +190,32 @@ const roomSocket = (io: Server, socket: Socket) => {
             }
             socket.join(data.roomId);
             console.log(`Player ${socket.id} joined room ${data.roomId}`);
+        }
+    );
+    socket.on(
+        'leave_room',
+        async (data: { roomId: string; user_token: string }) => {
+            console.log(`Player ${socket.id} is leaving room ${data.roomId}`);
+            if (!mongoose.isValidObjectId(data.roomId)) {
+                socket.emit('error', 'Invalid room id');
+                return;
+            }
+            const room = await Room.findById(data.roomId);
+            if (!room) {
+                socket.emit('error', 'Room not found');
+                return;
+            }
+            const userId = getUserIdByToken(data.user_token);
+            if (!userId) {
+                socket.emit('error', 'Invalid token');
+                return;
+            }
+            room.players = room.players.filter(
+                (p: any) => p.player.toString() !== userId.toString()
+            );
+            await room.save();
+            socket.leave(data.roomId);
+            console.log(`Player ${socket.id} left room ${data.roomId}`);
         }
     );
 };

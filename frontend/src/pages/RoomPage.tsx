@@ -17,6 +17,7 @@ import {
     AccordionDetails,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import socket from '../services/socket';
 import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
@@ -102,6 +103,15 @@ const Room: FC = () => {
         });
     };
 
+    const handleLeaveRoom = () => {
+        socket.emit('leave_room', {
+            roomId,
+            user_token: localStorage.getItem('token'),
+        });
+        socket.disconnect();
+        navigate('/dashboard');
+    };
+
     return (
         <Box
             sx={{ display: 'flex', height: 'calc(100vh - 64px)', p: 2, gap: 2 }}
@@ -122,26 +132,37 @@ const Room: FC = () => {
                     }}
                 >
                     <Typography variant='h6'>Code Editor</Typography>
-                    <FormControl size='small' sx={{ minWidth: 120 }}>
-                        <InputLabel id='language-select-label'>
-                            Language
-                        </InputLabel>
-                        <Select
-                            labelId='language-select-label'
-                            value={selectedLanguage}
-                            label='Language'
-                            onChange={handleLanguageChange}
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <FormControl size='small' sx={{ minWidth: 120 }}>
+                            <InputLabel id='language-select-label'>
+                                Language
+                            </InputLabel>
+                            <Select
+                                labelId='language-select-label'
+                                value={selectedLanguage}
+                                label='Language'
+                                onChange={handleLanguageChange}
+                            >
+                                {Object.entries(LANGUAGES).map(
+                                    ([name, _langData]) => (
+                                        <MenuItem key={name} value={name}>
+                                            {name.charAt(0).toUpperCase() +
+                                                name.slice(1)}
+                                        </MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                        <Button
+                            variant='contained'
+                            color='error'
+                            startIcon={<ExitToAppIcon />}
+                            onClick={handleLeaveRoom}
+                            sx={{ ml: 2 }}
                         >
-                            {Object.entries(LANGUAGES).map(
-                                ([name, _langData]) => (
-                                    <MenuItem key={name} value={name}>
-                                        {name.charAt(0).toUpperCase() +
-                                            name.slice(1)}
-                                    </MenuItem>
-                                )
-                            )}
-                        </Select>
-                    </FormControl>
+                            Leave Room
+                        </Button>
+                    </Box>
                 </Box>
                 <Box
                     sx={{
@@ -240,11 +261,21 @@ const Room: FC = () => {
                                     <span>Running...</span>
                                 ) : Array.isArray(output) ? (
                                     output.map((result, index) => {
-                                        const statusId = result.result.status_id;
-                                        const stdout = result.result.stdout ? atob(result.result.stdout) : '';
-                                        const stderr = result.result.stderr ? atob(result.result.stderr) : '';
-                                        const compileOutput = result.result.compile_output ? atob(result.result.compile_output) : '';
-                                        const message = result.result.message ? atob(result.result.message) : '';
+                                        const statusId =
+                                            result.result.status_id;
+                                        const stdout = result.result.stdout
+                                            ? atob(result.result.stdout)
+                                            : '';
+                                        const stderr = result.result.stderr
+                                            ? atob(result.result.stderr)
+                                            : '';
+                                        const compileOutput = result.result
+                                            .compile_output
+                                            ? atob(result.result.compile_output)
+                                            : '';
+                                        const message = result.result.message
+                                            ? atob(result.result.message)
+                                            : '';
                                         const expected = result.expectedOutput;
                                         let verdict = '';
                                         let verdictColor = '';
@@ -259,33 +290,152 @@ const Room: FC = () => {
                                             verdictColor = 'red';
                                         }
                                         return (
-                                            <Accordion key={index} sx={{ background: '#23272f', color: 'white', mb: 1 }}>
+                                            <Accordion
+                                                key={index}
+                                                sx={{
+                                                    background: '#23272f',
+                                                    color: 'white',
+                                                    mb: 1,
+                                                }}
+                                            >
                                                 <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+                                                    expandIcon={
+                                                        <ExpandMoreIcon
+                                                            sx={{
+                                                                color: 'white',
+                                                            }}
+                                                        />
+                                                    }
                                                     aria-controls={`panel${index}-content`}
                                                     id={`panel${index}-header`}
                                                 >
-                                                    <strong>Test Case {index + 1}:</strong>
-                                                    <span style={{ color: verdictColor, fontWeight: 'bold', marginLeft: 12 }}>{verdict}</span>
+                                                    <strong>
+                                                        Test Case {index + 1}:
+                                                    </strong>
+                                                    <span
+                                                        style={{
+                                                            color: verdictColor,
+                                                            fontWeight: 'bold',
+                                                            marginLeft: 12,
+                                                        }}
+                                                    >
+                                                        {verdict}
+                                                    </span>
                                                 </AccordionSummary>
                                                 <AccordionDetails>
-                                                    <div style={{ marginBottom: 8 }}>
+                                                    <div
+                                                        style={{
+                                                            marginBottom: 8,
+                                                        }}
+                                                    >
                                                         <strong>Input:</strong>
-                                                        <pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{result.testCase}</pre>
+                                                        <pre
+                                                            style={{
+                                                                background:
+                                                                    '#181c23',
+                                                                padding: 8,
+                                                                borderRadius: 4,
+                                                            }}
+                                                        >
+                                                            {result.testCase}
+                                                        </pre>
                                                     </div>
-                                                    <div style={{ marginBottom: 8 }}>
-                                                        <strong>Expected Output:</strong>
-                                                        <pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{expected}</pre>
+                                                    <div
+                                                        style={{
+                                                            marginBottom: 8,
+                                                        }}
+                                                    >
+                                                        <strong>
+                                                            Expected Output:
+                                                        </strong>
+                                                        <pre
+                                                            style={{
+                                                                background:
+                                                                    '#181c23',
+                                                                padding: 8,
+                                                                borderRadius: 4,
+                                                            }}
+                                                        >
+                                                            {expected}
+                                                        </pre>
                                                     </div>
-                                                    <div style={{ marginBottom: 8 }}>
-                                                        <strong>Your Output:</strong>
-                                                        <pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{stdout}</pre>
+                                                    <div
+                                                        style={{
+                                                            marginBottom: 8,
+                                                        }}
+                                                    >
+                                                        <strong>
+                                                            Your Output:
+                                                        </strong>
+                                                        <pre
+                                                            style={{
+                                                                background:
+                                                                    '#181c23',
+                                                                padding: 8,
+                                                                borderRadius: 4,
+                                                            }}
+                                                        >
+                                                            {stdout}
+                                                        </pre>
                                                     </div>
                                                     {statusId > 4 && (
                                                         <>
-                                                            {stderr && <div><strong>Stderr:</strong><pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{stderr}</pre></div>}
-                                                            {compileOutput && <div><strong>Compile Output:</strong><pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{compileOutput}</pre></div>}
-                                                            {message && <div><strong>Message:</strong><pre style={{ background: '#181c23', padding: 8, borderRadius: 4 }}>{message}</pre></div>}
+                                                            {stderr && (
+                                                                <div>
+                                                                    <strong>
+                                                                        Stderr:
+                                                                    </strong>
+                                                                    <pre
+                                                                        style={{
+                                                                            background:
+                                                                                '#181c23',
+                                                                            padding: 8,
+                                                                            borderRadius: 4,
+                                                                        }}
+                                                                    >
+                                                                        {stderr}
+                                                                    </pre>
+                                                                </div>
+                                                            )}
+                                                            {compileOutput && (
+                                                                <div>
+                                                                    <strong>
+                                                                        Compile
+                                                                        Output:
+                                                                    </strong>
+                                                                    <pre
+                                                                        style={{
+                                                                            background:
+                                                                                '#181c23',
+                                                                            padding: 8,
+                                                                            borderRadius: 4,
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            compileOutput
+                                                                        }
+                                                                    </pre>
+                                                                </div>
+                                                            )}
+                                                            {message && (
+                                                                <div>
+                                                                    <strong>
+                                                                        Message:
+                                                                    </strong>
+                                                                    <pre
+                                                                        style={{
+                                                                            background:
+                                                                                '#181c23',
+                                                                            padding: 8,
+                                                                            borderRadius: 4,
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            message
+                                                                        }
+                                                                    </pre>
+                                                                </div>
+                                                            )}
                                                         </>
                                                     )}
                                                 </AccordionDetails>
