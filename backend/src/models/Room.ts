@@ -1,8 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import type { Player } from './Player';
 
 export interface Room extends Document {
     players: {
-        player: Schema.Types.ObjectId;
+        player: Player | mongoose.Schema.Types.ObjectId;
         score: number;
     }[];
     status: 'waiting' | 'playing' | 'finished';
@@ -16,7 +17,6 @@ const RoomSchema: Schema = new Schema({
             player: {
                 type: Schema.Types.ObjectId,
                 ref: 'Player',
-                unique: true,
             },
             score: {
                 type: Number,

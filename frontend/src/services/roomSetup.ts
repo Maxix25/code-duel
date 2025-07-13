@@ -39,6 +39,8 @@ const roomSetup = async (
     socket.off('solution_result');
     socket.off('error');
     socket.off('winner');
+    socket.off('reconnect');
+
     socket.on('connect', () => {
         console.log('Connected to socket server');
         socket.emit('join_room', {

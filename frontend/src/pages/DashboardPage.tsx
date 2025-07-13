@@ -23,8 +23,11 @@ const DashboardPage: React.FC = () => {
                     response.roomId
             );
             return;
+        } else if (response.status === 200) {
+            navigate(`/room?roomId=${response.roomId}`);
+        } else {
+            alert('Unexpected error occurred while creating room');
         }
-        navigate(`/room?roomId=${response.roomId}`);
     };
 
     const handleJoinRoom = (event: React.FormEvent<HTMLFormElement>) => {

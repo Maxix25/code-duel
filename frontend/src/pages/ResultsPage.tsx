@@ -7,9 +7,11 @@ import {
     Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import getResult from '../api/room/getResult';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 type Result = {
-    username: string;
+    player: string;
     score: number;
     // Add more fields as needed
 };
@@ -28,24 +30,18 @@ const ResultsPage = () => {
             setLoading(false);
             return;
         }
-        fetch(`/api/room/${roomId}/results`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-            },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error('Failed to fetch results');
-                return res.json();
-            })
-            .then((data) => {
-                setResults(data.results || []);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
+        getResult(roomId).then((data) => {
+            console.log(data);
+            setResults(data.results);
+            setLoading(false);
+        });
     }, [roomId]);
+
+    // Find the highest score
+    const highestScore =
+        results && results.length > 0
+            ? Math.max(...results.map((r) => r.score))
+            : null;
 
     return (
         <Box
@@ -67,9 +63,28 @@ const ResultsPage = () => {
             {!loading && !error && results && results.length > 0 && (
                 <Paper sx={{ p: 3, minWidth: 320 }}>
                     {results.map((res, idx) => (
-                        <Box key={idx} sx={{ mb: 2 }}>
-                            <Typography variant='h6'>{res.username}</Typography>
-                            <Typography>Score: {res.score}</Typography>
+                        <Box
+                            key={idx}
+                            sx={{
+                                mb: 2,
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Typography
+                                variant='h6'
+                                sx={{ display: 'flex', alignItems: 'center' }}
+                            >
+                                {res.score === highestScore && (
+                                    <EmojiEventsIcon
+                                        sx={{ color: 'gold', ml: 1 }}
+                                    />
+                                )}
+                                {res.player}
+                            </Typography>
+                            <Typography marginInlineStart={1}>
+                                Score: {res.score}
+                            </Typography>
                         </Box>
                     ))}
                 </Paper>

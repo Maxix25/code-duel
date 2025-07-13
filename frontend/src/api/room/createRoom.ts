@@ -25,6 +25,7 @@ const createRoom = async (): Promise<Response> => {
             return { status: 400, roomId: err.response.data.roomId };
         }
         // Return a default Response if error is not handled above
+        console.error('Error creating room:', error);
         return { status: 500, roomId: '' };
     }
 };
