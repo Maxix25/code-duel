@@ -2,13 +2,33 @@ import { Request, Response } from 'express';
 import Question, { getRandomQuestion } from '../models/Question';
 import Room from '../models/Room';
 import mongoose from 'mongoose';
+import getUserIdByToken from '../utils/getUserIdByToken';
 
 export const startRoom = async (req: Request, res: Response): Promise<any> => {
     try {
+        const user_token = req.body.user_token;
+        if (!user_token) {
+            return res.status(401).json({ error: 'User token is required' });
+        }
         const question = await getRandomQuestion();
         if (!question) {
             return res.status(404).json({ error: 'No question found' });
         }
+        // Check if user is already in a room
+        const userId = getUserIdByToken(user_token);
+        if (!userId) {
+            return res.status(401).json({ error: 'Invalid user token' });
+        }
+        const existingRoom = await Room.findOne({
+            players: { $elemMatch: { player: userId } },
+        });
+        if (existingRoom) {
+            console.log('User already in a room:', existingRoom.id);
+            return res
+                .status(400)
+                .json({ error: 'Already in a room', roomId: existingRoom.id });
+        }
+        // Create a new room
         const room = await Room.create({
             players: [],
             status: 'waiting',

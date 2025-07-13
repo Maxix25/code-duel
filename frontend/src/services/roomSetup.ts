@@ -35,21 +35,40 @@ const roomSetup = async (
     setCode: Dispatch<SetStateAction<string>>,
     navigate: NavigateFunction
 ) => {
-    socket.connect();
-    socket.emit('join_room', {
-        roomId,
-        user_token: localStorage.getItem('token'),
+    socket.off('connect');
+    socket.off('solution_result');
+    socket.off('error');
+    socket.off('winner');
+    socket.on('connect', () => {
+        console.log('Connected to socket server');
+        socket.emit('join_room', {
+            roomId,
+            user_token: localStorage.getItem('token'),
+        });
     });
+    socket.on('reconnect', () => {
+        console.log('Reconnected to socket server');
+        socket.emit('join_room', {
+            roomId,
+            user_token: localStorage.getItem('token'),
+        });
+    });
+    socket.connect();
     socket.on('solution_result', (data: SolutionResult[]) => {
         setIsRunning(false);
         console.log('Solution result:', data);
-        setOutput(data)
-
+        setOutput(data);
     });
     socket.on('error', (data: string) => {
         if (data === 'Invalid room id') {
             navigate('/dashboard');
         }
+        console.log('Error:', data);
+    });
+    socket.on('winner', (data: { username: string }) => {
+        setIsRunning(false);
+        setOutput('We have a winner! ' + data.username);
+        console.log('Winner:', data.username);
     });
     const Question = await getQuestion(roomId);
     setProblemStatement(Question.question);

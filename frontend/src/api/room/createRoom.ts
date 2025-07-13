@@ -1,16 +1,31 @@
 import api from '../api';
 
-interface Response {
-    roomId: string;
+export interface Response {
+    status: number;
+    roomId: string | unknown;
 }
 
 const createRoom = async (): Promise<Response> => {
     try {
-        const response = await api.post('/room/start');
-        return response.data;
-    } catch (error) {
-        console.error('Error creating room:', error);
-        throw error;
+        const response = await api.post('/room/start', {
+            user_token: localStorage.getItem('token'),
+        });
+        console.log(response.status);
+        return { status: response.status, roomId: response.data.roomId };
+    } catch (error: unknown) {
+        if (
+            typeof error === 'object' &&
+            error !== null &&
+            'response' in error &&
+            (error as any).response?.status === 400
+        ) {
+            const err = error as {
+                response: { data: { roomId: string | unknown } };
+            };
+            return { status: 400, roomId: err.response.data.roomId };
+        }
+        // Return a default Response if error is not handled above
+        return { status: 500, roomId: '' };
     }
 };
 

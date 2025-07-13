@@ -8,7 +8,8 @@ import { Container } from '@mui/material';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CssBaseline from '@mui/material/CssBaseline';
-import Room from './pages/Room';
+import Room from './pages/RoomPage';
+import ResultsPage from './pages/ResultsPage';
 
 function App() {
     return (
@@ -41,6 +42,14 @@ function App() {
                                 element={
                                     <ProtectedRoute>
                                         <Room />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path='results'
+                                element={
+                                    <ProtectedRoute>
+                                        <ResultsPage />
                                     </ProtectedRoute>
                                 }
                             />
