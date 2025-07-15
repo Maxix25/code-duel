@@ -32,13 +32,14 @@ const LANGUAGES = {
 type LanguageName = keyof typeof LANGUAGES;
 
 const Room: FC = () => {
-    const [users, setUsers] = useState<string[]>([]);
-    const [usersOpen, setUsersOpen] = useState<boolean>(false);
-    const [copied, setCopied] = useState<boolean>(false);
-
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
+    const navigate = useNavigate();
+
+    const [users, setUsers] = useState<string[]>([]);
+    const [usersOpen, setUsersOpen] = useState<boolean>(false);
+    const [copied, setCopied] = useState<boolean>(false);
     const [code, setCode] = useState<string>('# Write your code here');
     const [output, setOutput] = useState<SolutionResult[] | string>([]);
     const [selectedLanguage, setSelectedLanguage] =
@@ -47,7 +48,6 @@ const Room: FC = () => {
     const [problemStatement, setProblemStatement] = useState<string>(
         'Waiting for game to start...'
     );
-    const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [readyButton, setReadyButton] = useState<boolean>(false);
     const [canSubmit, setCanSubmit] = useState<boolean>(false); // Default: cannot submit
