@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Container,
     Typography,
@@ -10,10 +10,25 @@ import {
 } from '@mui/material';
 import createRoom from '../api/room/createRoom';
 import { useNavigate } from 'react-router-dom';
+import checkIfUserIsInRoom from '../api/room/checkIfUserIsInRoom';
 
 const DashboardPage: React.FC = () => {
     const [roomId, setRoomId] = useState('');
+    const [isInRoom, setIsInRoom] = useState(false);
+    const [currentRoomId, setCurrentRoomId] = useState<string>('');
     const navigate = useNavigate();
+
+    // TODO: Maybe when we check if the user is in a room, we should disable the join room button and create room button
+    useEffect(() => {
+        checkIfUserIsInRoom().then((data) => {
+            if (data.inRoom) {
+                setIsInRoom(true);
+                if (data.roomId) {
+                    setCurrentRoomId(data.roomId);
+                }
+            }
+        });
+    }, []);
 
     const handleCreateRoom = async () => {
         const response = await createRoom();
@@ -62,6 +77,7 @@ const DashboardPage: React.FC = () => {
                             variant='contained'
                             color='primary'
                             onClick={handleCreateRoom}
+                            disabled={isInRoom}
                         >
                             Create Room
                         </Button>
@@ -81,30 +97,44 @@ const DashboardPage: React.FC = () => {
                         <Typography variant='h6' component='h2' gutterBottom>
                             Join Existing Room
                         </Typography>
-                        <Box
-                            component='form'
-                            onSubmit={handleJoinRoom}
-                            sx={{ width: '100%', mt: 1 }}
-                        >
-                            <TextField
-                                margin='normal'
-                                fullWidth
-                                id='roomId'
-                                label='Enter Room ID'
-                                name='roomId'
-                                value={roomId}
-                                onChange={(e) => setRoomId(e.target.value)}
-                                sx={{ mb: 2 }}
-                            />
+                        {isInRoom ? (
                             <Button
-                                type='submit'
-                                fullWidth
                                 variant='contained'
                                 color='secondary'
+                                fullWidth
+                                onClick={() =>
+                                    navigate(`/room?roomId=${currentRoomId}`)
+                                }
+                                sx={{ mt: 2 }}
                             >
-                                Join Room
+                                Go to Room (ID: {currentRoomId})
                             </Button>
-                        </Box>
+                        ) : (
+                            <Box
+                                component='form'
+                                onSubmit={handleJoinRoom}
+                                sx={{ width: '100%', mt: 1 }}
+                            >
+                                <TextField
+                                    margin='normal'
+                                    fullWidth
+                                    id='roomId'
+                                    label='Enter Room ID'
+                                    name='roomId'
+                                    value={roomId}
+                                    onChange={(e) => setRoomId(e.target.value)}
+                                    sx={{ mb: 2 }}
+                                />
+                                <Button
+                                    type='submit'
+                                    fullWidth
+                                    variant='contained'
+                                    color='secondary'
+                                >
+                                    Join Room
+                                </Button>
+                            </Box>
+                        )}
                     </Paper>
                 </Grid>
             </Grid>
