@@ -20,14 +20,20 @@ const DashboardPage: React.FC = () => {
 
     // TODO: Maybe when we check if the user is in a room, we should disable the join room button and create room button
     useEffect(() => {
-        checkIfUserIsInRoom().then((data) => {
-            if (data.inRoom) {
-                setIsInRoom(true);
-                if (data.roomId) {
-                    setCurrentRoomId(data.roomId);
+        const fetchUserRoomStatus = async () => {
+            try {
+                const data = await checkIfUserIsInRoom();
+                if (data.inRoom) {
+                    setIsInRoom(true);
+                    if (data.roomId) {
+                        setCurrentRoomId(data.roomId);
+                    }
                 }
+            } catch (error) {
+                console.error('Failed to check if user is in a room:', error);
             }
-        });
+        };
+        fetchUserRoomStatus();
     }, []);
 
     const handleCreateRoom = async () => {
