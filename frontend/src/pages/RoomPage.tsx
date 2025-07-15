@@ -34,9 +34,14 @@ const Room: FC = () => {
     const [copied, setCopied] = useState<boolean>(false);
     const handleCopyRoomId = () => {
         if (roomId) {
-            navigator.clipboard.writeText(roomId);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
+            try {
+                navigator.clipboard.writeText(roomId);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+            } catch (error) {
+                console.error('Failed to copy room ID to clipboard:', error);
+                alert('Failed to copy room ID. Please try again.');
+            }
         }
     };
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
