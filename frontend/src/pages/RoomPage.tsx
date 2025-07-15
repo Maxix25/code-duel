@@ -40,24 +40,26 @@ const Room: FC = () => {
         useState<LanguageName>(defaultLang);
     const [activeTab, setActiveTab] = useState<number>(0);
     const [problemStatement, setProblemStatement] = useState<string>(
-        'Problem statement goes here...'
+        'Waiting for game to start...'
     );
     const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState<boolean>(false);
+    const [readyButton, setReadyButton] = useState<boolean>(false);
+    const [canSubmit, setCanSubmit] = useState<boolean>(false); // Default: cannot submit
 
     useEffect(() => {
         if (!roomId) {
+            // TODO: Add message to user about missing room ID
             navigate('/dashboard');
             return;
         }
-        roomSetup(
-            roomId,
-            setOutput,
-            setProblemStatement,
-            setIsRunning,
-            setCode,
-            navigate
-        );
+        roomSetup(roomId, setOutput, setIsRunning, setReadyButton, navigate);
+        socket.on('start_game', (question) => {
+            console.log('Game started:', question);
+            setProblemStatement(question.question);
+            setCode(question.startingCode);
+            setCanSubmit(true); // Enable submit button when game starts
+        });
     }, []);
     // Helper: get default comment for each language
     const getDefaultComment = (lang: LanguageName) => {
@@ -111,6 +113,13 @@ const Room: FC = () => {
         socket.disconnect();
         navigate('/dashboard');
     };
+    const handleReadyButton = () => {
+        socket.emit('player_ready', {
+            roomId,
+            user_token: localStorage.getItem('token'),
+        });
+        setReadyButton(false); // Hide the button after clicking
+    };
 
     return (
         <Box
@@ -162,6 +171,16 @@ const Room: FC = () => {
                         >
                             Leave Room
                         </Button>
+                        {readyButton && (
+                            <Button
+                                variant='outlined'
+                                color='success'
+                                sx={{ ml: 2 }}
+                                onClick={handleReadyButton}
+                            >
+                                Ready
+                            </Button>
+                        )}
                     </Box>
                 </Box>
                 <Box
@@ -178,13 +197,16 @@ const Room: FC = () => {
                         value={code}
                         onChange={handleEditorChange}
                         theme='vs-dark'
-                        options={{ minimap: { enabled: false } }}
+                        options={{
+                            minimap: { enabled: false },
+                            readOnly: !canSubmit,
+                        }}
                     />
                 </Box>
                 <Button
                     variant='contained'
                     onClick={handleSubmitCode}
-                    disabled={isRunning}
+                    disabled={isRunning || !canSubmit}
                 >
                     {isRunning ? 'Running...' : 'Run Code'}
                 </Button>

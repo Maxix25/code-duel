@@ -1,6 +1,5 @@
 import socket from './socket';
 import { Dispatch, SetStateAction } from 'react';
-import getQuestion from '../api/room/getQuestion';
 import { NavigateFunction } from 'react-router-dom';
 
 interface Judge0Response {
@@ -30,16 +29,19 @@ export interface SolutionResult {
 const roomSetup = async (
     roomId: string,
     setOutput: Dispatch<SetStateAction<SolutionResult[] | string>>,
-    setProblemStatement: Dispatch<SetStateAction<string>>,
     setIsRunning: Dispatch<SetStateAction<boolean>>,
-    setCode: Dispatch<SetStateAction<string>>,
+    setReadyButton: Dispatch<SetStateAction<boolean>>,
     navigate: NavigateFunction
 ) => {
+    // Clear previous socket listeners to avoid memory leaks
     socket.off('connect');
     socket.off('solution_result');
     socket.off('error');
     socket.off('winner');
     socket.off('reconnect');
+    socket.off('add_ready_button');
+    socket.off('remove_ready_button');
+    socket.off('start_game');
 
     socket.on('connect', () => {
         console.log('Connected to socket server');
@@ -72,10 +74,12 @@ const roomSetup = async (
         setOutput('We have a winner! ' + data.username);
         console.log('Winner:', data.username);
     });
-    const Question = await getQuestion(roomId);
-    setProblemStatement(Question.question);
-    setCode(Question.startingCode);
-    return Question;
+    socket.on('add_ready_button', () => {
+        setReadyButton(true);
+    });
+    socket.on('remove_ready_button', () => {
+        setReadyButton(false);
+    });
 };
 
 export default roomSetup;
