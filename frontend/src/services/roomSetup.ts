@@ -1,6 +1,5 @@
 import socket from './socket';
 import { Dispatch, SetStateAction } from 'react';
-import getQuestion from '../api/room/getQuestion';
 import { NavigateFunction } from 'react-router-dom';
 
 interface Judge0Response {
@@ -42,6 +41,7 @@ const roomSetup = async (
     socket.off('reconnect');
     socket.off('add_ready_button');
     socket.off('remove_ready_button');
+    socket.off('start_game');
 
     socket.on('connect', () => {
         console.log('Connected to socket server');
