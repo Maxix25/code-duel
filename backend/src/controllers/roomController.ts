@@ -110,11 +110,8 @@ export const getUsersInRoom = async (
         if (!room) {
             return res.status(404).json({ error: 'Room not found' });
         }
-        const users = room.players.map((p) => ({
-            player: p.player,
-        }));
+        const userIds = room.players.map((p) => p.player);
         // Turn ids into usernames if available
-        const userIds = users.map((u) => u.player);
         const populatedUsers = await Player.find({
             _id: { $in: userIds },
         })
