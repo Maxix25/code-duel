@@ -31,6 +31,14 @@ const LANGUAGES = {
 type LanguageName = keyof typeof LANGUAGES;
 
 const Room: FC = () => {
+    const [copied, setCopied] = useState<boolean>(false);
+    const handleCopyRoomId = () => {
+        if (roomId) {
+            navigator.clipboard.writeText(roomId);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        }
+    };
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
@@ -142,6 +150,15 @@ const Room: FC = () => {
                 >
                     <Typography variant='h6'>Code Editor</Typography>
                     <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                            variant='outlined'
+                            color='primary'
+                            sx={{ ml: 2 }}
+                            onClick={handleCopyRoomId}
+                            disabled={!roomId}
+                        >
+                            {copied ? 'Copied!' : 'Copy Room ID'}
+                        </Button>
                         <FormControl size='small' sx={{ minWidth: 120 }}>
                             <InputLabel id='language-select-label'>
                                 Language
