@@ -104,8 +104,9 @@ const roomSocket = (io: Server, socket: Socket) => {
                             await room.save();
                         }
                     }
-                    return p;
-                });
+                }
+                room.status = 'finished';
+                await room.save();
                 io.to(data.roomId).emit('winner', {
                     username,
                 });
@@ -137,12 +138,33 @@ const roomSocket = (io: Server, socket: Socket) => {
     socket.on(
         'join_room',
         async (data: { roomId: string; user_token: string }) => {
-            let append = true;
             if (!mongoose.isValidObjectId(data.roomId)) {
                 socket.emit('error', 'Invalid room id');
                 return;
             }
             const room = await Room.findById(data.roomId);
+            const userId = getUserIdByToken(data.user_token);
+            if (!room) {
+                console.log('Room not found');
+                socket.emit('error', 'Room not found');
+                return;
+            }
+            if (!userId) {
+                console.log('Invalid token');
+                socket.emit('error', 'Invalid token');
+                return;
+            }
+            const question = await Question.findById(room.problemId);
+            // Check if the room is already running and if user is not in the room
+            if (
+                room.status === 'playing' &&
+                !room.players.some(
+                    (p: any) => p.player.toString() === userId.toString()
+                )
+            ) {
+                socket.emit('error', 'Room is already running');
+                return;
+            }
             let username: string;
             try {
                 const decoded = jwt.verify(data.user_token, JWT_SECRET) as {
@@ -154,20 +176,7 @@ const roomSocket = (io: Server, socket: Socket) => {
                 socket.emit('error', 'Invalid token');
                 return;
             }
-            const player = await Player.findOne({
-                username,
-            });
-            const userId = player && player._id ? player._id : null;
-            if (!userId) {
-                console.log('User not found');
-                socket.emit('error', 'Invalid token');
-                return;
-            }
-            if (!room) {
-                console.log('Room not found');
-                socket.emit('error', 'Room not found');
-                return;
-            }
+
             if (
                 userId &&
                 room.players
@@ -179,16 +188,20 @@ const roomSocket = (io: Server, socket: Socket) => {
                 console.log(
                     `Player ${socket.id} re-joined room ${data.roomId}`
                 );
+                io.to(data.roomId).emit('start_game', question);
                 return;
             }
             room.players.push({
                 player: userId as mongoose.Schema.Types.ObjectId,
                 score: 0,
+                ready: false,
             });
-            if (append) {
-                await room.save();
-            }
+            await room.save();
             socket.join(data.roomId);
+            // If the room is waiting and has at least 2 players, emit add_ready_button
+            if (room.status === 'waiting' && room.players.length >= 2) {
+                io.to(data.roomId).emit('add_ready_button');
+            }
             console.log(`Player ${socket.id} joined room ${data.roomId}`);
         }
     );
@@ -215,7 +228,54 @@ const roomSocket = (io: Server, socket: Socket) => {
             );
             await room.save();
             socket.leave(data.roomId);
+            if (room.players.length === 0) {
+                // If no players left, delete the room
+                await Room.deleteOne({ _id: data.roomId });
+                console.log(`Room ${data.roomId} deleted as no players left`);
+            } else if (room.status === 'waiting' && room.players.length === 1) {
+                console.log(
+                    `Only one player left in room ${data.roomId}, removing ready button`
+                );
+                io.to(data.roomId).emit('remove_ready_button');
+            }
             console.log(`Player ${socket.id} left room ${data.roomId}`);
+        }
+    );
+    socket.on(
+        'player_ready',
+        async (data: { roomId: string; user_token: string }) => {
+            if (!mongoose.isValidObjectId(data.roomId)) {
+                socket.emit('error', 'Invalid room id');
+                return;
+            }
+            const room = await Room.findById(data.roomId);
+            if (!room) {
+                socket.emit('error', 'Room not found');
+                return;
+            }
+            const userId = getUserIdByToken(data.user_token);
+            if (!userId) {
+                socket.emit('error', 'Invalid token');
+                return;
+            }
+            const player = room.players.find(
+                (p: any) => p.player.toString() === userId.toString()
+            );
+            if (!player) {
+                socket.emit('error', 'Player not found in room');
+                return;
+            }
+            player.ready = true;
+            await room.save();
+            // Check if all players are ready
+            const allReady = room.players.every((p: any) => p.ready);
+            if (allReady) {
+                room.status = 'playing';
+                await room.save();
+                // NOTE: The question data that's sent to the client should provide only the necessary fields
+                const question = await Question.findById(room.problemId);
+                io.to(data.roomId).emit('start_game', question);
+            }
         }
     );
 };
