@@ -3,6 +3,7 @@ import Question, { getRandomQuestion } from '../models/Question';
 import Room from '../models/Room';
 import mongoose from 'mongoose';
 import getUserIdByToken from '../utils/getUserIdByToken';
+import Player from '../models/Player';
 
 export const startRoom = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -92,6 +93,37 @@ export const getRoomQuestion = async (
         });
     } catch (error) {
         console.error('Error fetching question:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const getUsersInRoom = async (
+    req: Request,
+    res: Response
+): Promise<any> => {
+    try {
+        const { roomId } = req.params;
+        if (!mongoose.isValidObjectId(roomId)) {
+            return res.status(400).json({ error: 'Invalid room ID' });
+        }
+        const room = await Room.findById(roomId).populate('players.player');
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found' });
+        }
+        const users = room.players.map((p) => ({
+            player: p.player,
+        }));
+        // Turn ids into usernames if available
+        const userIds = users.map((u) => u.player);
+        const populatedUsers = await Player.find({
+            _id: { $in: userIds },
+        })
+            .select('username')
+            .lean();
+        // Return only usernames
+        res.status(200).json(populatedUsers.map((u) => u.username));
+    } catch (error) {
+        console.error('Error fetching users in room:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
