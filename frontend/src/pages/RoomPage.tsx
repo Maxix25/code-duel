@@ -22,6 +22,7 @@ import socket from '../services/socket';
 import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
 import { SolutionResult } from '../services/roomSetup';
+import getUsersInRoom from '../api/room/getUsersInRoom';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
@@ -34,6 +35,11 @@ const Room: FC = () => {
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
+    const navigate = useNavigate();
+
+    const [users, setUsers] = useState<string[]>([]);
+    const [usersOpen, setUsersOpen] = useState<boolean>(false);
+    const [copied, setCopied] = useState<boolean>(false);
     const [code, setCode] = useState<string>('# Write your code here');
     const [output, setOutput] = useState<SolutionResult[] | string>([]);
     const [selectedLanguage, setSelectedLanguage] =
@@ -42,7 +48,6 @@ const Room: FC = () => {
     const [problemStatement, setProblemStatement] = useState<string>(
         'Waiting for game to start...'
     );
-    const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [readyButton, setReadyButton] = useState<boolean>(false);
     const [canSubmit, setCanSubmit] = useState<boolean>(false); // Default: cannot submit
@@ -120,11 +125,70 @@ const Room: FC = () => {
         });
         setReadyButton(false); // Hide the button after clicking
     };
+    const handleOpenUsers = async () => {
+        if (roomId) {
+            const usersInRoom = await getUsersInRoom(roomId);
+            setUsers(usersInRoom);
+            setUsersOpen((open) => !open);
+        }
+    };
+    const handleCopyRoomId = () => {
+        if (roomId) {
+            navigator.clipboard.writeText(roomId);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        }
+    };
 
     return (
         <Box
             sx={{ display: 'flex', height: 'calc(100vh - 64px)', p: 2, gap: 2 }}
         >
+            {/* Collapsible Users Menu (Left) */}
+            <Box
+                sx={{
+                    width: usersOpen ? 220 : 48,
+                    transition: 'width 0.2s',
+                    background: '#23272f',
+                    color: 'white',
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    pt: 2,
+                    minHeight: '300px',
+                }}
+            >
+                <Button
+                    variant='text'
+                    sx={{ minWidth: 0, color: 'white', mb: 1, ml: 1 }}
+                    onClick={handleOpenUsers}
+                >
+                    {usersOpen ? '<' : '>'}
+                </Button>
+                {usersOpen && (
+                    <Box sx={{ pl: 2, pr: 2, width: '100%' }}>
+                        <Typography variant='subtitle1' sx={{ mb: 1 }}>
+                            Users in Room
+                        </Typography>
+                        {users.length === 0 ? (
+                            <Typography variant='body2'>No users</Typography>
+                        ) : (
+                            users.map((user, idx) => (
+                                <Typography
+                                    key={idx}
+                                    variant='body2'
+                                    sx={{ mb: 0.5 }}
+                                >
+                                    {user}
+                                </Typography>
+                            ))
+                        )}
+                    </Box>
+                )}
+            </Box>
+            {/* Main Content */}
             <Box
                 sx={{
                     flex: 1.2,
@@ -142,6 +206,15 @@ const Room: FC = () => {
                 >
                     <Typography variant='h6'>Code Editor</Typography>
                     <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                            variant='outlined'
+                            color='primary'
+                            sx={{ ml: 2 }}
+                            onClick={handleCopyRoomId}
+                            disabled={!roomId}
+                        >
+                            {copied ? 'Copied!' : 'Copy Room ID'}
+                        </Button>
                         <FormControl size='small' sx={{ minWidth: 120 }}>
                             <InputLabel id='language-select-label'>
                                 Language
