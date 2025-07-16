@@ -110,7 +110,6 @@ export const getUsersInRoom = async (
         if (!room) {
             return res.status(404).json({ error: 'Room not found' });
         }
-        // Extract player IDs directly
         const userIds = room.players.map((p) => p.player);
         // Turn ids into usernames if available
         const populatedUsers = await Player.find({
@@ -122,6 +121,38 @@ export const getUsersInRoom = async (
         res.status(200).json(populatedUsers.map((u) => u.username).filter(Boolean));
     } catch (error) {
         console.error('Error fetching users in room:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const userIsInRoom = async (
+    req: Request,
+    res: Response
+): Promise<any> => {
+    try {
+        const authHeader =
+            req.headers['authorization'] || req.headers['Authorization'];
+        const token =
+            typeof authHeader === 'string'
+                ? authHeader.split(' ')[1]
+                : undefined;
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided' });
+        }
+        const userId = getUserIdByToken(token);
+        if (!userId) {
+            return res.status(401).json({ error: 'Invalid user token' });
+        }
+        const room = await Room.findOne({
+            players: { $elemMatch: { player: userId } },
+        });
+        if (room) {
+            return res.status(200).json({ inRoom: true, roomId: room.id });
+        } else {
+            return res.status(200).json({ inRoom: false });
+        }
+    } catch (error) {
+        console.error('Error checking room status:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
