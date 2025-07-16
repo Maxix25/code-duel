@@ -3,6 +3,7 @@ import Question, { getRandomQuestion } from '../models/Question';
 import Room from '../models/Room';
 import mongoose from 'mongoose';
 import getUserIdByToken from '../utils/getUserIdByToken';
+import Player from '../models/Player';
 
 export const startRoom = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -92,6 +93,66 @@ export const getRoomQuestion = async (
         });
     } catch (error) {
         console.error('Error fetching question:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const getUsersInRoom = async (
+    req: Request,
+    res: Response
+): Promise<any> => {
+    try {
+        const { roomId } = req.params;
+        if (!mongoose.isValidObjectId(roomId)) {
+            return res.status(400).json({ error: 'Invalid room ID' });
+        }
+        const room = await Room.findById(roomId).populate('players.player');
+        if (!room) {
+            return res.status(404).json({ error: 'Room not found' });
+        }
+        const userIds = room.players.map((p) => p.player);
+        // Turn ids into usernames if available
+        const populatedUsers = await Player.find({
+            _id: { $in: userIds },
+        })
+            .select('username')
+            .lean();
+        // Return only usernames
+        res.status(200).json(populatedUsers.map((u) => u.username));
+    } catch (error) {
+        console.error('Error fetching users in room:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const userIsInRoom = async (
+    req: Request,
+    res: Response
+): Promise<any> => {
+    try {
+        const authHeader =
+            req.headers['authorization'] || req.headers['Authorization'];
+        const token =
+            typeof authHeader === 'string'
+                ? authHeader.split(' ')[1]
+                : undefined;
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided' });
+        }
+        const userId = getUserIdByToken(token);
+        if (!userId) {
+            return res.status(401).json({ error: 'Invalid user token' });
+        }
+        const room = await Room.findOne({
+            players: { $elemMatch: { player: userId } },
+        });
+        if (room) {
+            return res.status(200).json({ inRoom: true, roomId: room.id });
+        } else {
+            return res.status(200).json({ inRoom: false });
+        }
+    } catch (error) {
+        console.error('Error checking room status:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
