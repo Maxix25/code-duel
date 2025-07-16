@@ -188,7 +188,9 @@ const roomSocket = (io: Server, socket: Socket) => {
                 console.log(
                     `Player ${socket.id} re-joined room ${data.roomId}`
                 );
-                io.to(data.roomId).emit('start_game', question);
+                if (room.status === 'playing') {
+                    socket.emit('start_game', question);
+                }
                 return;
             }
             room.players.push({
@@ -274,6 +276,7 @@ const roomSocket = (io: Server, socket: Socket) => {
                 await room.save();
                 // NOTE: The question data that's sent to the client should provide only the necessary fields
                 const question = await Question.findById(room.problemId);
+                console.log('All players are ready, starting game');
                 io.to(data.roomId).emit('start_game', question);
             }
         }
