@@ -118,7 +118,7 @@ export const getUsersInRoom = async (
             .select('username')
             .lean();
         // Return only usernames
-        res.status(200).json(populatedUsers.map((u) => u.username));
+        res.status(200).json(populatedUsers.map((u) => u.username).filter(Boolean));
     } catch (error) {
         console.error('Error fetching users in room:', error);
         res.status(500).json({ error: 'Internal server error' });
