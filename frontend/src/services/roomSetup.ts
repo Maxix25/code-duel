@@ -64,7 +64,10 @@ const roomSetup = async (
         setOutput(data);
     });
     socket.on('error', (data: string) => {
+        // TODO: Add message errors to the user
         if (data === 'Invalid room id') {
+            navigate('/dashboard');
+        } else if (data === 'Room is already running') {
             navigate('/dashboard');
         }
         console.log('Error:', data);
