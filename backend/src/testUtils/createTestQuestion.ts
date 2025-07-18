@@ -1,4 +1,4 @@
-import Question from '../../models/Question';
+import Question from '../models/Question';
 
 const createTestQuestion = async () => {
     const question = await Question.create({

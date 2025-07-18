@@ -1,4 +1,4 @@
-import Room from '../../models/Room';
+import Room from '../models/Room';
 
 const createTestRoom = async (userId: string, questionId: string) => {
     const room = await Room.create({

@@ -2,10 +2,10 @@ import request from 'supertest';
 import { httpServer } from '../server';
 import mongoose from 'mongoose';
 import Question from '../models/Question';
-import createTestQuestion from './utils/createTestQuestion';
+import createTestQuestion from '../testUtils/createTestQuestion';
 import getUserIdByToken from '../utils/getUserIdByToken';
-import createTestRoom from './utils/createTestRoom';
-import createTestPlayer from './utils/createTestPlayer';
+import createTestRoom from '../testUtils/createTestRoom';
+import createTestPlayer from '../testUtils/createTestPlayer';
 
 let userId: mongoose.Schema.Types.ObjectId | null;
 let roomId: mongoose.Schema.Types.ObjectId | null;

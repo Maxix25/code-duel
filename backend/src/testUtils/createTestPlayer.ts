@@ -1,4 +1,4 @@
-import Player from '../../models/Player';
+import Player from '../models/Player';
 
 const createTestPlayer = async (
     username: string,
