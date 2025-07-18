@@ -10,11 +10,14 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
+export let httpServer: http.Server;
+
 const startServer = async () => {
     try {
-        await connectDB();
-
-        const httpServer = http.createServer(app);
+        if (process.env.NODE_ENV !== 'test') {
+            await connectDB();
+        }
+        httpServer = http.createServer(app);
 
         const io = new SocketIOServer(httpServer, {
             cors: {
@@ -32,9 +35,11 @@ const startServer = async () => {
         });
 
         // 4. Iniciar el servidor HTTP
-        httpServer.listen(PORT, () => {
-            console.log(`Server listening on http://localhost:${PORT}`);
-        });
+        if (process.env.NODE_ENV !== 'test') {
+            httpServer.listen(PORT, () => {
+                console.log(`Server listening on http://localhost:${PORT}`);
+            });
+        }
     } catch (error) {
         console.error('Failed to start the server:', error);
         process.exit(1);
