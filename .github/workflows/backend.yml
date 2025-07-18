@@ -9,6 +9,9 @@ on:
 jobs:
     test:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                mongodb-version: [7]
         services:
             mongodb:
                 image: mongo:7
@@ -31,12 +34,9 @@ jobs:
                   node-version: 20
             - name: Install dependencies
               run: npm install
-            - name: Wait for MongoDB
-              run: |
-                  for i in {1..30}; do
-                    nc -z localhost 27017 && echo "MongoDB is up!" && break
-                    echo "Waiting for MongoDB..."
-                    sleep 2
-                  done
+            - name: Start MongoDB
+              uses: supercharge/mongodb-github-action@1.6.0
+              with:
+                  mongodb-version: ${{ matrix.mongodb-version }}
             - name: Run tests
               run: npm test
