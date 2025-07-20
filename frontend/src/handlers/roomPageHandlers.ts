@@ -27,7 +27,7 @@ const handleEditorChange = (
 
 const handleLanguageChange = (
     event: SelectChangeEvent<LanguageName>,
-    selectedLanguage: 'python' | 'javascript',
+    selectedLanguage: LanguageName,
     setSelectedLanguage: React.Dispatch<React.SetStateAction<LanguageName>>,
     code: string,
     setCode: React.Dispatch<React.SetStateAction<string>>
