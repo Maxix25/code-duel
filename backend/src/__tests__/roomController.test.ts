@@ -44,6 +44,7 @@ describe('Room Controller', () => {
         );
         roomId = room.id;
         expect(roomId).toBeDefined();
+        // Empty the players array to ensure a clean state for each test
         room.players = [];
         await room.save();
 
