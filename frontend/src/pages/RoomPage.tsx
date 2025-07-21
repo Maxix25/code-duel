@@ -1,4 +1,4 @@
-import { FC, useState, SyntheticEvent, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import {
     Box,
@@ -11,7 +11,6 @@ import {
     InputLabel,
     Tabs,
     Tab,
-    SelectChangeEvent,
     Accordion,
     AccordionSummary,
     AccordionDetails,
@@ -22,14 +21,14 @@ import socket from '../services/socket';
 import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
 import { SolutionResult } from '../services/roomSetup';
-import getUsersInRoom from '../api/room/getUsersInRoom';
+import handlers from '../handlers/roomPageHandlers';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
     javascript: { id: 63, name: 'JavaScript', monaco: 'javascript' },
 };
 
-type LanguageName = keyof typeof LANGUAGES;
+export type LanguageName = keyof typeof LANGUAGES;
 
 const Room: FC = () => {
     const defaultLang = Object.keys(LANGUAGES)[0] as LanguageName;
@@ -66,79 +65,6 @@ const Room: FC = () => {
             setCanSubmit(true); // Enable submit button when game starts
         });
     }, []);
-    // Helper: get default comment for each language
-    const getDefaultComment = (lang: LanguageName) => {
-        switch (lang) {
-            case 'python':
-                return '# Write your code here';
-            case 'javascript':
-                return '// Write your code here';
-            // Add more languages as needed
-            default:
-                return '// Write your code here';
-        }
-    };
-
-    const handleEditorChange = (value: string | undefined) => {
-        setCode(value || '');
-    };
-
-    const handleLanguageChange = (event: SelectChangeEvent<LanguageName>) => {
-        const lang = event.target.value as LanguageName;
-        setSelectedLanguage(lang);
-        // Only set default comment if code is empty or is the previous default
-        if (
-            code.trim() === '' ||
-            code === getDefaultComment(selectedLanguage)
-        ) {
-            setCode(getDefaultComment(lang));
-        }
-    };
-
-    const handleTabChange = (_event: SyntheticEvent, newValue: number) => {
-        setActiveTab(newValue);
-    };
-
-    const handleSubmitCode = () => {
-        setIsRunning(true);
-        setOutput('Running...');
-        setActiveTab(1);
-        socket.emit('submit_solution', {
-            roomId,
-            code,
-            user_token: localStorage.getItem('token'),
-        });
-    };
-
-    const handleLeaveRoom = () => {
-        socket.emit('leave_room', {
-            roomId,
-            user_token: localStorage.getItem('token'),
-        });
-        socket.disconnect();
-        navigate('/dashboard');
-    };
-    const handleReadyButton = () => {
-        socket.emit('player_ready', {
-            roomId,
-            user_token: localStorage.getItem('token'),
-        });
-        setReadyButton(false); // Hide the button after clicking
-    };
-    const handleOpenUsers = async () => {
-        if (roomId) {
-            const usersInRoom = await getUsersInRoom(roomId);
-            setUsers(usersInRoom);
-            setUsersOpen((open) => !open);
-        }
-    };
-    const handleCopyRoomId = () => {
-        if (roomId) {
-            navigator.clipboard.writeText(roomId);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-        }
-    };
 
     return (
         <Box
@@ -163,7 +89,9 @@ const Room: FC = () => {
                 <Button
                     variant='text'
                     sx={{ minWidth: 0, color: 'white', mb: 1, ml: 1 }}
-                    onClick={handleOpenUsers}
+                    onClick={() =>
+                        handlers.handleOpenUsers(roomId, setUsers, setUsersOpen)
+                    }
                 >
                     {usersOpen ? '<' : '>'}
                 </Button>
@@ -210,7 +138,9 @@ const Room: FC = () => {
                             variant='outlined'
                             color='primary'
                             sx={{ ml: 2 }}
-                            onClick={handleCopyRoomId}
+                            onClick={() =>
+                                handlers.handleCopyRoomId(roomId, setCopied)
+                            }
                             disabled={!roomId}
                         >
                             {copied ? 'Copied!' : 'Copy Room ID'}
@@ -223,7 +153,15 @@ const Room: FC = () => {
                                 labelId='language-select-label'
                                 value={selectedLanguage}
                                 label='Language'
-                                onChange={handleLanguageChange}
+                                onChange={(event) =>
+                                    handlers.handleLanguageChange(
+                                        event,
+                                        selectedLanguage,
+                                        setSelectedLanguage,
+                                        code,
+                                        setCode
+                                    )
+                                }
                             >
                                 {Object.entries(LANGUAGES).map(
                                     ([name, _langData]) => (
@@ -239,7 +177,9 @@ const Room: FC = () => {
                             variant='contained'
                             color='error'
                             startIcon={<ExitToAppIcon />}
-                            onClick={handleLeaveRoom}
+                            onClick={() => {
+                                handlers.handleLeaveRoom(roomId, navigate);
+                            }}
                             sx={{ ml: 2 }}
                         >
                             Leave Room
@@ -249,7 +189,12 @@ const Room: FC = () => {
                                 variant='outlined'
                                 color='success'
                                 sx={{ ml: 2 }}
-                                onClick={handleReadyButton}
+                                onClick={() => {
+                                    handlers.handleReadyButton(
+                                        roomId,
+                                        setReadyButton
+                                    );
+                                }}
                             >
                                 Ready
                             </Button>
@@ -268,7 +213,9 @@ const Room: FC = () => {
                         height='100%'
                         language={LANGUAGES[selectedLanguage].monaco}
                         value={code}
-                        onChange={handleEditorChange}
+                        onChange={(value) =>
+                            handlers.handleEditorChange(value, setCode)
+                        }
                         theme='vs-dark'
                         options={{
                             minimap: { enabled: false },
@@ -278,7 +225,15 @@ const Room: FC = () => {
                 </Box>
                 <Button
                     variant='contained'
-                    onClick={handleSubmitCode}
+                    onClick={() =>
+                        handlers.handleSubmitCode(
+                            setIsRunning,
+                            setOutput,
+                            setActiveTab,
+                            roomId,
+                            code
+                        )
+                    }
                     disabled={isRunning || !canSubmit}
                 >
                     {isRunning ? 'Running...' : 'Run Code'}
@@ -295,7 +250,7 @@ const Room: FC = () => {
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs
                         value={activeTab}
-                        onChange={handleTabChange}
+                        onChange={(_, newValue) => setActiveTab(newValue)}
                         aria-label='statement and output tabs'
                     >
                         <Tab
