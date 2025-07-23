@@ -27,6 +27,12 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 return;
             }
             const question = await Question.findById(room.problemId);
+
+            if (!question) {
+                console.log('Question not found');
+                socket.emit('error', 'Question not found');
+                return;
+            }
             // Check if the room is already running and if user is not in the room
             if (
                 room.status === 'playing' &&
@@ -69,6 +75,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 player: userId as mongoose.Schema.Types.ObjectId,
                 score: 0,
                 ready: false,
+                current_code: question.startingCode,
             });
             await room.save();
             socket.join(data.roomId);
