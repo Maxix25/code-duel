@@ -7,7 +7,6 @@ import { CustomThemeProvider } from './context/ThemeContext';
 import { Container } from '@mui/material';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import CssBaseline from '@mui/material/CssBaseline';
 import Room from './pages/RoomPage';
 import ResultsPage from './pages/ResultsPage';
 
@@ -22,7 +21,6 @@ function App() {
             }}
         >
             <CustomThemeProvider>
-                <CssBaseline />
                 <BrowserRouter>
                     <Routes>
                         <Route path='/' element={<Layout />}>

@@ -1,103 +1,244 @@
-import React from 'react';
-import { Typography, Container, Button, Box, Paper } from '@mui/material';
+import React, { useRef, useEffect, useState } from 'react';
+// Custom hook for scroll-based animation
+function useScrollReveal(threshold = 0.2) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return [ref, visible] as const;
+}
+import {
+  Typography,
+  Container,
+  Button,
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Stack,
+  Divider,
+  useTheme,
+  alpha
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { keyframes } from '@mui/system';
 import CodeIcon from '@mui/icons-material/Code';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import GroupIcon from '@mui/icons-material/Group';
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
+
+
 
 const HomePage: React.FC = () => {
-    const features = [
-        {
-            icon: <GroupIcon sx={{ fontSize: 40 }} color="primary" />,
-            title: 'Live Duels',
-            description: 'Challenge your friends or other developers to real-time coding battles.',
-        },
-        {
-            icon: <EmojiEventsIcon sx={{ fontSize: 40 }} color="primary" />,
-            title: 'Climb the Leaderboards',
-            description: 'Earn points for every win and see how you rank against the best.',
-        },
-        {
-            icon: <CodeIcon sx={{ fontSize: 40 }} color="primary" />,
-            title: 'Vast Problem Library',
-            description: 'Practice with a wide range of problems from various difficulty levels.',
-        },
-    ];
+  const theme = useTheme();
+  const features = [
+    {
+      icon: <GroupIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
+      title: 'Live Duels',
+      description: 'Challenge your friends or other developers to real-time coding battles.',
+    },
+    {
+      icon: <EmojiEventsIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
+      title: 'Climb the Leaderboards',
+      description: 'Earn points for every win and see how you rank against the best.',
+    },
+    {
+      icon: <CodeIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
+      title: 'Vast Problem Library',
+      description: 'Practice with a wide range of problems from various difficulty levels.',
+    },
+  ];
 
-    return (
-        <Box>
-            {/* Hero Section */}
-            <Container maxWidth="md" sx={{ textAlign: 'center', py: { xs: 8, md: 12 } }}>
-                <Box sx={{ animation: `${fadeIn} 1s ease-out` }}>
-                    <Typography variant="h2" component="h1" fontWeight="bold" gutterBottom>
-                        Welcome to Code Duel
-                    </Typography>
-                    <Typography variant="h5" color="text.secondary" paragraph sx={{ mb: 4 }}>
-                        The ultimate platform for competitive programming. Sharpen your skills, challenge your peers, and climb to the top.
-                    </Typography>
-                    <Button variant="contained" color="primary" size="large">
-                        Get Started
-                    </Button>
-                </Box>
-            </Container>
+  // Animation hooks for each section
+  const [heroRef, heroVisible] = useScrollReveal();
+  const [aboutRef, aboutVisible] = useScrollReveal();
+  const [featuresRef, featuresVisible] = useScrollReveal();
+  const [ctaRef, ctaVisible] = useScrollReveal();
 
-            {/* About Section */}
-            <Container maxWidth="md" sx={{ py: { xs: 4, md: 8 }, textAlign: 'center' }}>
-                <Typography variant="h4" component="h2" fontWeight="bold" gutterBottom>
-                    Why Code Duel?
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                    Code Duel is designed for programmers of all levels to compete, learn, and grow. Whether you're a beginner or a seasoned coder, our platform offers a fun and challenging environment to test your skills, collaborate, and make new friends.
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Join live duels, climb the leaderboards, and explore a vast library of problems. Our real-time system ensures a smooth and engaging experience for everyone.
-                </Typography>
-            </Container>
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.08)} 0%, ${alpha(theme.palette.secondary.light, 0.08)} 100%)`,
+      }}
+    >
+      {/* Hero Section */}
 
-            {/* Features Section */}
-            <Box sx={{ bgcolor: 'action.hover', py: { xs: 8, md: 12 } }}>
-                <Container maxWidth="lg">
-                    <Typography variant="h4" component="h2" fontWeight="bold" textAlign="center" gutterBottom sx={{ mb: 6 }}>
-                        Features
-                    </Typography>
-                    <Grid container spacing={4}>
-                        {features.map((feature, index) => (
-                            <Grid size={{xs: 12, sm: 6, md: 4}} key={index}>
-                                <Paper
-                                    elevation={3}
-                                    sx={{
-                                        p: 4,
-                                        textAlign: 'center',
-                                        height: '100%',
-                                        animation: `${fadeIn} 0.5s ease-out ${index * 0.2}s forwards`,
-                                        opacity: 0,
-                                    }}
-                                >
-                                    {feature.icon}
-                                    <Typography variant="h6" component="h3" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
-                                        {feature.title}
-                                    </Typography>
-                                    <Typography color="text.secondary">{feature.description}</Typography>
-                                </Paper>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Container>
-            </Box>
-        </Box>
-    );
+      <Container
+        maxWidth="md"
+        sx={{ textAlign: 'center', py: { xs: 10, md: 16 } }}
+        ref={heroRef}
+      >
+        <Stack
+          spacing={3}
+          alignItems="center"
+          sx={{
+            opacity: heroVisible ? 1 : 0,
+            transform: heroVisible ? 'none' : 'translateY(40px)',
+            transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.1s',
+          }}
+        >
+          <Typography
+            variant="h2"
+            component="h1"
+            fontWeight="bold"
+            sx={{
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 1,
+            }}
+          >
+            Welcome to Code Duel
+          </Typography>
+          <Typography variant="h5" color="text.secondary" paragraph sx={{ maxWidth: 600 }}>
+            The ultimate platform for competitive programming. Sharpen your skills, challenge your peers, and climb to the top.
+          </Typography>
+          <Button variant="contained" color="primary" size="large" sx={{ px: 5, py: 1.5, fontWeight: 600, fontSize: 18, borderRadius: 3 }}>
+            Get Started
+          </Button>
+        </Stack>
+      </Container>
+
+      {/* About Section */}
+      <Container
+        maxWidth="md"
+        sx={{ py: { xs: 4, md: 8 }, textAlign: 'center' }}
+        ref={aboutRef}
+      >
+        <Card
+          elevation={0}
+          sx={{
+            bgcolor: 'background.paper',
+            p: { xs: 3, md: 5 },
+            borderRadius: 4,
+            boxShadow: 2,
+            opacity: aboutVisible ? 1 : 0,
+            transform: aboutVisible ? 'none' : 'translateY(40px)',
+            transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.2s',
+          }}
+        >
+          <CardHeader
+            title={
+              <Typography variant="h4" fontWeight="bold">
+                Why Code Duel?
+              </Typography>
+            }
+            sx={{ pb: 0 }}
+          />
+          <CardContent>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+              Code Duel is designed for programmers of all levels to compete, learn, and grow. Whether you're a beginner or a seasoned coder, our platform offers a fun and challenging environment to test your skills, collaborate, and make new friends.
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Join live duels, climb the leaderboards, and explore a vast library of problems. Our real-time system ensures a smooth and engaging experience for everyone.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Container>
+
+      {/* Features Section */}
+      <Container
+        maxWidth="lg"
+        sx={{ py: { xs: 8, md: 12 } }}
+        ref={featuresRef}
+      >
+        <Typography
+          variant="h4"
+          component="h2"
+          fontWeight="bold"
+          textAlign="center"
+          gutterBottom
+          sx={{ mb: 6, opacity: featuresVisible ? 1 : 0, transform: featuresVisible ? 'none' : 'translateY(40px)', transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.3s' }}
+        >
+          Features
+        </Typography>
+        <Grid container spacing={5} justifyContent="center">
+          {features.map((feature, index) => {
+            const [cardRef, cardVisible] = useScrollReveal(0.15);
+            return (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index} ref={cardRef}>
+                <Card
+                  elevation={4}
+                  sx={{
+                    height: '100%',
+                    borderRadius: 4,
+                    transition: 'transform 0.4s, box-shadow 0.4s, opacity 0.8s cubic-bezier(.4,1.3,.6,1)',
+                    '&:hover': {
+                      transform: 'translateY(-8px) scale(1.03)',
+                      boxShadow: 8,
+                    },
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p: 3,
+                    bgcolor: 'background.paper',
+                    opacity: cardVisible ? 1 : 0,
+                    transform: cardVisible ? 'none' : 'translateY(40px)',
+                  }}
+                >
+                  <Box sx={{ mb: 2 }}>{feature.icon}</Box>
+                  <Typography variant="h6" component="h3" fontWeight="bold" sx={{ mb: 1 }}>
+                    {feature.title}
+                  </Typography>
+                  <Typography color="text.secondary" sx={{ flexGrow: 1 }}>{feature.description}</Typography>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Container>
+
+      {/* Divider */}
+      <Divider sx={{ my: { xs: 6, md: 10 }, mx: 'auto', width: '60%', opacity: ctaVisible ? 1 : 0, transform: ctaVisible ? 'none' : 'translateY(40px)', transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.4s' }} />
+
+      {/* Call to Action Section */}
+      <Container
+        maxWidth="md"
+        sx={{ textAlign: 'center', pb: { xs: 8, md: 12 } }}
+        ref={ctaRef}
+      >
+        <Card
+          elevation={3}
+          sx={{
+            borderRadius: 4,
+            p: { xs: 3, md: 5 },
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText',
+            boxShadow: 6,
+            opacity: ctaVisible ? 1 : 0,
+            transform: ctaVisible ? 'none' : 'translateY(40px)',
+            transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.5s',
+          }}
+        >
+          <Stack spacing={2} alignItems="center">
+            <Typography variant="h5" fontWeight="bold">
+              Ready to start your coding journey?
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Sign up now and join a vibrant community of developers. Compete, learn, and grow with Code Duel!
+            </Typography>
+            <Button variant="contained" color="secondary" size="large" sx={{ px: 5, py: 1.5, fontWeight: 600, fontSize: 18, borderRadius: 3, boxShadow: 2 }}>
+              Join Now
+            </Button>
+          </Stack>
+        </Card>
+      </Container>
+    </Box>
+  );
 };
 
 export default HomePage;

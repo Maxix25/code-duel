@@ -33,6 +33,7 @@ const Layout: React.FC = () => {
     // Effect to listen for storage changes (optional, but good practice for multi-tab scenarios)
     useEffect(() => {
         const handleStorageChange = () => {
+            console.log('Storage changed, checking auth state');
             setIsAuthenticated(!!localStorage.getItem('token'));
         };
 
