@@ -1,20 +1,15 @@
-name: Backend CI
-
+name: Frontend CI
 on:
     push:
         branches: [main]
     pull_request:
         branches: [main]
-
 jobs:
-    test:
+    build-and-test:
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                mongodb-version: [7]
         defaults:
             run:
-                working-directory: ./backend
+                working-directory: ./frontend
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -28,9 +23,7 @@ jobs:
                   version: 10
             - name: Install dependencies
               run: pnpm install
-            - name: Start MongoDB
-              uses: supercharge/mongodb-github-action@1.6.0
-              with:
-                  mongodb-version: ${{ matrix.mongodb-version }}
             - name: Run tests
               run: pnpm test
+            - name: Build application
+              run: pnpm build

@@ -36,7 +36,7 @@ export const loginPlayer = async (
 
         res.status(200).json({
             message: 'Login successful',
-            token: token,
+            token: token
         });
     } catch (error) {
         console.error('Login error:', error);
@@ -66,7 +66,7 @@ export const registerPlayer = async (
         const newPlayer = new Player({
             username,
             password,
-            email,
+            email
         });
 
         await newPlayer.save();
@@ -78,7 +78,7 @@ export const registerPlayer = async (
 
         res.status(201).json({
             message: 'Registration successful',
-            token: token,
+            token: token
         });
     } catch (error) {
         console.error('Registration error:', error);
