@@ -1,5 +1,6 @@
-ignoredBuiltDependencies:
-  - '@swc/core'
+onlyBuiltDependencies:
+  - esbuild
+  - msw
 
 overrides:
   '@eslint/plugin-kit@<0.3.3': '>=0.3.3'
