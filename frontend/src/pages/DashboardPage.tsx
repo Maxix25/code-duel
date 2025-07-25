@@ -23,8 +23,6 @@ const DashboardPage: React.FC = () => {
     const [isInRoom, setIsInRoom] = useState(false);
     const [currentRoomId, setCurrentRoomId] = useState<string>('');
     const navigate = useNavigate();
-
-    // TODO: Maybe when we check if the user is in a room, we should disable the join room button and create room button
     useEffect(() => {
         const fetchUserRoomStatus = async () => {
             try {
