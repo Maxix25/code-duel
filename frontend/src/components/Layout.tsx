@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     AppBar,
     Toolbar,
@@ -6,7 +6,7 @@ import {
     Button,
     IconButton,
     Box,
-    Container,
+    Container
 } from '@mui/material';
 import { Link as RouterLink, Outlet, useNavigate } from 'react-router-dom';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
@@ -14,37 +14,17 @@ import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
 import { useThemeContext } from '../context/ThemeContext'; // Adjust path if needed
 import CssBaseline from '@mui/material/CssBaseline'; // Ensures baseline styles match theme
 import AuthNavbar from './AuthNavbar'; // Import the authenticated navbar
+import useAuth from '../hooks/useAuth';
 
 const Layout: React.FC = () => {
     const { mode, toggleTheme } = useThemeContext();
-    // Manage authentication state within Layout
-    const [isAuthenticated, setIsAuthenticated] = useState(
-        !!localStorage.getItem('token')
-    );
+    const { isAuthenticated, logout } = useAuth(); // Use custom hook to get auth state
     const navigate = useNavigate();
 
-    // Function to handle logout
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Remove token
-        setIsAuthenticated(false); // Update state
-        navigate('/login'); // Navigate to login
+        logout();
+        navigate('/login');
     };
-
-    // Effect to listen for storage changes (optional, but good practice for multi-tab scenarios)
-    useEffect(() => {
-        const handleStorageChange = () => {
-            setIsAuthenticated(!!localStorage.getItem('token'));
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        // Check auth state on mount in case it changed while the component wasn't mounted
-        handleStorageChange();
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
 
     return (
         <>

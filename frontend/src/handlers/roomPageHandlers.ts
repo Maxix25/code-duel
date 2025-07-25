@@ -6,6 +6,8 @@ import { NavigateFunction } from 'react-router-dom';
 import getUsersInRoom from '../api/room/getUsersInRoom';
 import { SolutionResult } from '../services/roomSetup';
 
+let saveTimeout: NodeJS.Timeout | null = null;
+
 const getDefaultComment = (lang: LanguageName) => {
     switch (lang) {
         case 'python':
@@ -20,9 +22,25 @@ const getDefaultComment = (lang: LanguageName) => {
 
 const handleEditorChange = (
     value: string | undefined,
-    setCode: React.Dispatch<React.SetStateAction<string>>
+    setCode: React.Dispatch<React.SetStateAction<string>>,
+    roomId: string
 ) => {
-    setCode(value || '');
+    const newCode = value || '';
+    setCode(newCode);
+    
+    if (saveTimeout) {
+        clearTimeout(saveTimeout);
+    }
+    
+    if (roomId) {
+        saveTimeout = setTimeout(() => {
+            socket.emit('code_save', {
+                roomId,
+                code: newCode,
+                user_token: localStorage.getItem('token'),
+            });
+        }, 2000);
+    }
 };
 
 const handleLanguageChange = (
@@ -44,7 +62,7 @@ const handleSubmitCode = (
     setIsRunning: React.Dispatch<React.SetStateAction<boolean>>,
     setOutput: React.Dispatch<React.SetStateAction<string | SolutionResult[]>>,
     setActiveTab: React.Dispatch<React.SetStateAction<number>>,
-    roomId: string | null,
+    roomId: string,
     code: string
 ) => {
     setIsRunning(true);
@@ -66,7 +84,7 @@ const handleLeaveRoom = (roomId: string | null, navigate: NavigateFunction) => {
     navigate('/dashboard');
 };
 const handleReadyButton = (
-    roomId: string | null,
+    roomId: string,
     setReadyButton: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
     socket.emit('player_ready', {
@@ -76,7 +94,7 @@ const handleReadyButton = (
     setReadyButton(false); // Hide the button after clicking
 };
 const handleOpenUsers = async (
-    roomId: string | null,
+    roomId: string,
     setUsers: React.Dispatch<React.SetStateAction<string[]>>,
     setUsersOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -87,7 +105,7 @@ const handleOpenUsers = async (
     }
 };
 const handleCopyRoomId = (
-    roomId: string | null,
+    roomId: string,
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
     if (roomId) {

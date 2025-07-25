@@ -6,10 +6,11 @@ import { BrowserRouter } from 'react-router-dom';
 
 const server = setupServer(
     http.post('/auth/login', () => {
+        localStorage.setItem('token', 'mocked_token');
         return HttpResponse.json(
             {
                 message: 'Login successful',
-                token: 'mocked_token',
+                token: 'mocked_token'
             },
             { status: 200 }
         );

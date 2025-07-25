@@ -5,9 +5,15 @@ import {
     TextField,
     Button,
     Box,
-    Paper,
+    Card,
+    CardContent,
+    Stack,
     Grid,
+    useTheme,
+    alpha
 } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import createRoom from '../api/room/createRoom';
 import { useNavigate } from 'react-router-dom';
 import checkIfUserIsInRoom from '../api/room/checkIfUserIsInRoom';
@@ -17,8 +23,6 @@ const DashboardPage: React.FC = () => {
     const [isInRoom, setIsInRoom] = useState(false);
     const [currentRoomId, setCurrentRoomId] = useState<string>('');
     const navigate = useNavigate();
-
-    // TODO: Maybe when we check if the user is in a room, we should disable the join room button and create room button
     useEffect(() => {
         const fetchUserRoomStatus = async () => {
             try {
@@ -57,94 +61,177 @@ const DashboardPage: React.FC = () => {
         setRoomId(''); // Clear the input field after joining
     };
 
+    const theme = useTheme();
     return (
-        <Container maxWidth='md' sx={{ mt: 4 }}>
-            <Typography variant='h4' component='h1' gutterBottom align='center'>
-                Dashboard
-            </Typography>
-            <Grid container spacing={4} justifyContent='center'>
-                <Grid sx={{ xs: 12, sm: 6 }}>
-                    <Paper
-                        elevation={3}
-                        sx={{
-                            p: 3,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Typography variant='h6' component='h2' gutterBottom>
-                            Create New Room
-                        </Typography>
-                        <Typography variant='body1' sx={{ mb: 2 }}>
-                            Start a new 1v1 code duel.
-                        </Typography>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            onClick={handleCreateRoom}
-                            disabled={isInRoom}
+        <Box
+            sx={{
+                minHeight: '100vh',
+                background: `linear-gradient(135deg, ${alpha(
+                    theme.palette.primary.light,
+                    0.1
+                )} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
+                py: { xs: 6, md: 10 }
+            }}
+        >
+            <Container maxWidth='md'>
+                <Typography
+                    variant='h3'
+                    component='h1'
+                    fontWeight='bold'
+                    align='center'
+                    sx={{ mb: 5 }}
+                >
+                    Dashboard
+                </Typography>
+                <Grid container spacing={5} justifyContent='center'>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Card
+                            elevation={6}
+                            sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
                         >
-                            Create Room
-                        </Button>
-                    </Paper>
+                            <CardContent>
+                                <Stack spacing={2} alignItems='center'>
+                                    <Box
+                                        sx={{
+                                            bgcolor: theme.palette.primary.main,
+                                            color: theme.palette.primary
+                                                .contrastText,
+                                            borderRadius: '50%',
+                                            width: 56,
+                                            height: 56,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            mb: 1,
+                                            boxShadow: 2
+                                        }}
+                                    >
+                                        <AddCircleOutlineIcon fontSize='large' />
+                                    </Box>
+                                    <Typography
+                                        variant='h6'
+                                        component='h2'
+                                        fontWeight='bold'
+                                    >
+                                        Create New Room
+                                    </Typography>
+                                    <Typography
+                                        variant='body1'
+                                        sx={{ mb: 2, textAlign: 'center' }}
+                                    >
+                                        Start a new 1v1 code duel.
+                                    </Typography>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={handleCreateRoom}
+                                        disabled={isInRoom}
+                                        size='large'
+                                        sx={{
+                                            fontWeight: 600,
+                                            fontSize: 16,
+                                            borderRadius: 3,
+                                            width: '100%'
+                                        }}
+                                    >
+                                        Create Room
+                                    </Button>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Card
+                            elevation={6}
+                            sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
+                        >
+                            <CardContent>
+                                <Stack spacing={2} alignItems='center'>
+                                    <Box
+                                        sx={{
+                                            bgcolor:
+                                                theme.palette.secondary.main,
+                                            color: theme.palette.secondary
+                                                .contrastText,
+                                            borderRadius: '50%',
+                                            width: 56,
+                                            height: 56,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            mb: 1,
+                                            boxShadow: 2
+                                        }}
+                                    >
+                                        <MeetingRoomIcon fontSize='large' />
+                                    </Box>
+                                    <Typography
+                                        variant='h6'
+                                        component='h2'
+                                        fontWeight='bold'
+                                    >
+                                        Join Existing Room
+                                    </Typography>
+                                    {isInRoom ? (
+                                        <Button
+                                            variant='contained'
+                                            color='secondary'
+                                            fullWidth
+                                            onClick={() =>
+                                                navigate(
+                                                    `/room?roomId=${currentRoomId}`
+                                                )
+                                            }
+                                            sx={{
+                                                mt: 2,
+                                                fontWeight: 600,
+                                                fontSize: 16,
+                                                borderRadius: 3
+                                            }}
+                                        >
+                                            Go to Room (ID: {currentRoomId})
+                                        </Button>
+                                    ) : (
+                                        <Box
+                                            component='form'
+                                            onSubmit={handleJoinRoom}
+                                            sx={{ width: '100%', mt: 1 }}
+                                        >
+                                            <TextField
+                                                margin='normal'
+                                                fullWidth
+                                                id='roomId'
+                                                label='Enter Room ID'
+                                                name='roomId'
+                                                value={roomId}
+                                                onChange={(e) =>
+                                                    setRoomId(e.target.value)
+                                                }
+                                                sx={{ mb: 2 }}
+                                            />
+                                            <Button
+                                                type='submit'
+                                                fullWidth
+                                                variant='contained'
+                                                color='secondary'
+                                                size='large'
+                                                sx={{
+                                                    fontWeight: 600,
+                                                    fontSize: 16,
+                                                    borderRadius: 3
+                                                }}
+                                            >
+                                                Join Room
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Grid>
-
-                <Grid sx={{ xs: 12, sm: 6 }}>
-                    <Paper
-                        elevation={3}
-                        sx={{
-                            p: 3,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Typography variant='h6' component='h2' gutterBottom>
-                            Join Existing Room
-                        </Typography>
-                        {isInRoom ? (
-                            <Button
-                                variant='contained'
-                                color='secondary'
-                                fullWidth
-                                onClick={() =>
-                                    navigate(`/room?roomId=${currentRoomId}`)
-                                }
-                                sx={{ mt: 2 }}
-                            >
-                                Go to Room (ID: {currentRoomId})
-                            </Button>
-                        ) : (
-                            <Box
-                                component='form'
-                                onSubmit={handleJoinRoom}
-                                sx={{ width: '100%', mt: 1 }}
-                            >
-                                <TextField
-                                    margin='normal'
-                                    fullWidth
-                                    id='roomId'
-                                    label='Enter Room ID'
-                                    name='roomId'
-                                    value={roomId}
-                                    onChange={(e) => setRoomId(e.target.value)}
-                                    sx={{ mb: 2 }}
-                                />
-                                <Button
-                                    type='submit'
-                                    fullWidth
-                                    variant='contained'
-                                    color='secondary'
-                                >
-                                    Join Room
-                                </Button>
-                            </Box>
-                        )}
-                    </Paper>
-                </Grid>
-            </Grid>
-        </Container>
+            </Container>
+        </Box>
     );
 };
 

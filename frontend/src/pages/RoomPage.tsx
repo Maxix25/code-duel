@@ -35,6 +35,11 @@ const Room: FC = () => {
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
     const navigate = useNavigate();
+    if (!roomId) {
+            // TODO: Add message to user about missing room ID
+            navigate('/dashboard');
+            return;
+        }
 
     const [users, setUsers] = useState<string[]>([]);
     const [usersOpen, setUsersOpen] = useState<boolean>(false);
@@ -52,11 +57,7 @@ const Room: FC = () => {
     const [canSubmit, setCanSubmit] = useState<boolean>(false); // Default: cannot submit
 
     useEffect(() => {
-        if (!roomId) {
-            // TODO: Add message to user about missing room ID
-            navigate('/dashboard');
-            return;
-        }
+
         roomSetup(roomId, setOutput, setIsRunning, setReadyButton, navigate);
         socket.on('start_game', (question) => {
             console.log('Game started:', question);
@@ -214,7 +215,7 @@ const Room: FC = () => {
                         language={LANGUAGES[selectedLanguage].monaco}
                         value={code}
                         onChange={(value) =>
-                            handlers.handleEditorChange(value, setCode)
+                            handlers.handleEditorChange(value, setCode, roomId)
                         }
                         theme='vs-dark'
                         options={{

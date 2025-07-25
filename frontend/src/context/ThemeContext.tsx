@@ -1,6 +1,5 @@
 import React, { createContext, useState, useMemo, useContext, ReactNode } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider, PaletteMode } from '@mui/material';
-import { grey, blue } from '@mui/material/colors';
 
 interface ThemeContextType {
     toggleTheme: () => void;
@@ -35,18 +34,26 @@ export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({ childr
                     mode,
                     ...(mode === 'light'
                         ? {
-                            primary: { main: blue[600] },
-                            secondary: { main: grey[500] },
-                            background: { default: grey[50], paper: '#ffffff' },
-                            text: { primary: grey[900], secondary: grey[700] },
-                            divider: grey[300],
+                            primary: { main: '#6366f1' }, // Modern indigo
+                            secondary: { main: '#f59e0b' }, // Warm amber
+                            background: { default: '#f8fafc', paper: '#ffffff' }, // Softer background
+                            text: { primary: '#1e293b', secondary: '#64748b' }, // Better contrast
+                            divider: '#e2e8f0',
+                            success: { main: '#10b981' }, // Modern green
+                            error: { main: '#ef4444' }, // Modern red
+                            warning: { main: '#f59e0b' }, // Amber
+                            info: { main: '#06b6d4' }, // Cyan
                         }
                         : {
-                            primary: { main: blue[300] },
-                            secondary: { main: grey[600] },
-                            background: { default: '#121212', paper: grey[900] },
-                            text: { primary: '#ffffff', secondary: grey[400] },
-                            divider: grey[700],
+                            primary: { main: '#818cf8' }, // Lighter indigo for dark mode
+                            secondary: { main: '#fbbf24' }, // Brighter amber for dark mode
+                            background: { default: '#0f172a', paper: '#1e293b' }, // Modern dark slate
+                            text: { primary: '#f1f5f9', secondary: '#94a3b8' }, // Better dark mode text
+                            divider: '#334155',
+                            success: { main: '#34d399' }, // Brighter green for dark mode
+                            error: { main: '#f87171' }, // Softer red for dark mode
+                            warning: { main: '#fbbf24' }, // Amber
+                            info: { main: '#22d3ee' }, // Bright cyan
                         }),
                 },
                 components: {

@@ -1,8 +1,8 @@
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom'; // Removed useNavigate
+import { Link as RouterLink } from 'react-router-dom';
 import { useThemeContext } from '../context/ThemeContext';
-import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
-import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import IconButton from '@mui/material/IconButton';
 
 // Define props type to include onLogout

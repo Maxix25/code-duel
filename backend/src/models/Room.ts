@@ -6,6 +6,7 @@ export interface Room extends Document {
         player: Player | mongoose.Schema.Types.ObjectId;
         score: number;
         ready: boolean;
+        current_code: string;
     }[];
     status: 'waiting' | 'playing' | 'finished';
     problemId: Schema.Types.ObjectId;
@@ -26,6 +27,10 @@ const RoomSchema: Schema = new Schema({
             ready: {
                 type: Boolean,
                 default: false,
+            },
+            current_code: {
+                type: String,
+                default: '',
             },
         },
     ],
