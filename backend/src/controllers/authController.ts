@@ -36,7 +36,7 @@ export const loginPlayer = async (
 
         res.status(200).json({
             message: 'Login successful',
-            token: token
+            token
         });
     } catch (error) {
         console.error('Login error:', error);

@@ -12,21 +12,23 @@ import {
     alpha
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import login from '../api/auth/login';
+import loginApi from '../api/auth/login';
 import { useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import useAuth from '../hooks/useAuth';
 
 const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        login({ username, password })
+        loginApi({ username, password })
             .then((response) => {
                 if (response.status === 200) {
-                    localStorage.setItem('token', response.data.token);
+                    login(response.data.token);
                     navigate('/dashboard');
                 }
             })
