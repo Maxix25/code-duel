@@ -13,7 +13,7 @@ import {
     Tab,
     Accordion,
     AccordionSummary,
-    AccordionDetails,
+    AccordionDetails
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -22,10 +22,11 @@ import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
 import { SolutionResult } from '../services/roomSetup';
 import handlers from '../handlers/roomPageHandlers';
+import getToken from '../api/auth/getToken';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
-    javascript: { id: 63, name: 'JavaScript', monaco: 'javascript' },
+    javascript: { id: 63, name: 'JavaScript', monaco: 'javascript' }
 };
 
 export type LanguageName = keyof typeof LANGUAGES;
@@ -36,10 +37,10 @@ const Room: FC = () => {
     const roomId = urlparams.get('roomId');
     const navigate = useNavigate();
     if (!roomId) {
-            // TODO: Add message to user about missing room ID
-            navigate('/dashboard');
-            return;
-        }
+        // TODO: Add message to user about missing room ID
+        navigate('/dashboard');
+        return;
+    }
 
     const [users, setUsers] = useState<string[]>([]);
     const [usersOpen, setUsersOpen] = useState<boolean>(false);
@@ -55,9 +56,9 @@ const Room: FC = () => {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [readyButton, setReadyButton] = useState<boolean>(false);
     const [canSubmit, setCanSubmit] = useState<boolean>(false); // Default: cannot submit
+    const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
-
         roomSetup(roomId, setOutput, setIsRunning, setReadyButton, navigate);
         socket.on('start_game', (question) => {
             console.log('Game started:', question);
@@ -65,6 +66,14 @@ const Room: FC = () => {
             setCode(question.startingCode);
             setCanSubmit(true); // Enable submit button when game starts
         });
+        getToken()
+            .then((fetchedToken) => {
+                setToken(fetchedToken);
+            })
+            .catch((error) => {
+                console.error('Error fetching token:', error);
+                navigate('/login');
+            });
     }, []);
 
     return (
@@ -84,7 +93,7 @@ const Room: FC = () => {
                     flexDirection: 'column',
                     alignItems: 'flex-start',
                     pt: 2,
-                    minHeight: '300px',
+                    minHeight: '300px'
                 }}
             >
                 <Button
@@ -122,7 +131,7 @@ const Room: FC = () => {
                 sx={{
                     flex: 1.2,
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: 'column'
                 }}
             >
                 <Box
@@ -130,7 +139,7 @@ const Room: FC = () => {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        mb: 1,
+                        mb: 1
                     }}
                 >
                     <Typography variant='h6'>Code Editor</Typography>
@@ -179,7 +188,15 @@ const Room: FC = () => {
                             color='error'
                             startIcon={<ExitToAppIcon />}
                             onClick={() => {
-                                handlers.handleLeaveRoom(roomId, navigate);
+                                if (!token) {
+                                    console.error('No token available');
+                                    return;
+                                }
+                                handlers.handleLeaveRoom(
+                                    roomId,
+                                    navigate,
+                                    token
+                                );
                             }}
                             sx={{ ml: 2 }}
                         >
@@ -191,9 +208,14 @@ const Room: FC = () => {
                                 color='success'
                                 sx={{ ml: 2 }}
                                 onClick={() => {
+                                    if (!token) {
+                                        console.error('No token available');
+                                        return;
+                                    }
                                     handlers.handleReadyButton(
                                         roomId,
-                                        setReadyButton
+                                        setReadyButton,
+                                        token
                                     );
                                 }}
                             >
@@ -207,34 +229,48 @@ const Room: FC = () => {
                         flexGrow: 1,
                         border: '1px solid grey',
                         mb: 1,
-                        minHeight: '300px',
+                        minHeight: '300px'
                     }}
                 >
                     <Editor
                         height='100%'
                         language={LANGUAGES[selectedLanguage].monaco}
                         value={code}
-                        onChange={(value) =>
-                            handlers.handleEditorChange(value, setCode, roomId)
-                        }
+                        onChange={(value) => {
+                            if (!token) {
+                                console.error('No token available');
+                                return;
+                            }
+                            handlers.handleEditorChange(
+                                value,
+                                setCode,
+                                roomId,
+                                token
+                            );
+                        }}
                         theme='vs-dark'
                         options={{
                             minimap: { enabled: false },
-                            readOnly: !canSubmit,
+                            readOnly: !canSubmit
                         }}
                     />
                 </Box>
                 <Button
                     variant='contained'
-                    onClick={() =>
+                    onClick={() => {
+                        if (!token) {
+                            console.error('No token available');
+                            return;
+                        }
                         handlers.handleSubmitCode(
                             setIsRunning,
                             setOutput,
                             setActiveTab,
                             roomId,
-                            code
-                        )
-                    }
+                            code,
+                            token
+                        );
+                    }}
                     disabled={isRunning || !canSubmit}
                 >
                     {isRunning ? 'Running...' : 'Run Code'}
@@ -245,7 +281,7 @@ const Room: FC = () => {
                 sx={{
                     flex: 1,
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: 'column'
                 }}
             >
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -277,7 +313,7 @@ const Room: FC = () => {
                         mt: 0,
                         minHeight: '300px',
                         fontFamily: 'monospace',
-                        whiteSpace: 'pre-wrap',
+                        whiteSpace: 'pre-wrap'
                     }}
                 >
                     <div
@@ -346,14 +382,14 @@ const Room: FC = () => {
                                                 sx={{
                                                     background: '#23272f',
                                                     color: 'white',
-                                                    mb: 1,
+                                                    mb: 1
                                                 }}
                                             >
                                                 <AccordionSummary
                                                     expandIcon={
                                                         <ExpandMoreIcon
                                                             sx={{
-                                                                color: 'white',
+                                                                color: 'white'
                                                             }}
                                                         />
                                                     }
@@ -367,7 +403,7 @@ const Room: FC = () => {
                                                         style={{
                                                             color: verdictColor,
                                                             fontWeight: 'bold',
-                                                            marginLeft: 12,
+                                                            marginLeft: 12
                                                         }}
                                                     >
                                                         {verdict}
@@ -376,7 +412,7 @@ const Room: FC = () => {
                                                 <AccordionDetails>
                                                     <div
                                                         style={{
-                                                            marginBottom: 8,
+                                                            marginBottom: 8
                                                         }}
                                                     >
                                                         <strong>Input:</strong>
@@ -385,7 +421,7 @@ const Room: FC = () => {
                                                                 background:
                                                                     '#181c23',
                                                                 padding: 8,
-                                                                borderRadius: 4,
+                                                                borderRadius: 4
                                                             }}
                                                         >
                                                             {result.testCase}
@@ -393,7 +429,7 @@ const Room: FC = () => {
                                                     </div>
                                                     <div
                                                         style={{
-                                                            marginBottom: 8,
+                                                            marginBottom: 8
                                                         }}
                                                     >
                                                         <strong>
@@ -404,7 +440,7 @@ const Room: FC = () => {
                                                                 background:
                                                                     '#181c23',
                                                                 padding: 8,
-                                                                borderRadius: 4,
+                                                                borderRadius: 4
                                                             }}
                                                         >
                                                             {expected}
@@ -412,7 +448,7 @@ const Room: FC = () => {
                                                     </div>
                                                     <div
                                                         style={{
-                                                            marginBottom: 8,
+                                                            marginBottom: 8
                                                         }}
                                                     >
                                                         <strong>
@@ -423,7 +459,7 @@ const Room: FC = () => {
                                                                 background:
                                                                     '#181c23',
                                                                 padding: 8,
-                                                                borderRadius: 4,
+                                                                borderRadius: 4
                                                             }}
                                                         >
                                                             {stdout}
@@ -441,7 +477,7 @@ const Room: FC = () => {
                                                                             background:
                                                                                 '#181c23',
                                                                             padding: 8,
-                                                                            borderRadius: 4,
+                                                                            borderRadius: 4
                                                                         }}
                                                                     >
                                                                         {stderr}
@@ -459,7 +495,7 @@ const Room: FC = () => {
                                                                             background:
                                                                                 '#181c23',
                                                                             padding: 8,
-                                                                            borderRadius: 4,
+                                                                            borderRadius: 4
                                                                         }}
                                                                     >
                                                                         {
@@ -478,7 +514,7 @@ const Room: FC = () => {
                                                                             background:
                                                                                 '#181c23',
                                                                             padding: 8,
-                                                                            borderRadius: 4,
+                                                                            borderRadius: 4
                                                                         }}
                                                                     >
                                                                         {

@@ -11,20 +11,13 @@ export const verifyToken = (
     req: Request,
     res: Response,
     next: NextFunction
-): any => {
-    const authHeader =
-        req.headers['authorization'] || req.headers['Authorization'];
-    const token =
-        typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
-
-    if (!token) {
-        return res.status(401).json({ message: 'No token provided' });
-    }
-
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+): void => {
+    jwt.verify(req.cookies.token, JWT_SECRET, (err: unknown) => {
         if (err) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            console.log('Token verification failed:', err);
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
         }
+        next();
     });
-    next();
 };

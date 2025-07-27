@@ -16,17 +16,35 @@ const getSubmission = async (token: string): Promise<Judge0Response> => {
         );
 
         return response.data;
-    } catch (error: any) {
-        console.error(
-            'Error calling Judge0 API:',
-            error.response?.data || error.message
-        );
-        throw new Error(
-            `API Error: ${error.response?.data?.message ||
-            error.message ||
-            'Unknown error'
-            }`
-        );
+    } catch (error: unknown) {
+        if (
+            typeof error === 'object' &&
+            error !== null &&
+            'response' in error
+        ) {
+            interface ErrorResponseData {
+                message?: string;
+                [key: string]: unknown;
+            }
+            const err = error as {
+                response?: { data?: ErrorResponseData };
+                message?: string;
+            };
+            console.error(
+                'Error calling Judge0 API:',
+                err.response?.data || err.message
+            );
+            throw new Error(
+                `API Error: ${
+                    err.response?.data?.message ||
+                    err.message ||
+                    'Unknown error'
+                }`
+            );
+        } else {
+            console.error('Error calling Judge0 API:', error);
+            throw new Error(`API Error: ${String(error)}`);
+        }
     }
 };
 export default getSubmission;

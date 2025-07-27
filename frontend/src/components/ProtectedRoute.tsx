@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { ReactNode } from 'react';
-import api from '../api/api';
+import getToken from '../api/auth/getToken';
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
@@ -11,24 +11,15 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const auth = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setIsAuthorized(false);
-            return;
-        }
         try {
-            const response = await api.post('/auth/verify', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.status === 200) {
-                setIsAuthorized(true);
-            } else {
+            const token = await getToken();
+            if (!token) {
                 setIsAuthorized(false);
+                return;
             }
+            setIsAuthorized(true);
         } catch (error) {
-            console.error('Error verifying token:', error);
+            console.error('Token is not valid', error);
             setIsAuthorized(false);
         }
     };

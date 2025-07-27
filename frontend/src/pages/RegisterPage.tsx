@@ -37,7 +37,6 @@ const RegisterPage: React.FC = () => {
         setLoading(true);
         register({ username, email, password })
             .then((response) => {
-                localStorage.setItem('token', response.data.token);
                 if (response.status === 201) {
                     navigate('/dashboard');
                 }

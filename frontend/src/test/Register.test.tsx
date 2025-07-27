@@ -6,10 +6,11 @@ import { setupServer } from 'msw/node';
 
 const server = setupServer(
     http.post('/auth/register', () => {
+        localStorage.setItem('token', 'mocked_token');
         return HttpResponse.json(
             {
                 message: 'Registration successful',
-                token: 'mocked_token',
+                token: 'mocked_token'
             },
             { status: 201 }
         );
@@ -42,7 +43,7 @@ describe('RegisterPage', () => {
         const submitButton = screen.getByRole('button', { name: /sign up/i });
         fireEvent.change(passwordInput, { target: { value: 'password123' } });
         fireEvent.change(confirmPasswordInput, {
-            target: { value: 'differentPassword' },
+            target: { value: 'differentPassword' }
         });
         fireEvent.click(submitButton);
 
@@ -62,11 +63,11 @@ describe('RegisterPage', () => {
 
         fireEvent.change(usernameInput, { target: { value: 'testuser123' } });
         fireEvent.change(emailInput, {
-            target: { value: 'testuser123@example.com' },
+            target: { value: 'testuser123@example.com' }
         });
         fireEvent.change(passwordInput, { target: { value: 'testpassword' } });
         fireEvent.change(confirmPasswordInput, {
-            target: { value: 'testpassword' },
+            target: { value: 'testpassword' }
         });
         fireEvent.click(submitButton);
 

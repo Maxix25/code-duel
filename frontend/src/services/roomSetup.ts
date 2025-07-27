@@ -1,6 +1,7 @@
 import socket from './socket';
 import { Dispatch, SetStateAction } from 'react';
 import { NavigateFunction } from 'react-router-dom';
+import api from '../api/api';
 
 interface Judge0Response {
     stdout: string | null;
@@ -42,19 +43,20 @@ const roomSetup = async (
     socket.off('add_ready_button');
     socket.off('remove_ready_button');
     socket.off('start_game');
+    const response = await api.get('/auth/token');
 
     socket.on('connect', () => {
         console.log('Connected to socket server');
         socket.emit('join_room', {
             roomId,
-            user_token: localStorage.getItem('token'),
+            user_token: response.data.token
         });
     });
     socket.on('reconnect', () => {
         console.log('Reconnected to socket server');
         socket.emit('join_room', {
             roomId,
-            user_token: localStorage.getItem('token'),
+            user_token: response.data.token
         });
     });
     socket.connect();

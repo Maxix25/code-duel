@@ -1,4 +1,5 @@
 import api from '../api';
+import getToken from '../auth/getToken';
 
 export interface Response {
     status: number;
@@ -7,8 +8,9 @@ export interface Response {
 
 const createRoom = async (): Promise<Response> => {
     try {
+        const user_token = await getToken();
         const response = await api.post('/room/start', {
-            user_token: localStorage.getItem('token'),
+            user_token
         });
         console.log(response.status);
         return { status: response.status, roomId: response.data.roomId };

@@ -23,21 +23,22 @@ const getDefaultComment = (lang: LanguageName) => {
 const handleEditorChange = (
     value: string | undefined,
     setCode: React.Dispatch<React.SetStateAction<string>>,
-    roomId: string
+    roomId: string,
+    token: string
 ) => {
     const newCode = value || '';
     setCode(newCode);
-    
+
     if (saveTimeout) {
         clearTimeout(saveTimeout);
     }
-    
+
     if (roomId) {
-        saveTimeout = setTimeout(() => {
+        saveTimeout = setTimeout(async () => {
             socket.emit('code_save', {
                 roomId,
                 code: newCode,
-                user_token: localStorage.getItem('token'),
+                user_token: token
             });
         }, 2000);
     }
@@ -63,7 +64,8 @@ const handleSubmitCode = (
     setOutput: React.Dispatch<React.SetStateAction<string | SolutionResult[]>>,
     setActiveTab: React.Dispatch<React.SetStateAction<number>>,
     roomId: string,
-    code: string
+    code: string,
+    token: string
 ) => {
     setIsRunning(true);
     setOutput('Running...');
@@ -71,25 +73,30 @@ const handleSubmitCode = (
     socket.emit('submit_solution', {
         roomId,
         code,
-        user_token: localStorage.getItem('token'),
+        user_token: token
     });
 };
 
-const handleLeaveRoom = (roomId: string | null, navigate: NavigateFunction) => {
+const handleLeaveRoom = (
+    roomId: string | null,
+    navigate: NavigateFunction,
+    token: string
+) => {
     socket.emit('leave_room', {
         roomId,
-        user_token: localStorage.getItem('token'),
+        user_token: token
     });
     socket.disconnect();
     navigate('/dashboard');
 };
 const handleReadyButton = (
     roomId: string,
-    setReadyButton: React.Dispatch<React.SetStateAction<boolean>>
+    setReadyButton: React.Dispatch<React.SetStateAction<boolean>>,
+    token: string
 ) => {
     socket.emit('player_ready', {
         roomId,
-        user_token: localStorage.getItem('token'),
+        user_token: token
     });
     setReadyButton(false); // Hide the button after clicking
 };
@@ -122,5 +129,5 @@ export default {
     handleLeaveRoom,
     handleSubmitCode,
     handleLanguageChange,
-    handleEditorChange,
+    handleEditorChange
 };
