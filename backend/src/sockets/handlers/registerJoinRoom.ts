@@ -48,9 +48,9 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                     username: string;
                 };
             } catch {
-                room.players
-                    .map((p: any) => p.player.toString())
-                    .includes(userId.toString());
+                console.log('JWT verification failed');
+                socket.emit('error', 'Invalid token');
+                return;
             }
 
             if (
