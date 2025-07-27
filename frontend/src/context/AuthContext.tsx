@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
-        api.post('http://localhost:3000/auth/verify')
+        api.post('/auth/verify')
             .then(() => {
                 setIsAuthenticated(true);
             })
