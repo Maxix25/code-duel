@@ -36,7 +36,13 @@ export const startRoom = async (req: Request, res: Response): Promise<void> => {
         }
         // Create a new room
         const room = await Room.create({
-            players: [{ player: userId, score: 0 }],
+            players: [
+                {
+                    player: userId,
+                    score: 0,
+                    current_code: question.startingCode
+                }
+            ],
             status: 'waiting',
             problemId: question._id
         });
@@ -135,6 +141,45 @@ export const getUsersInRoom = async (
         );
     } catch (error) {
         console.error('Error fetching users in room:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const getCurrentCode = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { roomId } = req.params;
+        if (!mongoose.isValidObjectId(roomId)) {
+            res.status(400).json({ error: 'Invalid room ID' });
+            return;
+        }
+        const room = await Room.findById(roomId);
+        if (!room) {
+            res.status(404).json({ error: 'Room not found' });
+            return;
+        }
+        const userId = getUserIdByToken(req.cookies.token);
+        if (!userId) {
+            res.status(401).json({ error: 'Invalid user token' });
+            return;
+        }
+        // Check if room is waiting for players
+        if (room.status === 'waiting') {
+            res.status(400).json({ error: 'Room is waiting for players' });
+            return;
+        }
+        const player = room.players.find(
+            (p) => p.player.toString() === userId.toString()
+        );
+        if (!player) {
+            res.status(404).json({ error: 'User not found in room' });
+            return;
+        }
+        res.status(200).json({ code: player.current_code });
+    } catch (error) {
+        console.error('Error fetching current code:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
