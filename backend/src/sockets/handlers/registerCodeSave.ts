@@ -25,7 +25,6 @@ const registerCodeSave = (socket: Socket) => {
             }
             room.players[playerIndex].current_code = data.code;
             await room.save();
-            // TODO: Emit an event to submit feedback to the frontend that the code is saved
         }
     );
 };
