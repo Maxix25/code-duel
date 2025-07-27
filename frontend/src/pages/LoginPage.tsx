@@ -21,14 +21,14 @@ const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { setIsAuthenticated } = useAuth();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         loginApi({ username, password })
             .then((response) => {
                 if (response.status === 200) {
-                    login(response.data.token);
+                    setIsAuthenticated(true);
                     navigate('/dashboard');
                 }
             })

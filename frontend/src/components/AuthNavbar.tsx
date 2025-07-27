@@ -5,12 +5,10 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import IconButton from '@mui/material/IconButton';
 
-// Define props type to include onLogout
 interface AuthNavbarProps {
     onLogout: () => void;
 }
 
-// Remove React.FC and type props directly
 const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
     const { mode, toggleTheme } = useThemeContext();
     return (

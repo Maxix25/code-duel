@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { httpServer } from '../server';
 import mongoose from 'mongoose';
-import Question from '../models/Question';
 import createTestQuestion from '../testUtils/createTestQuestion';
 import getUserIdByToken from '../utils/getUserIdByToken';
 import createTestRoom from '../testUtils/createTestRoom';
@@ -10,6 +9,7 @@ import createTestPlayer from '../testUtils/createTestPlayer';
 let userId: mongoose.Schema.Types.ObjectId | null;
 let roomId: mongoose.Schema.Types.ObjectId | null;
 let token: string;
+let cookie: string;
 
 describe('Room Controller', () => {
     beforeAll(async () => {
@@ -30,12 +30,12 @@ describe('Room Controller', () => {
         );
         const response1 = await request(httpServer).post('/auth/login').send({
             username: 'testuser1',
-            password: 'password1',
+            password: 'password1'
         });
-        token = response1.body.token;
+        cookie = response1.headers['set-cookie'][0];
+        token = cookie.split(';')[0].split('=')[1];
         expect(token).toBeDefined();
         userId = getUserIdByToken(token);
-        expect(userId).toBeDefined();
 
         const question = await createTestQuestion();
         const room = await createTestRoom(
@@ -61,8 +61,7 @@ describe('Room Controller', () => {
     it('should create a new room', async () => {
         const response = await request(httpServer)
             .post('/room/start')
-            .send({ user_token: token })
-            .set('Authorization', `Bearer ${token}`);
+            .set('Cookie', cookie);
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('roomId');

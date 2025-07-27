@@ -1,6 +1,5 @@
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { setIO } from './utils/sockets';
 import app from './app';
 import dotenv from 'dotenv';
 import connectDB from './config/database';
@@ -22,8 +21,8 @@ const startServer = async () => {
         const io = new SocketIOServer(httpServer, {
             cors: {
                 origin: '*',
-                methods: ['GET', 'POST'],
-            },
+                methods: ['GET', 'POST']
+            }
         });
 
         io.on('connection', (socket) => {

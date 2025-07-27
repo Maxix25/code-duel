@@ -1,15 +1,15 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
+import api from '../api/api';
 
 interface AuthContextType {
     isAuthenticated: boolean;
-    login: (token: string) => void;
     logout: () => void;
+    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
 export const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
-    login: () => {},
-    logout: () => {}
+    logout: () => {},
+    setIsAuthenticated: () => {}
 });
 
 interface AuthProviderProps {
@@ -20,24 +20,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsAuthenticated(true);
-        }
+        api.post('http://localhost:3000/auth/verify')
+            .then(() => {
+                setIsAuthenticated(true);
+            })
+            .catch(() => {
+                setIsAuthenticated(false);
+            });
     }, []);
 
-    const login = (token: string) => {
-        localStorage.setItem('token', token);
-        setIsAuthenticated(true);
-    };
-
     const logout = () => {
-        localStorage.removeItem('token');
-        setIsAuthenticated(false);
+        api.get('/auth/logout')
+            .then(() => {
+                setIsAuthenticated(false);
+                window.location.href = '/login';
+            })
+            .catch((error) => {
+                console.error('Logout error:', error);
+            });
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider
+            value={{ isAuthenticated, logout, setIsAuthenticated }}
+        >
             {children}
         </AuthContext.Provider>
     );

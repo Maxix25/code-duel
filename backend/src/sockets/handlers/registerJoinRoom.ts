@@ -43,16 +43,14 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 socket.emit('error', 'Room is already running');
                 return;
             }
-            let username: string;
             try {
-                const decoded = jwt.verify(data.user_token, JWT_SECRET) as {
+                jwt.verify(data.user_token, JWT_SECRET) as {
                     username: string;
                 };
-                username = decoded.username;
-            } catch (err) {
-                console.log('Invalid token');
-                socket.emit('error', 'Invalid token');
-                return;
+            } catch {
+                room.players
+                    .map((p: any) => p.player.toString())
+                    .includes(userId.toString());
             }
 
             if (
@@ -75,7 +73,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 player: userId as mongoose.Schema.Types.ObjectId,
                 score: 0,
                 ready: false,
-                current_code: question.startingCode,
+                current_code: question.startingCode
             });
             await room.save();
             socket.join(data.roomId);

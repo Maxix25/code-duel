@@ -3,7 +3,7 @@ import compiler from './compiler';
 
 export const LANGUAGES = {
     python: { id: 71, name: 'Python' },
-    javascript: { id: 63, name: 'JavaScript' },
+    javascript: { id: 63, name: 'JavaScript' }
 };
 
 interface Judge0Submission {
@@ -36,7 +36,7 @@ const runCode = async (
         language_id: language.id,
         source_code: btoa(code),
         stdin: stdin ? btoa(stdin) : undefined,
-        expected_output: expectedOutput ? btoa(expectedOutput) : undefined,
+        expected_output: expectedOutput ? btoa(expectedOutput) : undefined
     };
 
     try {
@@ -46,18 +46,32 @@ const runCode = async (
         );
         const token = response.data.token;
         return token;
-    } catch (error: any) {
-        console.error(
-            'Error calling Judge0 API:',
-            error.response?.data || error.message
-        );
-        throw new Error(
-            `API Error: ${
-                error.response?.data?.message ||
-                error.message ||
-                'Unknown error'
-            }`
-        );
+    } catch (error: unknown) {
+        if (
+            typeof error === 'object' &&
+            error !== null &&
+            'response' in error &&
+            'message' in error
+        ) {
+            const err = error as {
+                response?: { data?: { message?: string } };
+                message?: string;
+            };
+            console.error(
+                'Error calling Judge0 API:',
+                err.response?.data || err.message
+            );
+            throw new Error(
+                `API Error: ${
+                    err.response?.data?.message ||
+                    err.message ||
+                    'Unknown error'
+                }`
+            );
+        } else {
+            console.error('Error calling Judge0 API:', error);
+            throw new Error('API Error: Unknown error');
+        }
     }
 };
 
