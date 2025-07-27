@@ -16,6 +16,7 @@ export const verifyToken = (
         if (err) {
             console.log('Token verification failed:', err);
             res.status(401).json({ message: 'Unauthorized' });
+            return;
         }
         next();
     });
