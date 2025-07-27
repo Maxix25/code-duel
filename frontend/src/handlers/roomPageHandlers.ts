@@ -37,12 +37,17 @@ const handleEditorChange = (
 
     if (roomId) {
         saveTimeout = setTimeout(() => {
-            socket.emit('code_save', {
-                roomId,
-                code: newCode,
-                user_token: token
-            });
-            setIsSaving(false);
+            try {
+                socket.emit('code_save', {
+                    roomId,
+                    code: newCode,
+                    user_token: token
+                });
+            } catch (error) {
+                console.error('Error saving code:', error);
+            } finally {
+                setIsSaving(false);
+            }
         }, 2000);
     }
 };
