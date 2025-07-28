@@ -96,9 +96,12 @@ const Room: FC = () => {
                     setProblemStatement(question.question);
                 })
                 .catch((error) => {
-                    console.error('Error fetching question:', error);
-                    // Optionally, display an error message to the user
-                    setProblemStatement('Error loading question. Please try again later.');
+                    if (error.response && error.response.status !== 403) {
+                        console.error('Error fetching question:', error);
+                        setProblemStatement(
+                            'Error loading question. Please try again later.'
+                        );
+                    }
                 });
         }
     }, []);

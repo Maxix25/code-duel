@@ -11,6 +11,7 @@ export interface Room extends Document {
     status: 'waiting' | 'playing' | 'finished';
     problemId: Schema.Types.ObjectId;
     createdAt: Date;
+    name: string;
 }
 
 const RoomSchema: Schema = new Schema({
@@ -18,35 +19,39 @@ const RoomSchema: Schema = new Schema({
         {
             player: {
                 type: Schema.Types.ObjectId,
-                ref: 'Player',
+                ref: 'Player'
             },
             score: {
                 type: Number,
-                default: 0,
+                default: 0
             },
             ready: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             current_code: {
                 type: String,
-                default: '',
-            },
-        },
+                default: ''
+            }
+        }
     ],
     status: {
         type: String,
         enum: ['waiting', 'playing', 'finished'],
-        default: 'waiting',
+        default: 'waiting'
     },
     problemId: {
         type: Schema.Types.ObjectId,
-        ref: 'Question',
+        ref: 'Question'
     },
     createdAt: {
         type: Date,
-        default: Date.now,
+        default: Date.now
     },
+    name: {
+        type: String,
+        required: true
+    }
 });
 
 export default mongoose.model<Room>('Room', RoomSchema);

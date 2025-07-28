@@ -4,6 +4,7 @@ import {
     getRoomResults,
     getUsersInRoom,
     getCurrentCode,
+    getAllRooms,
     userIsInRoom
 } from '../controllers/roomController';
 import { verifyToken } from '../middleware/verifyToken';
@@ -17,5 +18,6 @@ router.get('/results/:roomId', verifyToken, getRoomResults);
 router.get('/users/:roomId', verifyToken, getUsersInRoom);
 router.get('/userInRoom/', verifyToken, userIsInRoom);
 router.get('/:roomId/code', verifyToken, getCurrentCode);
+router.get('/all', verifyToken, getAllRooms);
 
 export default router;

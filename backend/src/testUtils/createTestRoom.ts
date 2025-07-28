@@ -5,6 +5,7 @@ const createTestRoom = async (userId: string, questionId: string) => {
         players: [{ player: userId, score: 0 }],
         status: 'waiting',
         problemId: questionId,
+        name: `Test Room for ${userId}`
     });
     return room;
 };
