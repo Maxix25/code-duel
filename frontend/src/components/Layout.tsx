@@ -1,13 +1,11 @@
 import React from 'react';
-import {
-    AppBar,
-    Toolbar,
-    Typography,
-    Button,
-    IconButton,
-    Box,
-    Container
-} from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import { Link as RouterLink, Outlet, useNavigate } from 'react-router-dom';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Moon icon
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sun icon

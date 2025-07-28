@@ -1,4 +1,8 @@
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { Link as RouterLink } from 'react-router-dom';
 import { useThemeContext } from '../context/ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';

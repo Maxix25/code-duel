@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import {
-    Container,
-    Typography,
-    TextField,
-    Button,
-    Box,
-    Card,
-    CardContent,
-    Stack,
-    Snackbar,
-    Alert,
-    useTheme,
-    alpha,
-    CircularProgress
-} from '@mui/material';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useTheme, alpha } from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import register from '../api/auth/register';
