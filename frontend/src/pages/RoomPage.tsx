@@ -83,7 +83,7 @@ const Room: FC = () => {
                 navigate('/login');
             });
         getCurrentCode(roomId)
-            .then(async (currentCode) => {
+            .then((currentCode) => {
                 setCode(currentCode.code);
             })
             .catch((error) => {
@@ -91,9 +91,15 @@ const Room: FC = () => {
             });
         // Check that the problem statement is set correctly
         if (problemStatement === 'Waiting for game to start...') {
-            getQuestion(roomId).then((question) => {
-                setProblemStatement(question.question);
-            });
+            getQuestion(roomId)
+                .then((question) => {
+                    setProblemStatement(question.question);
+                })
+                .catch((error) => {
+                    console.error('Error fetching question:', error);
+                    // Optionally, display an error message to the user
+                    setProblemStatement('Error loading question. Please try again later.');
+                });
         }
     }, []);
 
