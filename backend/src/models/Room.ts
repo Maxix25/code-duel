@@ -50,7 +50,8 @@ const RoomSchema: Schema = new Schema({
     },
     name: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 100
     }
 });
 

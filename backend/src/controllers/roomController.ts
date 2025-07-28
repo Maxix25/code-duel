@@ -162,11 +162,7 @@ export const getAllRooms = async (
             .select('id players status problemId name');
         const formattedRooms = rooms.map((room) => ({
             id: room.id,
-            players: room.players.map((p) => ({
-                player: p.player ? p.player : 'Unknown',
-                score: p.score,
-                current_code: p.current_code
-            })),
+            num_players: room.players.length,
             status: room.status,
             problemId: room.problemId,
             name: room.name
