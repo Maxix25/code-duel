@@ -26,6 +26,7 @@ import { SolutionResult } from '../services/roomSetup';
 import handlers from '../handlers/roomPageHandlers';
 import getToken from '../api/auth/getToken';
 import getCurrentCode from '../api/room/getCurrentCode';
+import getQuestion from '../api/room/getQuestion';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
@@ -82,12 +83,18 @@ const Room: FC = () => {
                 navigate('/login');
             });
         getCurrentCode(roomId)
-            .then((currentCode) => {
+            .then(async (currentCode) => {
                 setCode(currentCode.code);
             })
             .catch((error) => {
                 console.error('Error fetching current code:', error);
             });
+        // Check that the problem statement is set correctly
+        if (problemStatement === 'Waiting for game to start...') {
+            getQuestion(roomId).then((question) => {
+                setProblemStatement(question.question);
+            });
+        }
     }, []);
 
     return (
