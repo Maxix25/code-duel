@@ -23,7 +23,7 @@ const registerPlayerReady = (io: Server, socket: Socket) => {
                 return;
             }
             const player = room.players.find(
-                (p: any) => p.player.toString() === userId.toString()
+                (p) => p.player.toString() === userId.toString()
             );
             if (!player) {
                 socket.emit('error', 'Player not found in room');
@@ -32,7 +32,7 @@ const registerPlayerReady = (io: Server, socket: Socket) => {
             player.ready = true;
             await room.save();
             // Check if all players are ready
-            const allReady = room.players.every((p: any) => p.ready);
+            const allReady = room.players.every((p) => p.ready);
             if (allReady) {
                 room.status = 'playing';
                 await room.save();

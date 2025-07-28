@@ -23,7 +23,7 @@ const registerLeaveRoom = (io: Server, socket: Socket) => {
                 return;
             }
             room.players = room.players.filter(
-                (p: any) => p.player.toString() !== userId.toString()
+                (p) => p.player.toString() !== userId.toString()
             );
             await room.save();
             socket.leave(data.roomId);

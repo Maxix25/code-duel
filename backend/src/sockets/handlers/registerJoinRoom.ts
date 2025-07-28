@@ -37,12 +37,13 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
             if (
                 room.status === 'playing' &&
                 !room.players.some(
-                    (p: any) => p.player.toString() === userId.toString()
+                    (p) => p.player.toString() === userId.toString()
                 )
             ) {
                 socket.emit('error', 'Room is already running');
                 return;
             }
+            // Check if the token is valid
             try {
                 jwt.verify(data.user_token, JWT_SECRET) as {
                     username: string;
@@ -52,11 +53,11 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 socket.emit('error', 'Invalid token');
                 return;
             }
-
+            // Check if the user is already in the room
             if (
                 userId &&
                 room.players
-                    .map((p: any) => p.player.toString())
+                    .map((p) => p.player.toString())
                     .includes(userId.toString())
             ) {
                 // User is already in the room, just join socket
@@ -65,7 +66,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                     `Player ${socket.id} re-joined room ${data.roomId}`
                 );
                 if (room.status === 'playing') {
-                    socket.emit('start_game', question);
+                    socket.emit('rejoin_game', question);
                 }
                 return;
             }

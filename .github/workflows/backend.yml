@@ -36,3 +36,7 @@ jobs:
                   mongodb-version: ${{ matrix.mongodb-version }}
             - name: Run tests
               run: pnpm test
+            - name: Run linter
+              run: pnpm lint
+            - name: Run type check
+              run: pnpm run typecheck

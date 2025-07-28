@@ -23,23 +23,31 @@ const getDefaultComment = (lang: LanguageName) => {
 const handleEditorChange = (
     value: string | undefined,
     setCode: React.Dispatch<React.SetStateAction<string>>,
+    setIsSaving: React.Dispatch<React.SetStateAction<boolean>>,
     roomId: string,
     token: string
 ) => {
     const newCode = value || '';
     setCode(newCode);
+    setIsSaving(true);
 
     if (saveTimeout) {
         clearTimeout(saveTimeout);
     }
 
     if (roomId) {
-        saveTimeout = setTimeout(async () => {
-            socket.emit('code_save', {
-                roomId,
-                code: newCode,
-                user_token: token
-            });
+        saveTimeout = setTimeout(() => {
+            try {
+                socket.emit('code_save', {
+                    roomId,
+                    code: newCode,
+                    user_token: token
+                });
+            } catch (error) {
+                console.error('Error saving code:', error);
+            } finally {
+                setIsSaving(false);
+            }
         }, 2000);
     }
 };
