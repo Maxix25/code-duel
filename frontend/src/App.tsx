@@ -3,11 +3,12 @@ import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import { CustomThemeProvider } from './context/ThemeContext';
 import DashboardPage from './pages/DashboardPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import Room from './pages/RoomPage';
 import ResultsPage from './pages/ResultsPage';
+import RoomPage from './pages/RoomPage';
+import FindRoomPage from './pages/FindRoomPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import { CustomThemeProvider } from './context/ThemeContext';
 
 function App() {
     return (
@@ -30,7 +31,7 @@ function App() {
                             path='room'
                             element={
                                 <ProtectedRoute>
-                                    <Room />
+                                    <RoomPage />
                                 </ProtectedRoute>
                             }
                         />
@@ -39,6 +40,14 @@ function App() {
                             element={
                                 <ProtectedRoute>
                                     <ResultsPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path='find-room'
+                            element={
+                                <ProtectedRoute>
+                                    <FindRoomPage />
                                 </ProtectedRoute>
                             }
                         />
