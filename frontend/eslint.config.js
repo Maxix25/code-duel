@@ -19,10 +19,9 @@ export default tseslint.config(
         },
         rules: {
             'no-restricted-imports': [
+                'error',
                 {
-                    error: {
-                        patterns: [{ regex: '^@mui/[^/]+$' }]
-                    }
+                    patterns: [{ regex: '^@mui/[^/]+$' }]
                 }
             ],
             ...reactHooks.configs.recommended.rules,
