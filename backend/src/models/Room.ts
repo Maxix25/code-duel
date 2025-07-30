@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import type { Player } from './Player';
+import { hash, genSalt, compare } from 'bcryptjs';
 
 export interface Room extends Document {
     players: {
@@ -12,6 +13,8 @@ export interface Room extends Document {
     problemId: Schema.Types.ObjectId;
     createdAt: Date;
     name: string;
+    password: string;
+    comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const RoomSchema: Schema = new Schema({
@@ -52,7 +55,33 @@ const RoomSchema: Schema = new Schema({
         type: String,
         required: true,
         maxlength: 100
+    },
+    password: {
+        type: String,
+        maxlength: 100
     }
 });
+
+RoomSchema.pre<Room>('save', async function (next) {
+    // Don't hash empty passwords (for public rooms)
+    if (!this.password || this.password === '') return next();
+
+    try {
+        const salt = await genSalt(10);
+        this.password = await hash(this.password, salt);
+        next();
+    } catch (error) {
+        if (error instanceof Error) {
+            return next(error);
+        }
+        return next(new Error('Error hashing password'));
+    }
+});
+
+RoomSchema.methods.comparePassword = function (
+    candidatePassword: string
+): Promise<boolean> {
+    return compare(candidatePassword, this.password);
+};
 
 export default mongoose.model<Room>('Room', RoomSchema);

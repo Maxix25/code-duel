@@ -9,6 +9,10 @@ import getUsernameByToken from '../utils/getUsernameByToken';
 export const startRoom = async (req: Request, res: Response): Promise<void> => {
     try {
         const user_token = req.cookies.token;
+        let { password } = req.body;
+        if (!password) {
+            password = '';
+        }
         if (!user_token) {
             res.status(401).json({ error: 'User token is required' });
             return;
@@ -47,7 +51,8 @@ export const startRoom = async (req: Request, res: Response): Promise<void> => {
             ],
             status: 'waiting',
             problemId: question._id,
-            name: `${username}'s Room`
+            name: `${username}'s Room`,
+            password
         });
         res.status(200).json({ roomId: room.id });
     } catch (error) {
@@ -196,7 +201,7 @@ export const getCurrentCode = async (
         }
         // Check if room is waiting for players
         if (room.status === 'waiting') {
-            res.status(400).json({ error: 'Room is waiting for players' });
+            res.status(403).json({ error: 'Room is waiting for players' });
             return;
         }
         const player = room.players.find(
@@ -236,6 +241,32 @@ export const userIsInRoom = async (
         }
     } catch (error) {
         console.error('Error checking room status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const checkIfRoomHasPassword = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { roomId } = req.params;
+        if (!mongoose.isValidObjectId(roomId)) {
+            res.status(400).json({ error: 'Invalid room ID' });
+            return;
+        }
+        const room = await Room.findById(roomId);
+        if (!room) {
+            res.status(404).json({ error: 'Room not found' });
+            return;
+        }
+        if (room.password === '' || !room.password) {
+            res.status(200).json({ hasPassword: false });
+            return;
+        }
+        res.status(200).json({ hasPassword: true });
+    } catch (error) {
+        console.error('Error checking if room has password:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

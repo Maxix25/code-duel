@@ -5,7 +5,8 @@ import {
     getUsersInRoom,
     getCurrentCode,
     getAllRooms,
-    userIsInRoom
+    userIsInRoom,
+    checkIfRoomHasPassword
 } from '../controllers/roomController';
 import { verifyToken } from '../middleware/verifyToken';
 import { Router } from 'express';
@@ -19,5 +20,6 @@ router.get('/users/:roomId', verifyToken, getUsersInRoom);
 router.get('/userInRoom/', verifyToken, userIsInRoom);
 router.get('/:roomId/code', verifyToken, getCurrentCode);
 router.get('/all', verifyToken, getAllRooms);
+router.get('/:roomId/check-password', verifyToken, checkIfRoomHasPassword);
 
 export default router;

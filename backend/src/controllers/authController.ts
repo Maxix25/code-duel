@@ -100,7 +100,6 @@ export const verifyAuth = async (
     res: Response
 ): Promise<void> => {
     const token = req.cookies.token;
-    console.log('Token:', token);
 
     if (!token) {
         res.status(400).json({ message: 'Unauthorized' });
