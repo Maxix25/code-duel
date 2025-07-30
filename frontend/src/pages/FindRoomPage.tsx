@@ -1,15 +1,13 @@
 import getAllRooms from '../api/room/getAllRooms';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Container,
-    Typography,
-    Grid,
-    Card,
-    CardContent,
-    CardActions,
-    Button
-} from '@mui/material';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Button from '@mui/material/Button';
 
 type Room = {
     id: string;

@@ -1,22 +1,20 @@
-import { FC, useState, useEffect } from 'react';
-import Editor from '@monaco-editor/react';
-import {
-    Box,
-    Button,
-    Paper,
-    Typography,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Tabs,
-    Tab,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
-    Snackbar,
-    Alert
-} from '@mui/material';
+import { FC, useState, useEffect, lazy } from 'react';
+const Editor = lazy(() => import('@monaco-editor/react'));
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import socket from '../services/socket';

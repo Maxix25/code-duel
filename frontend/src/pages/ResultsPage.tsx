@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import {
-    Box,
-    Typography,
-    Paper,
-    CircularProgress,
-    Button,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import getResult from '../api/room/getResult';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -55,7 +53,7 @@ const ResultsPage = () => {
                 p: 4,
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
+                alignItems: 'center'
             }}
         >
             <Typography variant='h4' gutterBottom>
@@ -74,7 +72,7 @@ const ResultsPage = () => {
                             sx={{
                                 mb: 2,
                                 display: 'flex',
-                                alignItems: 'center',
+                                alignItems: 'center'
                             }}
                         >
                             <Typography
