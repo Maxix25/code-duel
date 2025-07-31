@@ -297,13 +297,23 @@ export const validateRoomPassword = async (
             res.status(401).json({ error: 'Invalid user token' });
             return;
         }
-        const isPasswordCorrect = await room.comparePassword(password);
-        if (!isPasswordCorrect) {
-            console.log('Invalid password for room:', roomId);
-            res.status(403).json({ error: 'Invalid password' });
+        if (room.password && room.password !== '') {
+            const isPasswordCorrect = await room.comparePassword(password);
+            if (!isPasswordCorrect) {
+                console.log('Invalid password for room:', roomId);
+                res.status(403).json({ error: 'Invalid password' });
+                return;
+            }
+        } else {
+            console.log('Room has no password, skipping password validation');
+        }
+        console.log('Password is correct, checking if user is already in the room');
+        const isPlayerInRoom = room.players.some(player => player.player.toString() === userId.toString());
+        if (isPlayerInRoom) {
+            console.log('User is already in the room:', roomId);
+            res.status(400).json({ error: 'User is already in the room' });
             return;
         }
-        console.log('Password is correct, adding user to room');
         room.players.push({
             player: userId,
             score: 0,
