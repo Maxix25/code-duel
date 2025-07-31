@@ -1,13 +1,9 @@
 import request from 'supertest';
 import { httpServer } from '../server';
 import mongoose from 'mongoose';
-import createTestQuestion from '../testUtils/createTestQuestion';
-import getUserIdByToken from '../utils/getUserIdByToken';
-import createTestRoom from '../testUtils/createTestRoom';
 import createTestPlayer from '../testUtils/createTestPlayer';
+import createTestQuestion from '../testUtils/createTestQuestion';
 
-let userId: mongoose.Schema.Types.ObjectId | null;
-let roomId: mongoose.Schema.Types.ObjectId | null;
 let token: string;
 let cookie: string;
 
@@ -23,11 +19,7 @@ describe('Room Controller', () => {
             'password1',
             'testuser1@example.com'
         );
-        await createTestPlayer(
-            'testuser2',
-            'password2',
-            'testuser2@example.com'
-        );
+        await createTestQuestion();
         const response1 = await request(httpServer).post('/auth/login').send({
             username: 'testuser1',
             password: 'password1'
@@ -35,19 +27,6 @@ describe('Room Controller', () => {
         cookie = response1.headers['set-cookie'][0];
         token = cookie.split(';')[0].split('=')[1];
         expect(token).toBeDefined();
-        userId = getUserIdByToken(token);
-
-        const question = await createTestQuestion();
-        const room = await createTestRoom(
-            userId!.toString(),
-            question.id.toString()
-        );
-        roomId = room.id;
-        expect(roomId).toBeDefined();
-        // Empty the players array to ensure a clean state for each test
-        room.players = [];
-        await room.save();
-
         console.timeEnd('Connecting to test database');
     });
 
@@ -61,6 +40,7 @@ describe('Room Controller', () => {
     it('should create a new room', async () => {
         const response = await request(httpServer)
             .post('/room/start')
+            .send({ password: '' })
             .set('Cookie', cookie);
 
         expect(response.status).toBe(200);

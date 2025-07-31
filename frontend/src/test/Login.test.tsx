@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import LoginPage from '../pages/LoginPage';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter, BrowserRouter } from 'react-router-dom';
 
 const server = setupServer(
     http.post('/auth/login', () => {
@@ -23,9 +23,9 @@ describe('LoginPage', () => {
     afterAll(() => server.close());
     it('should render the login form', () => {
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <LoginPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/password/i)).toBeInTheDocument();

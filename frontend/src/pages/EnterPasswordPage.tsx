@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,14 +14,15 @@ import validateRoomPassword from '../api/room/validateRoomPassword';
 
 const EnterPasswordPage: React.FC = () => {
     const navigate = useNavigate();
-    const params = new URLSearchParams(window.location.search);
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
     const roomId = params.get('roomId');
 
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
 
     if (!roomId) {
-        // no room specified
+        // No room specified
         navigate('/dashboard');
         return null;
     }
