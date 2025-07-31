@@ -64,7 +64,8 @@ const RoomSchema: Schema = new Schema({
 
 RoomSchema.pre<Room>('save', async function (next) {
     // Don't hash empty passwords (for public rooms)
-    if (!this.password || this.password === '') return next();
+    if (!this.password || this.password === '' || !this.isModified('password'))
+        return next();
 
     try {
         const salt = await genSalt(10);

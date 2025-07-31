@@ -270,3 +270,50 @@ export const checkIfRoomHasPassword = async (
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+export const validateRoomPassword = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { roomId } = req.params;
+        const { password } = req.body;
+        if (!mongoose.isValidObjectId(roomId)) {
+            res.status(400).json({ error: 'Invalid room ID' });
+            return;
+        }
+        const room = await Room.findById(roomId);
+        if (!room) {
+            res.status(404).json({ error: 'Room not found' });
+            return;
+        }
+        if (room.status === 'playing') {
+            res.status(403).json({ error: 'Room is already running' });
+            return;
+        }
+        // Password is correct, add user to room
+        const userId = getUserIdByToken(req.cookies.token);
+        if (!userId) {
+            res.status(401).json({ error: 'Invalid user token' });
+            return;
+        }
+        const isPasswordCorrect = await room.comparePassword(password);
+        if (!isPasswordCorrect) {
+            console.log('Invalid password for room:', roomId);
+            res.status(403).json({ error: 'Invalid password' });
+            return;
+        }
+        console.log('Password is correct, adding user to room');
+        room.players.push({
+            player: userId,
+            score: 0,
+            ready: false,
+            current_code: ''
+        });
+        await room.save();
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Error validating room password:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};

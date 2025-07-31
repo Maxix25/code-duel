@@ -32,8 +32,7 @@ const roomSetup = async (
     setOutput: Dispatch<SetStateAction<SolutionResult[] | string>>,
     setIsRunning: Dispatch<SetStateAction<boolean>>,
     setReadyButton: Dispatch<SetStateAction<boolean>>,
-    navigate: NavigateFunction,
-    password: string | undefined
+    navigate: NavigateFunction
 ) => {
     // Clear previous socket listeners to avoid memory leaks
     socket.off('connect');
@@ -49,16 +48,14 @@ const roomSetup = async (
         console.log('Connected to socket server');
         socket.emit('join_room', {
             roomId,
-            user_token: token,
-            password
+            user_token: token
         });
     });
     socket.on('reconnect', () => {
         console.log('Reconnected to socket server');
         socket.emit('join_room', {
             roomId,
-            user_token: token,
-            password
+            user_token: token
         });
     });
     socket.connect();

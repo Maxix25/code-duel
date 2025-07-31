@@ -9,11 +9,7 @@ import { JWT_SECRET } from '../../utils/jwtHelper';
 const registerJoinRoom = (io: Server, socket: Socket) => {
     socket.on(
         'join_room',
-        async (data: {
-            roomId: string;
-            user_token: string;
-            password: string;
-        }) => {
+        async (data: { roomId: string; user_token: string }) => {
             if (!mongoose.isValidObjectId(data.roomId)) {
                 socket.emit('error', 'Invalid room id');
                 return;
@@ -29,20 +25,6 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 socket.emit('error', 'Invalid token');
                 return;
             }
-            // Check if user is not in the room and if the room has a password
-            if (
-                !room.players.some(
-                    (p) => p.player.toString() === userId.toString()
-                ) &&
-                room.password &&
-                room.password !== ''
-            ) {
-                const isValid = await room.comparePassword(data.password);
-                if (!isValid) {
-                    socket.emit('error', 'Incorrect password');
-                    return;
-                }
-            }
 
             const question = await Question.findById(room.problemId);
 
@@ -51,6 +33,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 return;
             }
             // Check if the room is already running and if user is not in the room
+            console.log(room.players);
             if (
                 room.status === 'playing' &&
                 !room.players.some(
@@ -58,6 +41,9 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 )
             ) {
                 socket.emit('error', 'Room is already running');
+                console.log(
+                    `Player ${socket.id} tried to join a running room ${data.roomId}`
+                );
                 return;
             }
             // Check if the token is valid

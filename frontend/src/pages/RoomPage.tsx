@@ -68,29 +68,20 @@ const Room: FC = () => {
             try {
                 const { inRoom, roomId: userRoomId } =
                     await checkIfUserIsInRoom();
-                let passwordArg: string | undefined;
                 // If user not in this room, check for password requirement
                 if (!inRoom || userRoomId !== roomId) {
                     const hasPassword = await checkIfRoomHasPassword(roomId);
                     if (hasPassword) {
-                        const pwd = prompt('Enter room password:');
-                        if (!pwd) {
-                            console.warn(
-                                'No password entered, aborting room join'
-                            );
-                            return;
-                        }
-                        passwordArg = pwd;
+                        navigate(`/enter-password?roomId=${roomId}`);
+                        return;
                     }
                 }
-                // Proceed with room setup, passing passwordArg if defined
                 roomSetup(
                     roomId,
                     setOutput,
                     setIsRunning,
                     setReadyButton,
-                    navigate,
-                    passwordArg
+                    navigate
                 );
             } catch (error) {
                 console.error('Error during room setup:', error);
