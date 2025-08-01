@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid';
 import { useTheme, alpha } from '@mui/material/styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import SearchIcon from '@mui/icons-material/Search';
 import createRoom from '../api/room/createRoom';
 import { useNavigate } from 'react-router-dom';
 import checkIfUserIsInRoom from '../api/room/checkIfUserIsInRoom';
@@ -82,7 +83,7 @@ const DashboardPage: React.FC = () => {
                     Dashboard
                 </Typography>
                 <Grid container spacing={5} justifyContent='center'>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
@@ -151,7 +152,7 @@ const DashboardPage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
@@ -160,9 +161,8 @@ const DashboardPage: React.FC = () => {
                                 <Stack spacing={2} alignItems='center'>
                                     <Box
                                         sx={{
-                                            bgcolor:
-                                                theme.palette.secondary.main,
-                                            color: theme.palette.secondary
+                                            bgcolor: theme.palette.info.main,
+                                            color: theme.palette.info
                                                 .contrastText,
                                             borderRadius: '50%',
                                             width: 56,
@@ -174,34 +174,142 @@ const DashboardPage: React.FC = () => {
                                             boxShadow: 2
                                         }}
                                     >
-                                        <MeetingRoomIcon fontSize='large' />
+                                        <SearchIcon fontSize='large' />
                                     </Box>
                                     <Typography
                                         variant='h6'
                                         component='h2'
                                         fontWeight='bold'
                                     >
-                                        Join Existing Room
+                                        Find Room
                                     </Typography>
-                                    {isInRoom ? (
-                                        <Button
-                                            variant='contained'
-                                            color='secondary'
-                                            fullWidth
-                                            onClick={() =>
-                                                navigate(
-                                                    `/room?roomId=${currentRoomId}`
-                                                )
-                                            }
+                                    <Typography
+                                        variant='body1'
+                                        sx={{ mb: 2, textAlign: 'center' }}
+                                    >
+                                        Browse available rooms to join.
+                                    </Typography>
+
+                                    <Button
+                                        variant='contained'
+                                        color='info'
+                                        onClick={() => navigate('/find-room')}
+                                        size='large'
+                                        sx={{
+                                            fontWeight: 600,
+                                            fontSize: 16,
+                                            borderRadius: 3,
+                                            width: '100%'
+                                        }}
+                                    >
+                                        Find Room
+                                    </Button>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Card
+                            elevation={6}
+                            sx={{
+                                borderRadius: 4,
+                                p: 3,
+                                boxShadow: 8,
+                                minHeight: { xs: 'auto', md: 420 },
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}
+                        >
+                            <CardContent
+                                sx={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column'
+                                }}
+                            >
+                                <Stack
+                                    spacing={2}
+                                    alignItems='center'
+                                    sx={{
+                                        flex: 1,
+                                        justifyContent: 'space-between'
+                                    }}
+                                >
+                                    <Box sx={{ textAlign: 'center' }}>
+                                        <Box
                                             sx={{
-                                                mt: 2,
-                                                fontWeight: 600,
-                                                fontSize: 16,
-                                                borderRadius: 3
+                                                bgcolor:
+                                                    theme.palette.secondary
+                                                        .main,
+                                                color: theme.palette.secondary
+                                                    .contrastText,
+                                                borderRadius: '50%',
+                                                width: 56,
+                                                height: 56,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                mb: 2,
+                                                boxShadow: 2,
+                                                mx: 'auto'
                                             }}
                                         >
-                                            Go to Room (ID: {currentRoomId})
-                                        </Button>
+                                            <MeetingRoomIcon fontSize='large' />
+                                        </Box>
+                                        <Typography
+                                            variant='h6'
+                                            component='h2'
+                                            fontWeight='bold'
+                                            sx={{ mb: 1 }}
+                                        >
+                                            Join Existing Room
+                                        </Typography>
+                                    </Box>
+                                    {isInRoom ? (
+                                        <Box sx={{ width: '100%', mt: 2 }}>
+                                            <Typography
+                                                variant='body2'
+                                                sx={{
+                                                    mb: 1,
+                                                    textAlign: 'center',
+                                                    color: 'text.secondary'
+                                                }}
+                                            >
+                                                Currently in room:
+                                            </Typography>
+                                            <Typography
+                                                variant='body1'
+                                                sx={{
+                                                    mb: 2,
+                                                    textAlign: 'center',
+                                                    fontWeight: 'bold',
+                                                    fontSize: {
+                                                        xs: '0.9rem',
+                                                        sm: '1rem'
+                                                    },
+                                                    wordBreak: 'break-all'
+                                                }}
+                                            >
+                                                {currentRoomId}
+                                            </Typography>
+                                            <Button
+                                                variant='contained'
+                                                color='secondary'
+                                                fullWidth
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/room?roomId=${currentRoomId}`
+                                                    )
+                                                }
+                                                sx={{
+                                                    fontWeight: 600,
+                                                    fontSize: 16,
+                                                    borderRadius: 3
+                                                }}
+                                            >
+                                                Go to Room
+                                            </Button>
+                                        </Box>
                                     ) : (
                                         <Box
                                             component='form'
