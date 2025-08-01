@@ -33,7 +33,6 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 return;
             }
             // Check if the room is already running and if user is not in the room
-            console.log(room.players);
             if (
                 room.status === 'playing' &&
                 !room.players.some(
@@ -41,9 +40,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 )
             ) {
                 socket.emit('error', 'Room is already running');
-                console.log(
-                    `Player ${socket.id} tried to join a running room ${data.roomId}`
-                );
+
                 return;
             }
             // Check if the token is valid
@@ -83,6 +80,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
             // Join the room in socket.io
             socket.join(data.roomId);
             if (room.status === 'waiting' && room.players.length >= 2) {
+                console.log(`Room ${data.roomId} is ready to start`);
                 io.to(data.roomId).emit('add_ready_button');
             }
             console.log(`Player ${socket.id} joined room ${data.roomId}`);
