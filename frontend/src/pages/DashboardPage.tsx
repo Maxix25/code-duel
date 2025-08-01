@@ -19,6 +19,7 @@ const DashboardPage: React.FC = () => {
     const [roomId, setRoomId] = useState('');
     const [isInRoom, setIsInRoom] = useState(false);
     const [currentRoomId, setCurrentRoomId] = useState<string>('');
+    const [roomPassword, setRoomPassword] = useState<string>('');
     const navigate = useNavigate();
     useEffect(() => {
         const fetchUserRoomStatus = async () => {
@@ -38,7 +39,7 @@ const DashboardPage: React.FC = () => {
     }, []);
 
     const handleCreateRoom = async () => {
-        const response = await createRoom();
+        const response = await createRoom(roomPassword);
         if (response.status === 400) {
             alert(
                 'Error creating room: Already in room with ID ' +
@@ -118,6 +119,19 @@ const DashboardPage: React.FC = () => {
                                     >
                                         Start a new 1v1 code duel.
                                     </Typography>
+
+                                    <TextField
+                                        margin='normal'
+                                        fullWidth
+                                        type='password'
+                                        label='Room Password'
+                                        value={roomPassword}
+                                        onChange={(e) =>
+                                            setRoomPassword(e.target.value)
+                                        }
+                                        sx={{ mb: 2 }}
+                                    />
+
                                     <Button
                                         variant='contained'
                                         color='primary'

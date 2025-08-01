@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import RegisterPage from '../pages/RegisterPage';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter, BrowserRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -23,9 +23,9 @@ describe('RegisterPage', () => {
     afterAll(() => server.close());
     it('should render the registration form', () => {
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <RegisterPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -34,9 +34,9 @@ describe('RegisterPage', () => {
 
     it('should show error when passwords do not match', () => {
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <RegisterPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         const passwordInput = screen.getAllByLabelText(/password/i)[0];
         const confirmPasswordInput = screen.getAllByLabelText(/password/i)[1];

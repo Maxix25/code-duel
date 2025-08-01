@@ -1,5 +1,4 @@
 import { FC, useState, useEffect, lazy } from 'react';
-const Editor = lazy(() => import('@monaco-editor/react'));
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -25,6 +24,9 @@ import handlers from '../handlers/roomPageHandlers';
 import getToken from '../api/auth/getToken';
 import getCurrentCode from '../api/room/getCurrentCode';
 import getQuestion from '../api/room/getQuestion';
+import checkIfRoomHasPassword from '../api/room/checkIfRoomHasPassword';
+import checkIfUserIsInRoom from '../api/room/checkIfUserIsInRoom';
+const Editor = lazy(() => import('@monaco-editor/react'));
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', monaco: 'python' },
@@ -62,8 +64,34 @@ const Room: FC = () => {
     const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
-        roomSetup(roomId, setOutput, setIsRunning, setReadyButton, navigate);
+        (async () => {
+            try {
+                const { inRoom, roomId: userRoomId } =
+                    await checkIfUserIsInRoom();
+                // If user not in this room, check for password requirement
+                if (!inRoom || userRoomId !== roomId) {
+                    const hasPassword = await checkIfRoomHasPassword(roomId);
+                    if (hasPassword) {
+                        navigate(`/enter-password?roomId=${roomId}`);
+                        return;
+                    }
+                }
+                roomSetup(
+                    roomId,
+                    setOutput,
+                    setIsRunning,
+                    setReadyButton,
+                    navigate
+                );
+            } catch (error) {
+                console.error('Error during room setup:', error);
+                navigate('/dashboard');
+            }
+        })();
+        socket.off('start_game');
+        socket.off('rejoin_game');
         socket.on('start_game', (question) => {
+            console.log('Game started:', question);
             setProblemStatement(question.question);
             setCode(question.startingCode);
             setCanSubmit(true); // Enable submit button when game starts

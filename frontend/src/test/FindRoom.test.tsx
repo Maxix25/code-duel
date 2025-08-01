@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import FindRoomPage from '../pages/FindRoomPage';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 const server = setupServer(
     http.get('/room/all', () => {
@@ -29,18 +29,18 @@ describe('FindRoomPage', () => {
 
     it('should render the FindRoomPage', () => {
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <FindRoomPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         expect(screen.getByText(/available rooms/i)).toBeInTheDocument();
     });
 
     it('should fetch and display rooms', async () => {
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <FindRoomPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         expect(await screen.findByText('Room 1')).toBeInTheDocument();
         expect(screen.getByText('Room 2')).toBeInTheDocument();
@@ -54,9 +54,9 @@ describe('FindRoomPage', () => {
         );
 
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <FindRoomPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         expect(
             await screen.findByText(/no rooms available at the moment/i)
@@ -64,9 +64,9 @@ describe('FindRoomPage', () => {
     });
     it('should find join buttons', async () => {
         render(
-            <BrowserRouter>
+            <MemoryRouter>
                 <FindRoomPage />
-            </BrowserRouter>
+            </MemoryRouter>
         );
         const joinButtons = await screen.findAllByRole('button', {
             name: /join/i

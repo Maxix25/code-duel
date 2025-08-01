@@ -13,6 +13,7 @@ const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const ResultsPage = lazy(() => import('./pages/ResultsPage'));
 const RoomPage = lazy(() => import('./pages/RoomPage'));
 const FindRoomPage = lazy(() => import('./pages/FindRoomPage'));
+const EnterPasswordPage = lazy(() => import('./pages/EnterPasswordPage'));
 
 const Loader = () => {
     return (
@@ -65,6 +66,14 @@ function App() {
                                 element={
                                     <ProtectedRoute>
                                         <FindRoomPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path='enter-password'
+                                element={
+                                    <ProtectedRoute>
+                                        <EnterPasswordPage />
                                     </ProtectedRoute>
                                 }
                             />

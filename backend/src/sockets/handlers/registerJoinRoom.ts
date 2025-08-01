@@ -16,24 +16,24 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
             }
             const room = await Room.findById(data.roomId);
             const userId = getUserIdByToken(data.user_token);
+            let appendPlayer = true;
             if (!room) {
-                console.log('Room not found');
                 socket.emit('error', 'Room not found');
                 return;
             }
             if (!userId) {
-                console.log('Invalid token');
                 socket.emit('error', 'Invalid token');
                 return;
             }
+
             const question = await Question.findById(room.problemId);
 
             if (!question) {
-                console.log('Question not found');
                 socket.emit('error', 'Question not found');
                 return;
             }
             // Check if the room is already running and if user is not in the room
+            console.log(room.players);
             if (
                 room.status === 'playing' &&
                 !room.players.some(
@@ -41,6 +41,9 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 )
             ) {
                 socket.emit('error', 'Room is already running');
+                console.log(
+                    `Player ${socket.id} tried to join a running room ${data.roomId}`
+                );
                 return;
             }
             // Check if the token is valid
@@ -49,7 +52,6 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                     username: string;
                 };
             } catch {
-                console.log('JWT verification failed');
                 socket.emit('error', 'Invalid token');
                 return;
             }
@@ -61,24 +63,25 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                     .includes(userId.toString())
             ) {
                 // User is already in the room, just join socket
-                socket.join(data.roomId);
+                appendPlayer = false;
                 console.log(
                     `Player ${socket.id} re-joined room ${data.roomId}`
                 );
                 if (room.status === 'playing') {
                     socket.emit('rejoin_game', question);
                 }
-                return;
             }
-            room.players.push({
-                player: userId as mongoose.Schema.Types.ObjectId,
-                score: 0,
-                ready: false,
-                current_code: question.startingCode
-            });
-            await room.save();
+            if (appendPlayer) {
+                room.players.push({
+                    player: userId as mongoose.Schema.Types.ObjectId,
+                    score: 0,
+                    ready: false,
+                    current_code: question.startingCode
+                });
+                await room.save();
+            }
+            // Join the room in socket.io
             socket.join(data.roomId);
-            // If the room is waiting and has at least 2 players, emit add_ready_button
             if (room.status === 'waiting' && room.players.length >= 2) {
                 io.to(data.roomId).emit('add_ready_button');
             }

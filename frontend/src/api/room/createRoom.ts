@@ -1,16 +1,14 @@
 import api from '../api';
-import getToken from '../auth/getToken';
 
 export interface Response {
     status: number;
     roomId: string | unknown;
 }
 
-const createRoom = async (): Promise<Response> => {
+const createRoom = async (password: string): Promise<Response> => {
     try {
-        const user_token = await getToken();
         const response = await api.post('/room/start', {
-            user_token
+            password
         });
         console.log(response.status);
         return { status: response.status, roomId: response.data.roomId };
