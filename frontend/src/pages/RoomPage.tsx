@@ -130,6 +130,9 @@ const Room: FC = () => {
                     }
                 });
         }
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
     return (
