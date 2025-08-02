@@ -9,7 +9,8 @@ import {
     createTheme,
     ThemeProvider as MuiThemeProvider
 } from '@mui/material/styles';
-import type { PaletteMode } from '@mui/material';
+
+type PaletteMode = 'light' | 'dark';
 
 interface ThemeContextType {
     toggleTheme: () => void;

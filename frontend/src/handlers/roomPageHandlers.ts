@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectChangeEvent } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { LanguageName } from '../pages/RoomPage';
 import socket from '../services/socket';
 import { NavigateFunction } from 'react-router-dom';

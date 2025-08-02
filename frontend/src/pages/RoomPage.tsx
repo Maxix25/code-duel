@@ -44,12 +44,6 @@ const Room: FC = () => {
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
     const navigate = useNavigate();
-    if (!roomId) {
-        // TODO: Add message to user about missing room ID
-        navigate('/dashboard');
-        return;
-    }
-
     const [users, setUsers] = useState<string[]>([]);
     const [usersOpen, setUsersOpen] = useState<boolean>(false);
     const [copied, setCopied] = useState<boolean>(false);
@@ -66,9 +60,13 @@ const Room: FC = () => {
     const [readyButton, setReadyButton] = useState<boolean>(false);
     const [canSubmit, setCanSubmit] = useState<boolean>(false); // Default: cannot submit
     const [token, setToken] = useState<string | null>(null);
-
     useEffect(() => {
         (async () => {
+            if (!roomId) {
+                // TODO: Add message to user about missing room ID
+                navigate('/dashboard');
+                return;
+            }
             try {
                 const { inRoom, roomId: userRoomId } =
                     await checkIfUserIsInRoom();
@@ -81,7 +79,7 @@ const Room: FC = () => {
                     }
                 }
                 roomSetup(
-                    roomId,
+                    roomId!,
                     setOutput,
                     setIsRunning,
                     setReadyButton,
@@ -92,6 +90,7 @@ const Room: FC = () => {
                 navigate('/dashboard');
             }
         })();
+
         socket.off('start_game');
         socket.off('rejoin_game');
         socket.on('start_game', (question) => {
@@ -112,7 +111,7 @@ const Room: FC = () => {
                 console.error('Error fetching token:', error);
                 navigate('/login');
             });
-        getCurrentCode(roomId)
+        getCurrentCode(roomId!)
             .then((currentCode) => {
                 setCode(currentCode.code);
             })
@@ -121,7 +120,7 @@ const Room: FC = () => {
             });
         // Check that the problem statement is set correctly
         if (problemStatement === 'Waiting for game to start...') {
-            getQuestion(roomId)
+            getQuestion(roomId!)
                 .then((question) => {
                     setProblemStatement(question.question);
                 })
@@ -137,7 +136,12 @@ const Room: FC = () => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [navigate, problemStatement, roomId]);
+    if (!roomId) {
+        // TODO: Add message to user about missing room ID
+        navigate('/dashboard');
+        return;
+    }
 
     return (
         <>
@@ -178,7 +182,7 @@ const Room: FC = () => {
                         sx={{ minWidth: 0, color: 'white', mb: 1, ml: 1 }}
                         onClick={() =>
                             handlers.handleOpenUsers(
-                                roomId,
+                                roomId || '',
                                 setUsers,
                                 setUsersOpen
                             )
@@ -232,7 +236,10 @@ const Room: FC = () => {
                                 color='primary'
                                 sx={{ ml: 2 }}
                                 onClick={() =>
-                                    handlers.handleCopyRoomId(roomId, setCopied)
+                                    handlers.handleCopyRoomId(
+                                        roomId!,
+                                        setCopied
+                                    )
                                 }
                                 disabled={!roomId}
                             >
@@ -256,14 +263,12 @@ const Room: FC = () => {
                                         )
                                     }
                                 >
-                                    {Object.entries(LANGUAGES).map(
-                                        ([name, _langData]) => (
-                                            <MenuItem key={name} value={name}>
-                                                {name.charAt(0).toUpperCase() +
-                                                    name.slice(1)}
-                                            </MenuItem>
-                                        )
-                                    )}
+                                    {Object.entries(LANGUAGES).map(([name]) => (
+                                        <MenuItem key={name} value={name}>
+                                            {name.charAt(0).toUpperCase() +
+                                                name.slice(1)}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                             <Button
@@ -276,7 +281,7 @@ const Room: FC = () => {
                                         return;
                                     }
                                     handlers.handleLeaveRoom(
-                                        roomId,
+                                        roomId!,
                                         navigate,
                                         token
                                     );
@@ -296,7 +301,7 @@ const Room: FC = () => {
                                             return;
                                         }
                                         handlers.handleReadyButton(
-                                            roomId,
+                                            roomId!,
                                             setReadyButton,
                                             token
                                         );
@@ -327,7 +332,7 @@ const Room: FC = () => {
                                     value,
                                     setCode,
                                     setIsSaving,
-                                    roomId,
+                                    roomId!,
                                     token
                                 );
                             }}
@@ -350,7 +355,7 @@ const Room: FC = () => {
                                 setIsRunning,
                                 setOutput,
                                 setActiveTab,
-                                roomId,
+                                roomId!,
                                 code,
                                 token
                             );
