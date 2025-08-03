@@ -40,11 +40,6 @@ const Room: FC = () => {
     const [token, setToken] = useState<string | null>(null);
     useEffect(() => {
         (async () => {
-            if (!roomId) {
-                // TODO: Add message to user about missing room ID
-                navigate('/dashboard');
-                return;
-            }
             try {
                 const { inRoom, roomId: userRoomId } =
                     await checkIfUserIsInRoom();
