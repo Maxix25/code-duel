@@ -1,42 +1,42 @@
 name: Backend CI
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                mongodb-version: [7]
-        defaults:
-            run:
-                working-directory: ./backend
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-            - name: Install pnpm
-              uses: pnpm/action-setup@v4
-              with:
-                  version: 10
-            - name: Install dependencies
-              run: pnpm install
-            - name: Start MongoDB
-              uses: supercharge/mongodb-github-action@1.6.0
-              with:
-                  mongodb-version: ${{ matrix.mongodb-version }}
-            - name: Run tests
-              run: pnpm test
-            - name: Run linter
-              run: pnpm lint
-            - name: Run type check
-              run: pnpm run typecheck
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mongodb-version: [7]
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install dependencies
+        run: pnpm install
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+      - name: Run tests
+        run: pnpm test
+      - name: Run linter
+        run: pnpm lint
+      - name: Run type check
+        run: pnpm run typecheck
