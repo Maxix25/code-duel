@@ -1,6 +1,6 @@
 import React from 'react';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { LanguageName } from '../pages/RoomPage';
+import { LanguageName } from '../components/CodeEditor';
 import socket from '../services/socket';
 import { NavigateFunction } from 'react-router-dom';
 import getUsersInRoom from '../api/room/getUsersInRoom';
