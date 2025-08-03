@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, lazy } from 'react';
+import { FC, useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -26,11 +26,15 @@ import getCurrentCode from '../api/room/getCurrentCode';
 import getQuestion from '../api/room/getQuestion';
 import checkIfRoomHasPassword from '../api/room/checkIfRoomHasPassword';
 import checkIfUserIsInRoom from '../api/room/checkIfUserIsInRoom';
-const Editor = lazy(() => import('@monaco-editor/react'));
+import CodeMirror from '@uiw/react-codemirror';
+import { EditorView } from '@uiw/react-codemirror';
+import { oneDark } from '@uiw/react-codemirror';
+import { python } from '@codemirror/lang-python';
+import { javascript } from '@codemirror/lang-javascript';
 
 const LANGUAGES = {
-    python: { id: 71, name: 'Python', monaco: 'python' },
-    javascript: { id: 63, name: 'JavaScript', monaco: 'javascript' }
+    python: { id: 71, name: 'Python', codemirror: python() },
+    javascript: { id: 63, name: 'JavaScript', codemirror: javascript() }
 };
 
 export type LanguageName = keyof typeof LANGUAGES;
@@ -311,9 +315,8 @@ const Room: FC = () => {
                             minHeight: '300px'
                         }}
                     >
-                        <Editor
+                        <CodeMirror
                             height='100%'
-                            language={LANGUAGES[selectedLanguage].monaco}
                             value={code}
                             onChange={(value) => {
                                 if (!token) {
@@ -328,11 +331,12 @@ const Room: FC = () => {
                                     token
                                 );
                             }}
-                            theme='vs-dark'
-                            options={{
-                                minimap: { enabled: false },
-                                readOnly: !canSubmit
-                            }}
+                            extensions={[
+                                EditorView.editable.of(canSubmit),
+                                LANGUAGES[selectedLanguage].codemirror
+                            ]}
+                            theme={oneDark}
+                            style={{ height: '100%' }}
                         />
                     </Box>
                     <Button
