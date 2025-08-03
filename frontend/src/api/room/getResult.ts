@@ -6,9 +6,16 @@ import api from '../api';
  * @returns {Promise<any>} - A promise that resolves to the results data.
  */
 
-const getResult = async (roomId: string): Promise<any> => {
+interface RoomResult {
+    results: {
+        player: string;
+        score: number;
+    }[];
+}
+
+const getResult = async (roomId: string): Promise<RoomResult> => {
     try {
-        const response = await api.get(`/room/results/${roomId}`);
+        const response = await api.get<RoomResult>(`/room/results/${roomId}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching results:', error);

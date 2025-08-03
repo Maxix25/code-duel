@@ -67,6 +67,14 @@ const HomePage: React.FC = () => {
     const [featuresRef, featuresVisible] = useScrollReveal();
     const [ctaRef, ctaVisible] = useScrollReveal();
 
+    // Animation hooks for feature cards
+    const [feature0Ref, feature0Visible] = useScrollReveal(0.15);
+    const [feature1Ref, feature1Visible] = useScrollReveal(0.15);
+    const [feature2Ref, feature2Visible] = useScrollReveal(0.15);
+
+    const featureRefs = [feature0Ref, feature1Ref, feature2Ref];
+    const featureVisibles = [feature0Visible, feature1Visible, feature2Visible];
+
     return (
         <Box
             sx={{
@@ -206,7 +214,8 @@ const HomePage: React.FC = () => {
                 </Typography>
                 <Grid container spacing={5} justifyContent='center'>
                     {features.map((feature, index) => {
-                        const [cardRef, cardVisible] = useScrollReveal(0.15);
+                        const cardRef = featureRefs[index];
+                        const cardVisible = featureVisibles[index];
                         return (
                             <Grid
                                 size={{ xs: 12, sm: 6, md: 4 }}

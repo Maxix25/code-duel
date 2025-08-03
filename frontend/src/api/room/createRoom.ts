@@ -17,7 +17,8 @@ const createRoom = async (password: string): Promise<Response> => {
             typeof error === 'object' &&
             error !== null &&
             'response' in error &&
-            (error as any).response?.status === 400
+            (error as { response?: { status?: number } }).response?.status ===
+                400
         ) {
             const err = error as {
                 response: { data: { roomId: string | unknown } };

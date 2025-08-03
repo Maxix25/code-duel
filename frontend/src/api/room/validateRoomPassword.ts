@@ -1,5 +1,5 @@
 import api from '../api';
-import { AxiosError, isAxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 
 const validateRoomPassword = async (
     roomId: string,
@@ -12,7 +12,7 @@ const validateRoomPassword = async (
         });
         console.log('Password validation response:', response.data);
         return response.data.success;
-    } catch (error: AxiosError | unknown) {
+    } catch (error) {
         if (isAxiosError(error) && error.response?.data.error) {
             setError(error.response.data.error);
             return false;

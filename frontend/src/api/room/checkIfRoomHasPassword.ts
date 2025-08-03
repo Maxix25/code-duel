@@ -1,6 +1,12 @@
 import api from '../api';
 
-const checkIfRoomHasPassword = async (roomId: string): Promise<boolean> => {
+const checkIfRoomHasPassword = async (
+    roomId: string | null
+): Promise<boolean> => {
+    if (!roomId) {
+        console.error('Room ID is null or undefined');
+        return false;
+    }
     try {
         const response = await api.get(`/room/${roomId}/check-password`);
         console.log('Room password check response:', response.data);
