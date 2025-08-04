@@ -8,10 +8,15 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
+import Lock from '@mui/icons-material/Lock';
+import LockOpen from '@mui/icons-material/LockOpen';
 
 type Room = {
     id: string;
     name: string;
+    maxCapacity: number;
+    num_players: number;
+    visibility: 'public' | 'private';
 };
 
 const FindRoomPage = () => {
@@ -53,14 +58,41 @@ const FindRoomPage = () => {
                                 }}
                             >
                                 <CardContent sx={{ flexGrow: 1 }}>
-                                    <Typography variant='h6' component='div'>
+                                    <Typography
+                                        variant='h6'
+                                        component='div'
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1
+                                        }}
+                                    >
                                         {room.name}
+                                        {room.visibility === 'private' ? (
+                                            <Lock
+                                                fontSize='small'
+                                                color='action'
+                                            />
+                                        ) : (
+                                            <LockOpen
+                                                fontSize='small'
+                                                color='action'
+                                            />
+                                        )}
                                     </Typography>
                                     <Typography
                                         variant='body2'
                                         color='textSecondary'
                                     >
                                         ID: {room.id}
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='textSecondary'
+                                        sx={{ mt: 1 }}
+                                    >
+                                        Players: {room.num_players}/
+                                        {room.maxCapacity}
                                     </Typography>
                                 </CardContent>
                                 <CardActions>

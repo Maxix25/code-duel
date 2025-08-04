@@ -25,6 +25,11 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 socket.emit('error', 'Invalid token');
                 return;
             }
+            // Check if the room admits one more player
+            if (room.players.length + 1 > room.maxCapacity) {
+                socket.emit('error', 'Room is full');
+                return;
+            }
 
             const question = await Question.findById(room.problemId);
 
