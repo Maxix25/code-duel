@@ -32,6 +32,13 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                     >
                         Dashboard
                     </Button>
+                    <Button
+                        color='inherit'
+                        component={RouterLink}
+                        to='/profile-update'
+                    >
+                        Profile
+                    </Button>
                     <Button color='inherit' onClick={onLogout}>
                         Logout
                     </Button>

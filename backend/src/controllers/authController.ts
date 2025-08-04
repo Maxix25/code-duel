@@ -4,6 +4,7 @@ import { generateToken } from '../utils/jwtHelper';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/jwtHelper';
+import getUserIdByToken from '../utils/getUserIdByToken';
 
 export const loginPlayer = async (
     req: Request,
@@ -94,6 +95,97 @@ export const registerPlayer = async (
         return;
     }
 };
+
+export const updatePlayer = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    // TODO: Admit profile picture upload
+    const { username, password, email, old_password } = req.body;
+    const playerId = getUserIdByToken(req.cookies.token);
+
+    if (!playerId) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(playerId.toString())) {
+        res.status(400).json({ message: 'Invalid player ID' });
+        return;
+    }
+
+    if (!username) {
+        res.status(400).json({ message: 'Username is required' });
+        return;
+    }
+    if (password && !old_password) {
+        res.status(400).json({ message: 'Old password is required for password change' });
+        return;
+    }
+
+    try {
+        const player = await Player.findById(playerId);
+        // Check if old password matches the current password
+        if (!player) {
+            res.status(404).json({ message: 'Player not found' });
+            return;
+        }
+        if (old_password && password) {
+            if (!(await player.comparePassword(old_password))) {
+                res.status(403).json({ message: 'Old password is incorrect' });
+                return;
+            }
+        }
+
+
+        player.username = username;
+        if (password) player.password = password;
+        player.email = email;
+
+        await player.save();
+
+        res.status(200).json({
+            message: 'Player updated successfully',
+            player
+        });
+    } catch (error) {
+        console.error('Update error:', error);
+        res.status(500).json({ message: 'Server error while updating player' });
+    }
+}
+
+export const getProfile = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const playerId = getUserIdByToken(req.cookies.token);
+
+    if (!playerId) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+    }
+
+    try {
+        const player = await Player.findById(playerId).select('-password');
+
+        if (!player) {
+            res.status(404).json({ message: 'Player not found' });
+            return;
+        }
+
+        res.status(200).json({
+            message: 'Profile retrieved successfully',
+            player: {
+                id: player._id,
+                username: player.username,
+                email: player.email
+            }
+        });
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ message: 'Server error while retrieving profile' });
+    }
+}
 
 export const verifyAuth = async (
     req: Request,

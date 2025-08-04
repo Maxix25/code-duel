@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ProfileUpdate from './pages/ProfileUpdate';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CustomThemeProvider } from './context/ThemeContext';
 import Box from '@mui/material/Box';
@@ -37,6 +38,14 @@ function App() {
                             <Route index element={<HomePage />} />
                             <Route path='login' element={<LoginPage />} />
                             <Route path='register' element={<RegisterPage />} />
+                            <Route
+                                path='profile-update'
+                                element={
+                                    <ProtectedRoute>
+                                        <ProfileUpdate />
+                                    </ProtectedRoute>
+                                }
+                            />
                             <Route
                                 path='dashboard'
                                 element={
