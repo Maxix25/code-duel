@@ -165,7 +165,6 @@ export const getAllRooms = async (
         const rooms = await Room.find({ status: 'waiting' })
             .populate('players.player', 'username')
             .select('id players status problemId name maxCapacity password');
-        console.log(rooms);
         const formattedRooms = rooms.map((room) => ({
             id: room.id,
             num_players: room.players.length,
@@ -175,7 +174,6 @@ export const getAllRooms = async (
             visibility:
                 room.password === '' || !room.password ? 'public' : 'private'
         }));
-        console.log('Available rooms:', formattedRooms);
         res.status(200).json(formattedRooms);
     } catch (error) {
         console.error('Error fetching all rooms:', error);

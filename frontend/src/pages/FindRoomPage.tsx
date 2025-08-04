@@ -27,7 +27,6 @@ const FindRoomPage = () => {
         const fetchRooms = async () => {
             try {
                 const allRooms = await getAllRooms();
-                console.log(allRooms);
                 setRooms(allRooms);
             } catch (error) {
                 console.error('Failed to fetch rooms:', error);
