@@ -70,6 +70,8 @@ const roomSetup = async (
             navigate('/dashboard');
         } else if (data === 'Room is already running') {
             navigate('/dashboard');
+        } else if (data === 'Room is full') {
+            navigate('/dashboard');
         }
         console.log('Error:', data);
     });

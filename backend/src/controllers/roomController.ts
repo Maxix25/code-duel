@@ -164,14 +164,18 @@ export const getAllRooms = async (
     try {
         const rooms = await Room.find({ status: 'waiting' })
             .populate('players.player', 'username')
-            .select('id players status problemId name');
+            .select('id players status problemId name maxCapacity password');
+        console.log(rooms);
         const formattedRooms = rooms.map((room) => ({
             id: room.id,
             num_players: room.players.length,
             status: room.status,
-            problemId: room.problemId,
-            name: room.name
+            maxCapacity: room.maxCapacity,
+            name: room.name,
+            visibility:
+                room.password === '' || !room.password ? 'public' : 'private'
         }));
+        console.log('Available rooms:', formattedRooms);
         res.status(200).json(formattedRooms);
     } catch (error) {
         console.error('Error fetching all rooms:', error);
@@ -307,18 +311,27 @@ export const validateRoomPassword = async (
         } else {
             console.log('Room has no password, skipping password validation');
         }
-        console.log('Password is correct, checking if user is already in the room');
-        const isPlayerInRoom = room.players.some(player => player.player.toString() === userId.toString());
+        console.log(
+            'Password is correct, checking if user is already in the room'
+        );
+        const isPlayerInRoom = room.players.some(
+            (player) => player.player.toString() === userId.toString()
+        );
         if (isPlayerInRoom) {
             console.log('User is already in the room:', roomId);
             res.status(400).json({ error: 'User is already in the room' });
+            return;
+        }
+        const question = await Question.findById(room.problemId);
+        if (!question) {
+            res.status(404).json({ error: 'Question not found' });
             return;
         }
         room.players.push({
             player: userId,
             score: 0,
             ready: false,
-            current_code: ''
+            current_code: question.startingCode
         });
         await room.save();
         res.status(200).json({ success: true });

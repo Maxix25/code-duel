@@ -87,6 +87,7 @@ const Room: FC = () => {
             });
         getCurrentCode(roomId!)
             .then((currentCode) => {
+                console.log('Current code fetched:', currentCode);
                 setCode(currentCode.code);
             })
             .catch((error) => {

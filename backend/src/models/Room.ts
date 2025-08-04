@@ -14,6 +14,7 @@ export interface Room extends Document {
     createdAt: Date;
     name: string;
     password: string;
+    maxCapacity: number;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -59,6 +60,11 @@ const RoomSchema: Schema = new Schema({
     password: {
         type: String,
         maxlength: 100
+    },
+    maxCapacity: {
+        type: Number,
+        default: 4,
+        max: 10
     }
 });
 
