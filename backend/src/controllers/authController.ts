@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/jwtHelper';
 import getUserIdByToken from '../utils/getUserIdByToken';
+import path from 'path';
 
 export const loginPlayer = async (
     req: Request,
@@ -96,7 +97,7 @@ export const registerPlayer = async (
     }
 };
 
-export const updatePlayer = async (
+export const updateProfile = async (
     req: Request,
     res: Response
 ): Promise<void> => {
@@ -154,6 +155,73 @@ export const updatePlayer = async (
     }
 }
 
+export const updateAvatar = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const playerId = getUserIdByToken(req.cookies.token);
+
+    if (!playerId) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+    }
+
+    if (!req.file) {
+        res.status(400).json({ message: 'No file uploaded' });
+        return;
+    }
+
+    try {
+        const player = await Player.findById(playerId);
+
+        if (!player) {
+            res.status(404).json({ message: 'Player not found' });
+            return;
+        }
+
+        player.avatar = '/auth/avatar/' + player.id;
+        await player.save();
+
+        res.status(200).json({
+            message: 'Avatar updated successfully',
+        });
+    } catch (error) {
+        console.error('Update avatar error:', error);
+        res.status(500).json({ message: 'Server error while updating avatar' });
+    }
+}
+
+export const getAvatar = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { playerId } = req.params;
+
+    if (!playerId || !mongoose.Types.ObjectId.isValid(playerId)) {
+        res.status(400).json({ message: 'Invalid player ID' });
+        return;
+    }
+
+    try {
+        const player = await Player.findById(playerId);
+
+        if (!player) {
+            res.status(404).json({ message: 'Player not found' });
+            return;
+        }
+
+        if (!player.avatar) {
+            res.status(404).json({ message: 'Avatar not found' });
+            return;
+        }
+
+        res.sendFile(path.join(__dirname, '..', '..', player.avatar));
+    } catch (error) {
+        console.error('Get avatar error:', error);
+        res.status(500).json({ message: 'Server error while retrieving avatar' });
+    }
+}
+
 export const getProfile = async (
     req: Request,
     res: Response
@@ -178,7 +246,8 @@ export const getProfile = async (
             player: {
                 id: player._id,
                 username: player.username,
-                email: player.email
+                email: player.email,
+                avatar: player.avatar
             }
         });
     } catch (error) {

@@ -2,8 +2,10 @@ import { Router } from 'express';
 import {
     loginPlayer,
     registerPlayer,
-    updatePlayer,
+    updateProfile,
+    updateAvatar,
     getProfile,
+    getAvatar,
     verifyAuth,
     logoutPlayer,
     getToken
@@ -14,7 +16,9 @@ const router = Router();
 
 router.post('/login', loginPlayer);
 router.post('/register', registerPlayer);
-router.put('/update', verifyToken, updatePlayer);
+router.put('/update', verifyToken, updateProfile);
+router.put('/avatar', verifyToken, updateAvatar);
+router.get('/avatar/:playerId', verifyToken, getAvatar);
 router.get('/profile', verifyToken, getProfile);
 router.post('/verify', verifyAuth);
 router.get('/logout', logoutPlayer);

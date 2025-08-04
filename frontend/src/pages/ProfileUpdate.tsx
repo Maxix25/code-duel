@@ -10,16 +10,20 @@ import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import Avatar from '@mui/material/Avatar';
 import { useTheme, alpha } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import updateProfile from '../api/auth/updateProfile';
 import getProfile from '../api/auth/getProfile';
+import getAvatar from '../api/auth/getAvatar';
 import { isAxiosError } from 'axios';
 
 interface UserProfile {
     id: string;
     username: string;
     email: string;
+    avatar?: string;
 }
 
 const ProfileUpdate: React.FC = () => {
@@ -33,6 +37,7 @@ const ProfileUpdate: React.FC = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('error');
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const theme = useTheme();
 
     useEffect(() => {
@@ -42,6 +47,19 @@ const ProfileUpdate: React.FC = () => {
                 const profile: UserProfile = response.data.player;
                 setUsername(profile.username);
                 setEmail(profile.email);
+
+                // If user has an avatar, fetch it
+                if (profile.avatar && profile.id) {
+                    try {
+                        const avatarResponse = await getAvatar(profile.id);
+                        const avatarBlob = avatarResponse.data;
+                        const avatarObjectUrl = URL.createObjectURL(avatarBlob);
+                        setAvatarUrl(avatarObjectUrl);
+                    } catch (avatarError) {
+                        console.error('Error fetching avatar:', avatarError);
+                        // Avatar not found is not critical, so we don't show an error
+                    }
+                }
             } catch (error) {
                 console.error('Error fetching profile:', error);
                 setSnackbarMessage('Failed to load profile');
@@ -53,7 +71,14 @@ const ProfileUpdate: React.FC = () => {
         };
 
         fetchProfile();
-    }, []);
+
+        // Cleanup function to revoke object URL
+        return () => {
+            if (avatarUrl) {
+                URL.revokeObjectURL(avatarUrl);
+            }
+        };
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -156,22 +181,34 @@ const ProfileUpdate: React.FC = () => {
                 >
                     <CardContent>
                         <Stack spacing={3} alignItems='center'>
-                            <Box
-                                sx={{
-                                    bgcolor: theme.palette.primary.main,
-                                    color: theme.palette.primary.contrastText,
-                                    borderRadius: '50%',
-                                    width: 64,
-                                    height: 64,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    mb: 1,
-                                    boxShadow: 2
-                                }}
-                            >
-                                <PersonIcon fontSize='large' />
-                            </Box>
+                            {avatarUrl ? (
+                                <Avatar
+                                    src={avatarUrl}
+                                    sx={{
+                                        width: 64,
+                                        height: 64,
+                                        mb: 1,
+                                        boxShadow: 2
+                                    }}
+                                />
+                            ) : (
+                                <Box
+                                    sx={{
+                                        bgcolor: theme.palette.primary.main,
+                                        color: theme.palette.primary.contrastText,
+                                        borderRadius: '50%',
+                                        width: 64,
+                                        height: 64,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        mb: 1,
+                                        boxShadow: 2
+                                    }}
+                                >
+                                    <PersonIcon fontSize='large' />
+                                </Box>
+                            )}
                             <Typography
                                 component='h1'
                                 variant='h5'
@@ -281,7 +318,15 @@ const ProfileUpdate: React.FC = () => {
                                         Update Profile
                                     </Button>
                                 )}
-
+                                <Button
+                                    component={Link}
+                                    to="/dashboard"
+                                    variant="text"
+                                    color="secondary"
+                                    sx={{ mt: 1 }}
+                                >
+                                    Dashboard
+                                </Button>
                             </Box>
                         </Stack>
                     </CardContent>
