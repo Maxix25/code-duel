@@ -84,7 +84,8 @@ const DashboardPage: React.FC = () => {
                     Dashboard
                 </Typography>
                 <Grid container spacing={5} justifyContent='center'>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    {/* First Row: Create Room and Find Room */}
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
@@ -153,7 +154,7 @@ const DashboardPage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
@@ -209,7 +210,9 @@ const DashboardPage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+
+                    {/* Second Row: Join Room and Profile */}
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{
@@ -349,7 +352,7 @@ const DashboardPage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
