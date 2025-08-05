@@ -17,6 +17,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import updateProfile from '../api/auth/updateProfile';
 import getProfile from '../api/auth/getProfile';
 import getAvatar from '../api/auth/getAvatar';
+import uploadAvatar from '../api/auth/uploadAvatar';
 import { isAxiosError } from 'axios';
 
 interface UserProfile {
@@ -38,6 +39,8 @@ const ProfileUpdate: React.FC = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('error');
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const theme = useTheme();
 
     useEffect(() => {
@@ -132,6 +135,59 @@ const ProfileUpdate: React.FC = () => {
         }
     };
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                setSnackbarMessage('Please select a valid image file');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setSnackbarMessage('File size must be less than 5MB');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+                return;
+            }
+
+            setSelectedFile(file);
+
+            // Create preview URL
+            const previewUrl = URL.createObjectURL(file);
+            if (avatarUrl) {
+                URL.revokeObjectURL(avatarUrl);
+            }
+            setAvatarUrl(previewUrl);
+        }
+    };
+
+    const handleAvatarUpload = async () => {
+        if (!selectedFile) return;
+
+        setUploadingAvatar(true);
+        try {
+            await uploadAvatar(selectedFile);
+            setSnackbarMessage('Avatar updated successfully!');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+            setSelectedFile(null);
+        } catch (error) {
+            if (isAxiosError(error) && error.response?.data.message) {
+                setSnackbarMessage(error.response.data.message);
+            } else {
+                setSnackbarMessage('Failed to upload avatar');
+            }
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        } finally {
+            setUploadingAvatar(false);
+        }
+    };
+
     if (loadingProfile) {
         return (
             <Box
@@ -209,6 +265,44 @@ const ProfileUpdate: React.FC = () => {
                                     <PersonIcon fontSize='large' />
                                 </Box>
                             )}
+
+                            {/* Avatar Upload Section */}
+                            <Box sx={{ textAlign: 'center', mt: 1, mb: 2 }}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    style={{ display: 'none' }}
+                                    id="avatar-upload"
+                                />
+                                <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
+                                    <label htmlFor="avatar-upload">
+                                        <Button
+                                            variant="outlined"
+                                            component="span"
+                                            size="small"
+                                        >
+                                            Choose Image
+                                        </Button>
+                                    </label>
+                                    {selectedFile && (
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleAvatarUpload}
+                                            disabled={uploadingAvatar}
+                                        >
+                                            {uploadingAvatar ? 'Uploading...' : 'Upload'}
+                                        </Button>
+                                    )}
+                                </Stack>
+                                {selectedFile && (
+                                    <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+                                        Selected: {selectedFile.name}
+                                    </Typography>
+                                )}
+                            </Box>
+
                             <Typography
                                 component='h1'
                                 variant='h5'

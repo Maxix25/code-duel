@@ -179,11 +179,13 @@ export const updateAvatar = async (
             return;
         }
 
-        player.avatar = '/auth/avatar/' + player.id;
+        // Store the path to the uploaded avatar
+        player.avatar = `uploads/avatars/${req.file.filename}`;
         await player.save();
 
         res.status(200).json({
             message: 'Avatar updated successfully',
+            avatar: player.avatar
         });
     } catch (error) {
         console.error('Update avatar error:', error);
