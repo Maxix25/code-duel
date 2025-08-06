@@ -1,22 +1,10 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
+import AuthContext from '../context/AuthContext';
 import api from '../api/api';
-
-interface AuthContextType {
-    isAuthenticated: boolean;
-    logout: () => void;
-    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-}
-export const AuthContext = createContext<AuthContextType>({
-    isAuthenticated: false,
-    logout: () => {},
-    setIsAuthenticated: () => {}
-});
-
 interface AuthProviderProps {
     children: ReactNode;
 }
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
@@ -48,3 +36,5 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         </AuthContext.Provider>
     );
 };
+
+export default AuthProvider;
