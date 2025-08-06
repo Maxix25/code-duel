@@ -1,11 +1,13 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext } from 'react';
 type PaletteMode = 'light' | 'dark';
 interface ThemeContextType {
     toggleTheme: () => void;
     mode: PaletteMode;
 }
 
-export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+export const ThemeContext = createContext<ThemeContextType | undefined>(
+    undefined
+);
 export const useThemeContext = () => {
     const context = useContext(ThemeContext);
     if (context === undefined) {
