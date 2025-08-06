@@ -7,6 +7,9 @@ export interface Player extends Document {
     email: string;
     password: string;
     avatar: string;
+    wins: number;
+    losses: number;
+    ties: number;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 

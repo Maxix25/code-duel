@@ -258,6 +258,42 @@ export const getProfile = async (
     }
 }
 
+export const getUserProfile = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const playerId = req.params.playerId;
+
+    if (!playerId || !mongoose.Types.ObjectId.isValid(playerId)) {
+        res.status(400).json({ message: 'Invalid player ID' });
+        return;
+    }
+
+    try {
+        const player = await Player.findById(playerId).select('-password -email');
+
+        if (!player) {
+            res.status(404).json({ message: 'Player not found' });
+            return;
+        }
+
+        res.status(200).json({
+            message: 'Profile retrieved successfully',
+            player: {
+                id: player._id,
+                username: player.username,
+                avatar: player.avatar,
+                wins: player.wins,
+                losses: player.losses,
+                draws: player.ties
+            }
+        });
+    } catch (error) {
+        console.error('Get user profile error:', error);
+        res.status(500).json({ message: 'Server error while retrieving user profile' });
+    }
+}
+
 export const verifyAuth = async (
     req: Request,
     res: Response
