@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import ProfileUpdate from '../pages/ProfileUpdate';
+import ProfileUpdate from '../pages/ProfileUpdatePage';
 import { MemoryRouter } from 'react-router-dom';
 
 const mockUserProfile = {

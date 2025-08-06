@@ -3,7 +3,8 @@ import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import ProfileUpdate from './pages/ProfileUpdate';
+import ProfileUpdate from './pages/ProfileUpdatePage';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CustomThemeProvider } from './context/ThemeContext';
 import Box from '@mui/material/Box';
@@ -43,6 +44,14 @@ function App() {
                                 element={
                                     <ProtectedRoute>
                                         <ProfileUpdate />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path='profile/:playerId'
+                                element={
+                                    <ProtectedRoute>
+                                        <ProfilePage />
                                     </ProtectedRoute>
                                 }
                             />
