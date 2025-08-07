@@ -101,7 +101,6 @@ export const updateProfile = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    // TODO: Admit profile picture upload
     const { username, password, email, old_password } = req.body;
     const playerId = getUserIdByToken(req.cookies.token);
 
