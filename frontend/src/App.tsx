@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import { CustomThemeProvider } from './context/ThemeContext';
+import { CustomThemeProvider } from './components/ThemeContext';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Suspense, lazy } from 'react';

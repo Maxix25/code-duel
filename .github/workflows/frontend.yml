@@ -27,5 +27,7 @@ jobs:
         run: pnpm install
       - name: Run tests
         run: pnpm test
+      - name: Lint code
+        run: pnpm lint
       - name: Build application
         run: pnpm build
