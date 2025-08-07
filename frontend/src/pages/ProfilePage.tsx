@@ -91,7 +91,7 @@ const ProfilePage: React.FC = () => {
                 URL.revokeObjectURL(avatarUrl);
             }
         };
-    }, [playerId, avatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [playerId, avatarUrl]);
 
     if (loading) {
         return (

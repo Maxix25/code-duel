@@ -6,6 +6,7 @@ import { http, HttpResponse } from 'msw';
 
 // Mock URL.createObjectURL and URL.revokeObjectURL since they're used for avatar display
 global.URL.createObjectURL = vi.fn(() => 'mocked-object-url');
+global.URL.revokeObjectURL = vi.fn();
 
 const server = setupServer(
     http.get('/auth/profile/:playerId', () => {
