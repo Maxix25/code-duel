@@ -6,6 +6,10 @@ export interface Player extends Document {
     roomId: mongoose.Types.ObjectId;
     email: string;
     password: string;
+    avatar: string;
+    wins: number;
+    losses: number;
+    ties: number;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -17,6 +21,7 @@ const playerSchema: Schema = new Schema({
     roomId: { type: Schema.Types.ObjectId, ref: 'Room' },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    avatar: { type: String, default: '/uploads/avatars/default.png' }
 });
 
 // Hook Pre-save para hashear la contraseña

@@ -12,6 +12,7 @@ import { useTheme, alpha } from '@mui/material/styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import SearchIcon from '@mui/icons-material/Search';
+import PersonIcon from '@mui/icons-material/Person';
 import createRoom from '../api/room/createRoom';
 import { useNavigate } from 'react-router-dom';
 import checkIfUserIsInRoom from '../api/room/checkIfUserIsInRoom';
@@ -44,7 +45,7 @@ const DashboardPage: React.FC = () => {
         if (response.status === 400) {
             alert(
                 'Error creating room: Already in room with ID ' +
-                    response.roomId
+                response.roomId
             );
             return;
         } else if (response.status === 200) {
@@ -83,7 +84,8 @@ const DashboardPage: React.FC = () => {
                     Dashboard
                 </Typography>
                 <Grid container spacing={5} justifyContent='center'>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    {/* First Row: Create Room and Find Room */}
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
@@ -152,7 +154,7 @@ const DashboardPage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
@@ -208,7 +210,9 @@ const DashboardPage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+
+                    {/* Second Row: Join Room and Profile */}
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
                             elevation={6}
                             sx={{
@@ -344,6 +348,62 @@ const DashboardPage: React.FC = () => {
                                             </Button>
                                         </Box>
                                     )}
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+                        <Card
+                            elevation={6}
+                            sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
+                        >
+                            <CardContent>
+                                <Stack spacing={2} alignItems='center'>
+                                    <Box
+                                        sx={{
+                                            bgcolor: theme.palette.success.main,
+                                            color: theme.palette.success
+                                                .contrastText,
+                                            borderRadius: '50%',
+                                            width: 56,
+                                            height: 56,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            mb: 1,
+                                            boxShadow: 2
+                                        }}
+                                    >
+                                        <PersonIcon fontSize='large' />
+                                    </Box>
+                                    <Typography
+                                        variant='h6'
+                                        component='h2'
+                                        fontWeight='bold'
+                                    >
+                                        Update Profile
+                                    </Typography>
+                                    <Typography
+                                        variant='body1'
+                                        sx={{ mb: 2, textAlign: 'center' }}
+                                    >
+                                        Update your account information.
+                                    </Typography>
+
+                                    <Button
+                                        variant='contained'
+                                        color='success'
+                                        onClick={() => navigate('/profile-update')}
+                                        size='large'
+                                        sx={{
+                                            fontWeight: 600,
+                                            fontSize: 16,
+                                            borderRadius: 3,
+                                            width: '100%'
+                                        }}
+                                    >
+                                        Update Profile
+                                    </Button>
                                 </Stack>
                             </CardContent>
                         </Card>
