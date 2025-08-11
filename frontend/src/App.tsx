@@ -72,7 +72,7 @@ function App() {
                                 }
                             />
                             <Route
-                                path='results'
+                                path='results/:roomId'
                                 element={
                                     <ProtectedRoute>
                                         <ResultsPage />

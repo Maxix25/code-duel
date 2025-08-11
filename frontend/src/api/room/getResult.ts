@@ -8,7 +8,8 @@ import api from '../api';
 
 interface RoomResult {
     results: {
-        player: string;
+        playerId: string;
+        username: string;
         score: number;
     }[];
 }

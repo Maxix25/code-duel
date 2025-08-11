@@ -27,7 +27,7 @@ const registerLeaveRoom = (io: Server, socket: Socket) => {
             );
             await room.save();
             socket.leave(data.roomId);
-            if (room.players.length === 0) {
+            if (room.players.length === 0 && room.status !== 'finished') {
                 // If no players left, delete the room
                 await Room.deleteOne({ _id: data.roomId });
                 console.log(`Room ${data.roomId} deleted as no players left`);

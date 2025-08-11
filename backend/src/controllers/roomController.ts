@@ -76,14 +76,16 @@ export const getRoomResults = async (
             res.status(404).json({ error: 'Room not found' });
             return;
         }
-        const results = room.players.map((p) => ({
-            player:
-                typeof p.player === 'object' && 'username' in p.player
-                    ? p.player.username
-                    : p.player.toString(),
-            score: p.score
-        }));
-        console.log('Room results:', results);
+
+        const results = room.players.map((p) => {
+            if (p.player instanceof Player) {
+                return {
+                    playerId: p.player.toString(),
+                    username: p.player.username,
+                    score: p.score
+                };
+            }
+        });
         res.status(200).json({ results });
     } catch (error) {
         console.error('Error fetching results:', error);
