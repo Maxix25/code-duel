@@ -32,7 +32,7 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                 return;
             }
             const question = await Question.findOne({
-                _id: room.problemId,
+                _id: room.problemId
             });
             if (!question) {
                 socket.emit('error', 'Question not found');
@@ -66,7 +66,7 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                         const result = {
                             result: submission,
                             testCase: testCase.stdin,
-                            expectedOutput: testCase.expectedOutput,
+                            expectedOutput: testCase.expectedOutput
                         };
                         results.push(result);
                         break;
@@ -84,7 +84,7 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                     return;
                 }
                 const player = await Player.findOne({
-                    _id: userId,
+                    _id: userId
                 });
                 if (!player) {
                     socket.emit('error', 'Player not found');
@@ -99,14 +99,13 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                         if (problem) {
                             // Set score to number of test cases
                             p.score = problem.testCases.length;
-                            await room.save();
                         }
                     }
                 }
                 room.status = 'finished';
                 await room.save();
                 io.to(data.roomId).emit('winner', {
-                    username,
+                    username
                 });
                 return;
             } else {

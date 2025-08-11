@@ -76,6 +76,10 @@ export const getRoomResults = async (
             res.status(404).json({ error: 'Room not found' });
             return;
         }
+        if (room.status !== 'finished') {
+            res.status(403).json({ error: 'Room is not finished yet' });
+            return;
+        }
 
         const results = room.players.map((p) => {
             if (p.player instanceof Player) {

@@ -76,9 +76,8 @@ const roomSetup = async (
         console.log('Error:', data);
     });
     socket.on('winner', (data: { username: string }) => {
-        setIsRunning(false);
         setOutput('We have a winner! ' + data.username);
-        console.log('Winner:', data.username);
+        navigate('/results/' + roomId);
     });
     socket.on('add_ready_button', () => {
         setReadyButton(true);
