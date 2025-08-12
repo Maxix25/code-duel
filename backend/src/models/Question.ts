@@ -28,14 +28,14 @@ export interface QuestionDocument extends Document {
 
 const TestCaseSchema = new Schema<TestCase>({
     stdin: { type: String, required: true },
-    expectedOutput: { type: String, required: true },
+    expectedOutput: { type: String, required: true }
 });
 
 const QuestionSchema = new Schema<QuestionDocument>({
     question: { type: String, required: true },
     testCases: { type: [TestCaseSchema], required: true },
     difficulty: { type: Number, required: true, min: 1, max: 5 },
-    startingCode: { type: String, required: true },
+    startingCode: { type: String, required: true }
 });
 
 export async function getRandomQuestion() {
