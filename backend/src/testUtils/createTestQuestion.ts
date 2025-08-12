@@ -6,20 +6,20 @@ const createTestQuestion = async () => {
         testCases: [
             {
                 stdin: '2\n3',
-                expectedOutput: '5',
+                expectedOutput: '5'
             },
             {
                 stdin: '10\n20',
-                expectedOutput: '30',
+                expectedOutput: '30'
             },
             {
                 stdin: '-5\n5',
-                expectedOutput: '0',
-            },
+                expectedOutput: '0'
+            }
         ],
         difficulty: 1,
         startingCode:
-            'def sum_two_numbers(a, b):\n    # Write your code\n\nprint(sum_two_numbers(int(input()), int(input())))',
+            'def sum_two_numbers(a, b):\n    # Write your code\n\nprint(sum_two_numbers(int(input()), int(input())))'
     });
     return question;
 };
