@@ -71,8 +71,7 @@ const roomSetup = async (
         }
         console.log('Error:', data);
     });
-    socket.on('winner', (data: { username: string }) => {
-        setOutput('We have a winner! ' + data.username);
+    socket.on('winner', () => {
         navigate('/results/' + roomId);
     });
     socket.on('add_ready_button', () => {
