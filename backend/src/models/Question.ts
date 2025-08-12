@@ -38,6 +38,11 @@ const QuestionSchema = new Schema<QuestionDocument>({
     startingCode: { type: String, required: true }
 });
 
+/**
+ * Fetch a random coding question from the database.
+ * @returns A random coding question document.
+ */
+
 export async function getRandomQuestion() {
     const Question = mongoose.model<QuestionDocument>('Question');
     const result = await Question.aggregate([{ $sample: { size: 1 } }]);
