@@ -40,10 +40,15 @@ const ProfilePage: React.FC = () => {
     const theme = useTheme();
 
     useEffect(() => {
+        let isMounted = true;
+        let objectUrl: string | undefined;
+
         const fetchPlayerProfile = async () => {
             if (!playerId) {
-                setError('Player ID is required');
-                setLoading(false);
+                if (isMounted) {
+                    setError('Player ID is required');
+                    setLoading(false);
+                }
                 return;
             }
 
@@ -51,47 +56,54 @@ const ProfilePage: React.FC = () => {
                 setLoading(true);
                 const response = await getPlayerProfile(playerId);
                 const playerData: PlayerProfile = response.data.player;
-                setProfile(playerData);
+                if (isMounted) setProfile(playerData);
 
-                // If player has an avatar, fetch it
                 if (playerData.avatar) {
                     try {
                         const avatarResponse = await getAvatar(playerId);
                         const avatarBlob = avatarResponse.data;
-                        const avatarObjectUrl = URL.createObjectURL(avatarBlob);
-                        setAvatarUrl(avatarObjectUrl);
+                        objectUrl = URL.createObjectURL(avatarBlob);
+                        if (isMounted) setAvatarUrl(objectUrl);
                     } catch (avatarError) {
                         console.error('Error fetching avatar:', avatarError);
-                        // Avatar not found is not critical, so we don't show an error
                     }
+                } else if (isMounted) {
+                    setAvatarUrl(null);
                 }
             } catch (error) {
                 console.error('Error fetching player profile:', error);
-                if (isAxiosError(error)) {
-                    if (error.response?.status === 404) {
-                        setError('Player not found');
-                    } else if (error.response?.status === 401) {
-                        setError('You need to be logged in to view profiles');
+                if (isMounted) {
+                    if (isAxiosError(error)) {
+                        if (error.response?.status === 404) {
+                            setError('Player not found');
+                        } else if (error.response?.status === 401) {
+                            setError(
+                                'You need to be logged in to view profiles'
+                            );
+                        } else {
+                            setError(
+                                error.response?.data?.message ||
+                                    'Failed to load player profile'
+                            );
+                        }
                     } else {
-                        setError(error.response?.data?.message || 'Failed to load player profile');
+                        setError('Failed to load player profile');
                     }
-                } else {
-                    setError('Failed to load player profile');
                 }
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchPlayerProfile();
 
-        // Cleanup function to revoke object URL
         return () => {
-            if (avatarUrl) {
-                URL.revokeObjectURL(avatarUrl);
+            isMounted = false;
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
             }
         };
-    }, [playerId, avatarUrl]);
+    }, [playerId]);
 
     if (loading) {
         return (
@@ -126,11 +138,11 @@ const ProfilePage: React.FC = () => {
                     <Card elevation={6} sx={{ borderRadius: 4, p: 3 }}>
                         <CardContent>
                             <Stack spacing={3} alignItems='center'>
-                                <Alert severity="error" sx={{ width: '100%' }}>
+                                <Alert severity='error' sx={{ width: '100%' }}>
                                     {error}
                                 </Alert>
                                 <Button
-                                    variant="contained"
+                                    variant='contained'
                                     startIcon={<ArrowBackIcon />}
                                     onClick={() => navigate(-1)}
                                 >
@@ -167,7 +179,7 @@ const ProfilePage: React.FC = () => {
                             {/* Back Button */}
                             <Box sx={{ alignSelf: 'flex-start' }}>
                                 <Button
-                                    variant="text"
+                                    variant='text'
                                     startIcon={<ArrowBackIcon />}
                                     onClick={() => navigate(-1)}
                                     sx={{ color: 'text.secondary' }}
@@ -190,7 +202,8 @@ const ProfilePage: React.FC = () => {
                                 <Box
                                     sx={{
                                         bgcolor: theme.palette.primary.main,
-                                        color: theme.palette.primary.contrastText,
+                                        color: theme.palette.primary
+                                            .contrastText,
                                         borderRadius: '50%',
                                         width: 120,
                                         height: 120,
@@ -223,16 +236,25 @@ const ProfilePage: React.FC = () => {
                                             alignItems: 'center',
                                             gap: 2,
                                             p: 2,
-                                            bgcolor: alpha(theme.palette.primary.main, 0.05),
+                                            bgcolor: alpha(
+                                                theme.palette.primary.main,
+                                                0.05
+                                            ),
                                             borderRadius: 2
                                         }}
                                     >
-                                        <BadgeIcon color="primary" />
+                                        <BadgeIcon color='primary' />
                                         <Box>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography
+                                                variant='caption'
+                                                color='text.secondary'
+                                            >
                                                 Username
                                             </Typography>
-                                            <Typography variant="body1" fontWeight="medium">
+                                            <Typography
+                                                variant='body1'
+                                                fontWeight='medium'
+                                            >
                                                 {profile?.username}
                                             </Typography>
                                         </Box>
@@ -241,10 +263,19 @@ const ProfilePage: React.FC = () => {
 
                                 {/* Game Statistics */}
                                 <Box>
-                                    <Typography variant="h6" fontWeight="bold" align="center" sx={{ mb: 2 }}>
+                                    <Typography
+                                        variant='h6'
+                                        fontWeight='bold'
+                                        align='center'
+                                        sx={{ mb: 2 }}
+                                    >
                                         Game Statistics
                                     </Typography>
-                                    <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
+                                    <Stack
+                                        direction='row'
+                                        spacing={1}
+                                        sx={{ width: '100%' }}
+                                    >
                                         {/* Wins */}
                                         <Box
                                             sx={{
@@ -253,16 +284,36 @@ const ProfilePage: React.FC = () => {
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
                                                 p: 2,
-                                                bgcolor: alpha(theme.palette.success.main, 0.1),
+                                                bgcolor: alpha(
+                                                    theme.palette.success.main,
+                                                    0.1
+                                                ),
                                                 borderRadius: 2,
-                                                border: `2px solid ${alpha(theme.palette.success.main, 0.3)}`
+                                                border: `2px solid ${alpha(
+                                                    theme.palette.success.main,
+                                                    0.3
+                                                )}`
                                             }}
                                         >
-                                            <EmojiEventsIcon sx={{ color: theme.palette.success.main, fontSize: 28, mb: 1 }} />
-                                            <Typography variant="h5" fontWeight="bold" color="success.main">
+                                            <EmojiEventsIcon
+                                                sx={{
+                                                    color: theme.palette.success
+                                                        .main,
+                                                    fontSize: 28,
+                                                    mb: 1
+                                                }}
+                                            />
+                                            <Typography
+                                                variant='h5'
+                                                fontWeight='bold'
+                                                color='success.main'
+                                            >
                                                 {profile?.wins || 0}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography
+                                                variant='caption'
+                                                color='text.secondary'
+                                            >
                                                 Wins
                                             </Typography>
                                         </Box>
@@ -275,16 +326,36 @@ const ProfilePage: React.FC = () => {
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
                                                 p: 2,
-                                                bgcolor: alpha(theme.palette.error.main, 0.1),
+                                                bgcolor: alpha(
+                                                    theme.palette.error.main,
+                                                    0.1
+                                                ),
                                                 borderRadius: 2,
-                                                border: `2px solid ${alpha(theme.palette.error.main, 0.3)}`
+                                                border: `2px solid ${alpha(
+                                                    theme.palette.error.main,
+                                                    0.3
+                                                )}`
                                             }}
                                         >
-                                            <CancelIcon sx={{ color: theme.palette.error.main, fontSize: 28, mb: 1 }} />
-                                            <Typography variant="h5" fontWeight="bold" color="error.main">
+                                            <CancelIcon
+                                                sx={{
+                                                    color: theme.palette.error
+                                                        .main,
+                                                    fontSize: 28,
+                                                    mb: 1
+                                                }}
+                                            />
+                                            <Typography
+                                                variant='h5'
+                                                fontWeight='bold'
+                                                color='error.main'
+                                            >
                                                 {profile?.losses || 0}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography
+                                                variant='caption'
+                                                color='text.secondary'
+                                            >
                                                 Losses
                                             </Typography>
                                         </Box>
@@ -297,52 +368,101 @@ const ProfilePage: React.FC = () => {
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
                                                 p: 2,
-                                                bgcolor: alpha(theme.palette.grey[500], 0.1),
+                                                bgcolor: alpha(
+                                                    theme.palette.grey[500],
+                                                    0.1
+                                                ),
                                                 borderRadius: 2,
-                                                border: `2px solid ${alpha(theme.palette.grey[500], 0.3)}`
+                                                border: `2px solid ${alpha(
+                                                    theme.palette.grey[500],
+                                                    0.3
+                                                )}`
                                             }}
                                         >
-                                            <RemoveIcon sx={{ color: theme.palette.grey[600], fontSize: 28, mb: 1 }} />
-                                            <Typography variant="h5" fontWeight="bold" color="text.primary">
+                                            <RemoveIcon
+                                                sx={{
+                                                    color: theme.palette
+                                                        .grey[600],
+                                                    fontSize: 28,
+                                                    mb: 1
+                                                }}
+                                            />
+                                            <Typography
+                                                variant='h5'
+                                                fontWeight='bold'
+                                                color='text.primary'
+                                            >
                                                 {profile?.draws || 0}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
+                                            <Typography
+                                                variant='caption'
+                                                color='text.secondary'
+                                            >
                                                 Ties
                                             </Typography>
                                         </Box>
                                     </Stack>
 
                                     {/* Win Rate */}
-                                    {profile && (profile.wins + profile.losses + profile.draws) > 0 && (
-                                        <Box sx={{ mt: 2, textAlign: 'center' }}>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Win Rate: {' '}
+                                    {profile &&
+                                        profile.wins +
+                                            profile.losses +
+                                            profile.draws >
+                                            0 && (
+                                            <Box
+                                                sx={{
+                                                    mt: 2,
+                                                    textAlign: 'center'
+                                                }}
+                                            >
                                                 <Typography
-                                                    component="span"
-                                                    fontWeight="bold"
-                                                    color={
-                                                        (profile.wins / (profile.wins + profile.losses + profile.draws)) > 0.5
-                                                            ? 'success.main'
-                                                            : 'text.primary'
-                                                    }
+                                                    variant='body2'
+                                                    color='text.secondary'
                                                 >
-                                                    {((profile.wins / (profile.wins + profile.losses + profile.draws)) * 100).toFixed(1)}%
+                                                    Win Rate:{' '}
+                                                    <Typography
+                                                        component='span'
+                                                        fontWeight='bold'
+                                                        color={
+                                                            profile.wins /
+                                                                (profile.wins +
+                                                                    profile.losses +
+                                                                    profile.draws) >
+                                                            0.5
+                                                                ? 'success.main'
+                                                                : 'text.primary'
+                                                        }
+                                                    >
+                                                        {(
+                                                            (profile.wins /
+                                                                (profile.wins +
+                                                                    profile.losses +
+                                                                    profile.draws)) *
+                                                            100
+                                                        ).toFixed(1)}
+                                                        %
+                                                    </Typography>
                                                 </Typography>
-                                            </Typography>
-                                        </Box>
-                                    )}
+                                            </Box>
+                                        )}
                                 </Box>
 
                                 {/* Player ID */}
                                 <Box sx={{ textAlign: 'center', mt: 2 }}>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography
+                                        variant='caption'
+                                        color='text.secondary'
+                                    >
                                         Player ID
                                     </Typography>
                                     <Typography
-                                        variant="body2"
+                                        variant='body2'
                                         sx={{
                                             fontFamily: 'monospace',
-                                            bgcolor: alpha(theme.palette.grey[500], 0.1),
+                                            bgcolor: alpha(
+                                                theme.palette.grey[500],
+                                                0.1
+                                            ),
                                             p: 1,
                                             borderRadius: 1,
                                             mt: 0.5
