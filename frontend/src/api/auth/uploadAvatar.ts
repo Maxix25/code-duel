@@ -6,8 +6,8 @@ const uploadAvatar = async (file: File) => {
 
     return api.put('/auth/avatar', formData, {
         headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+            'Content-Type': 'multipart/form-data'
+        }
     });
 };
 

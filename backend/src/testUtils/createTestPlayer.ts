@@ -8,7 +8,7 @@ const createTestPlayer = async (
     const player = await Player.create({
         username,
         password,
-        email,
+        email
     });
     return player;
 };

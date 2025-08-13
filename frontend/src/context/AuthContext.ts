@@ -7,12 +7,8 @@ interface AuthContextType {
 }
 const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
-    logout: () => { },
-    setIsAuthenticated: () => { }
+    logout: () => {},
+    setIsAuthenticated: () => {}
 });
 
 export default AuthContext;
-
-
-
-

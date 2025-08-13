@@ -37,7 +37,9 @@ const ProfileUpdate: React.FC = () => {
     const [loadingProfile, setLoadingProfile] = useState(true);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('error');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<
+        'success' | 'error'
+    >('error');
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -89,7 +91,9 @@ const ProfileUpdate: React.FC = () => {
         // If user wants to change password, both old and new password are required
         if (password || oldPassword) {
             if (!oldPassword) {
-                setSnackbarMessage('Current password is required to change password');
+                setSnackbarMessage(
+                    'Current password is required to change password'
+                );
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
                 return;
@@ -112,7 +116,12 @@ const ProfileUpdate: React.FC = () => {
 
         setLoading(true);
         try {
-            const response = await updateProfile({ username, email, old_password: oldPassword, password });
+            const response = await updateProfile({
+                username,
+                email,
+                old_password: oldPassword,
+                password
+            });
             if (response.status === 200) {
                 setSnackbarMessage('Profile updated successfully!');
                 setSnackbarSeverity('success');
@@ -251,7 +260,8 @@ const ProfileUpdate: React.FC = () => {
                                 <Box
                                     sx={{
                                         bgcolor: theme.palette.primary.main,
-                                        color: theme.palette.primary.contrastText,
+                                        color: theme.palette.primary
+                                            .contrastText,
                                         borderRadius: '50%',
                                         width: 64,
                                         height: 64,
@@ -269,35 +279,46 @@ const ProfileUpdate: React.FC = () => {
                             {/* Avatar Upload Section */}
                             <Box sx={{ textAlign: 'center', mt: 1, mb: 2 }}>
                                 <input
-                                    type="file"
-                                    accept="image/*"
+                                    type='file'
+                                    accept='image/*'
                                     onChange={handleFileChange}
                                     style={{ display: 'none' }}
-                                    id="avatar-upload"
+                                    id='avatar-upload'
                                 />
-                                <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
-                                    <label htmlFor="avatar-upload">
+                                <Stack
+                                    direction='row'
+                                    spacing={1}
+                                    justifyContent='center'
+                                    alignItems='center'
+                                >
+                                    <label htmlFor='avatar-upload'>
                                         <Button
-                                            variant="outlined"
-                                            component="span"
-                                            size="small"
+                                            variant='outlined'
+                                            component='span'
+                                            size='small'
                                         >
                                             Choose Image
                                         </Button>
                                     </label>
                                     {selectedFile && (
                                         <Button
-                                            variant="contained"
-                                            size="small"
+                                            variant='contained'
+                                            size='small'
                                             onClick={handleAvatarUpload}
                                             disabled={uploadingAvatar}
                                         >
-                                            {uploadingAvatar ? 'Uploading...' : 'Upload'}
+                                            {uploadingAvatar
+                                                ? 'Uploading...'
+                                                : 'Upload'}
                                         </Button>
                                     )}
                                 </Stack>
                                 {selectedFile && (
-                                    <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+                                    <Typography
+                                        variant='caption'
+                                        color='textSecondary'
+                                        sx={{ mt: 1, display: 'block' }}
+                                    >
                                         Selected: {selectedFile.name}
                                     </Typography>
                                 )}
@@ -352,7 +373,7 @@ const ProfileUpdate: React.FC = () => {
                                     onChange={(e) =>
                                         setOldPassword(e.target.value)
                                     }
-                                    helperText="Only required if you want to change your password"
+                                    helperText='Only required if you want to change your password'
                                 />
                                 <TextField
                                     margin='normal'
@@ -366,7 +387,7 @@ const ProfileUpdate: React.FC = () => {
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
-                                    helperText="Leave empty to keep current password"
+                                    helperText='Leave empty to keep current password'
                                 />
                                 <TextField
                                     margin='normal'
@@ -414,9 +435,9 @@ const ProfileUpdate: React.FC = () => {
                                 )}
                                 <Button
                                     component={Link}
-                                    to="/dashboard"
-                                    variant="text"
-                                    color="secondary"
+                                    to='/dashboard'
+                                    variant='text'
+                                    color='secondary'
                                     sx={{ mt: 1 }}
                                 >
                                     Dashboard

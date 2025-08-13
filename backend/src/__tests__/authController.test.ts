@@ -23,7 +23,7 @@ describe('Auth Controller', () => {
         const response = await request(httpServer).post('/auth/register').send({
             email: 'test@example.com',
             password: 'password',
-            username: 'testuser',
+            username: 'testuser'
         });
 
         expect(response.status).toBe(201);
@@ -35,7 +35,7 @@ describe('Auth Controller', () => {
         console.time('Logging in user');
         const response = await request(httpServer).post('/auth/login').send({
             username: 'testuser',
-            password: 'password',
+            password: 'password'
         });
 
         expect(response.status).toBe(200);

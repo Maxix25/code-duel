@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
         if (response.status === 400) {
             alert(
                 'Error creating room: Already in room with ID ' +
-                response.roomId
+                    response.roomId
             );
             return;
         } else if (response.status === 200) {
@@ -391,7 +391,9 @@ const DashboardPage: React.FC = () => {
                                     <Button
                                         variant='contained'
                                         color='success'
-                                        onClick={() => navigate('/profile-update')}
+                                        onClick={() =>
+                                            navigate('/profile-update')
+                                        }
                                         size='large'
                                         sx={{
                                             fontWeight: 600,

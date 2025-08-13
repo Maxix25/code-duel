@@ -9,7 +9,9 @@
         "dev": "tsx watch ./src/server.ts",
         "lint": "eslint .",
         "build": "tsc",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "checkFormat": "prettier . --check",
+        "format": "prettier . --write"
     },
     "keywords": [],
     "author": "",

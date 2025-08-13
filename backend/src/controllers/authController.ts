@@ -119,7 +119,9 @@ export const updateProfile = async (
         return;
     }
     if (password && !old_password) {
-        res.status(400).json({ message: 'Old password is required for password change' });
+        res.status(400).json({
+            message: 'Old password is required for password change'
+        });
         return;
     }
 
@@ -137,7 +139,6 @@ export const updateProfile = async (
             }
         }
 
-
         player.username = username;
         if (password) player.password = password;
         player.email = email;
@@ -152,7 +153,7 @@ export const updateProfile = async (
         console.error('Update error:', error);
         res.status(500).json({ message: 'Server error while updating player' });
     }
-}
+};
 
 export const updateAvatar = async (
     req: Request,
@@ -190,12 +191,9 @@ export const updateAvatar = async (
         console.error('Update avatar error:', error);
         res.status(500).json({ message: 'Server error while updating avatar' });
     }
-}
+};
 
-export const getAvatar = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const getAvatar = async (req: Request, res: Response): Promise<void> => {
     const { playerId } = req.params;
 
     if (!playerId || !mongoose.Types.ObjectId.isValid(playerId)) {
@@ -219,9 +217,11 @@ export const getAvatar = async (
         res.sendFile(path.join(__dirname, '..', '..', player.avatar));
     } catch (error) {
         console.error('Get avatar error:', error);
-        res.status(500).json({ message: 'Server error while retrieving avatar' });
+        res.status(500).json({
+            message: 'Server error while retrieving avatar'
+        });
     }
-}
+};
 
 export const getProfile = async (
     req: Request,
@@ -253,9 +253,11 @@ export const getProfile = async (
         });
     } catch (error) {
         console.error('Get profile error:', error);
-        res.status(500).json({ message: 'Server error while retrieving profile' });
+        res.status(500).json({
+            message: 'Server error while retrieving profile'
+        });
     }
-}
+};
 
 export const getUserProfile = async (
     req: Request,
@@ -269,7 +271,8 @@ export const getUserProfile = async (
     }
 
     try {
-        const player = await Player.findById(playerId).select('-password -email');
+        const player =
+            await Player.findById(playerId).select('-password -email');
 
         if (!player) {
             res.status(404).json({ message: 'Player not found' });
@@ -289,9 +292,11 @@ export const getUserProfile = async (
         });
     } catch (error) {
         console.error('Get user profile error:', error);
-        res.status(500).json({ message: 'Server error while retrieving user profile' });
+        res.status(500).json({
+            message: 'Server error while retrieving user profile'
+        });
     }
-}
+};
 
 export const verifyAuth = async (
     req: Request,
