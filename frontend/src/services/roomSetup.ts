@@ -64,21 +64,15 @@ const roomSetup = async (
         console.log('Solution result:', data);
         setOutput(data);
     });
-    socket.on('error', (data: string) => {
+    socket.on('error', (data: { type: string; message: string }) => {
         // TODO: Add message errors to the user
-        if (data === 'Invalid room id') {
-            navigate('/dashboard');
-        } else if (data === 'Room is already running') {
-            navigate('/dashboard');
-        } else if (data === 'Room is full') {
+        if (data.type === 'redirect') {
             navigate('/dashboard');
         }
         console.log('Error:', data);
     });
-    socket.on('winner', (data: { username: string }) => {
-        setIsRunning(false);
-        setOutput('We have a winner! ' + data.username);
-        console.log('Winner:', data.username);
+    socket.on('winner', () => {
+        navigate('/results/' + roomId);
     });
     socket.on('add_ready_button', () => {
         setReadyButton(true);

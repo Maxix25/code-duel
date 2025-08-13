@@ -17,11 +17,6 @@ export const startRoom = async (req: Request, res: Response): Promise<void> => {
             res.status(401).json({ error: 'User token is required' });
             return;
         }
-        const question = await getRandomQuestion();
-        if (!question) {
-            res.status(404).json({ error: 'No question found' });
-            return;
-        }
         // Check if user is already in a room
         const userId = getUserIdByToken(user_token);
         const username = getUsernameByToken(user_token);
@@ -30,7 +25,8 @@ export const startRoom = async (req: Request, res: Response): Promise<void> => {
             return;
         }
         const existingRoom = await Room.findOne({
-            players: { $elemMatch: { player: userId } }
+            players: { $elemMatch: { player: userId } },
+            status: 'playing'
         });
         if (existingRoom) {
             console.log('User already in a room:', existingRoom.id);
@@ -38,6 +34,11 @@ export const startRoom = async (req: Request, res: Response): Promise<void> => {
                 error: 'Already in a room',
                 roomId: existingRoom.id
             });
+            return;
+        }
+        const question = await getRandomQuestion();
+        if (!question) {
+            res.status(404).json({ error: 'No question found' });
             return;
         }
         // Create a new room
@@ -76,14 +77,20 @@ export const getRoomResults = async (
             res.status(404).json({ error: 'Room not found' });
             return;
         }
-        const results = room.players.map((p) => ({
-            player:
-                typeof p.player === 'object' && 'username' in p.player
-                    ? p.player.username
-                    : p.player.toString(),
-            score: p.score
-        }));
-        console.log('Room results:', results);
+        if (room.status !== 'finished') {
+            res.status(403).json({ error: 'Room is not finished yet' });
+            return;
+        }
+
+        const results = room.players.map((p) => {
+            if (p.player instanceof Player) {
+                return {
+                    playerId: p.player.toString(),
+                    username: p.player.username,
+                    score: p.score
+                };
+            }
+        });
         res.status(200).json({ results });
     } catch (error) {
         console.error('Error fetching results:', error);
@@ -232,7 +239,8 @@ export const userIsInRoom = async (
             return;
         }
         const room = await Room.findOne({
-            players: { $elemMatch: { player: userId } }
+            players: { $elemMatch: { player: userId } },
+            status: 'playing'
         });
         if (room) {
             res.status(200).json({ inRoom: true, roomId: room.id });

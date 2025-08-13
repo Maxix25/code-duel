@@ -219,7 +219,7 @@ const DashboardPage: React.FC = () => {
                                 borderRadius: 4,
                                 p: 3,
                                 boxShadow: 8,
-                                minHeight: { xs: 'auto', md: 420 },
+                                minHeight: { xs: 'auto', md: 300 },
                                 display: 'flex',
                                 flexDirection: 'column'
                             }}
@@ -227,7 +227,6 @@ const DashboardPage: React.FC = () => {
                             <CardContent
                                 sx={{
                                     flex: 1,
-                                    display: 'flex',
                                     flexDirection: 'column'
                                 }}
                             >
@@ -253,7 +252,6 @@ const DashboardPage: React.FC = () => {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                mb: 2,
                                                 boxShadow: 2,
                                                 mx: 'auto'
                                             }}

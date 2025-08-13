@@ -18,16 +18,32 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
             const userId = getUserIdByToken(data.user_token);
             let appendPlayer = true;
             if (!room) {
-                socket.emit('error', 'Room not found');
+                socket.emit('error', {
+                    type: 'redirect',
+                    message: 'Room not found'
+                });
                 return;
             }
             if (!userId) {
-                socket.emit('error', 'Invalid token');
+                socket.emit('error', {
+                    type: 'redirect',
+                    message: 'Invalid token'
+                });
                 return;
             }
             // Check if the room admits one more player
             if (room.players.length + 1 > room.maxCapacity) {
-                socket.emit('error', 'Room is full');
+                socket.emit('error', {
+                    type: 'redirect',
+                    message: 'Room is full'
+                });
+                return;
+            }
+            if (room.status === 'finished') {
+                socket.emit('error', {
+                    type: 'redirect',
+                    message: 'This room is no longer playing'
+                });
                 return;
             }
 

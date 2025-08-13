@@ -4,7 +4,7 @@ import { hash, genSalt, compare } from 'bcryptjs';
 
 export interface Room extends Document {
     players: {
-        player: Player | mongoose.Schema.Types.ObjectId;
+        player: Player | Schema.Types.ObjectId;
         score: number;
         ready: boolean;
         current_code: string;

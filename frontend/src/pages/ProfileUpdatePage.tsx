@@ -81,7 +81,7 @@ const ProfileUpdate: React.FC = () => {
                 URL.revokeObjectURL(avatarUrl);
             }
         };
-    }, [avatarUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [avatarUrl]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
