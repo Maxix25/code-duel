@@ -1,0 +1,5 @@
+dist/*
+stats.html
+pnpm-lock.yaml
+pnpm-workspace.yaml
+README.md

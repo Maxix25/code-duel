@@ -10,7 +10,11 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 import { SolutionResult } from '../services/roomSetup';
 import handlers from '../handlers/roomPageHandlers';
-import CodeMirror, { oneDark, EditorView, EditorState } from '@uiw/react-codemirror';
+import CodeMirror, {
+    oneDark,
+    EditorView,
+    EditorState
+} from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { javascript } from '@codemirror/lang-javascript';
 

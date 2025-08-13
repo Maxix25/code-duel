@@ -15,11 +15,11 @@ export const generateToken = (
 ): string => {
     const payload = {
         id: playerId,
-        username,
+        username
     };
 
     const token = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: JWT_EXPIRATION,
+        expiresIn: JWT_EXPIRATION
     });
 
     return token;

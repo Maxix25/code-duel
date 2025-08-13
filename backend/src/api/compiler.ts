@@ -18,8 +18,8 @@ const compiler = axios.create({
     headers: {
         'X-RapidAPI-Key': API_KEY,
         'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-        'Content-Type': 'application/json',
-    },
+        'Content-Type': 'application/json'
+    }
 });
 
 export default compiler;
