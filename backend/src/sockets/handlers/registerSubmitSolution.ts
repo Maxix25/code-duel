@@ -102,8 +102,10 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                         }
                     }
                 }
+                player.wins += 1;
                 room.status = 'finished';
                 await room.save();
+                await player.save();
                 io.to(data.roomId).emit('winner', {
                     username
                 });
