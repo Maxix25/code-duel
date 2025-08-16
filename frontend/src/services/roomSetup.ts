@@ -12,9 +12,11 @@ interface Judge0Response {
     token: string;
 }
 export interface SolutionResult {
-    result: Judge0Response;
-    testCase: string;
-    expectedOutput: string;
+    result?: Judge0Response;
+    testCase?: string;
+    expectedOutput?: string;
+    status: 'passed' | 'failed' | 'error';
+    isPrivate: boolean;
 }
 
 /**

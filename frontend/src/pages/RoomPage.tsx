@@ -224,36 +224,117 @@ const Room: FC = () => {
                                         <span>Running...</span>
                                     ) : Array.isArray(output) ? (
                                         output.map((result, index) => {
-                                            const statusId =
-                                                result.result.status_id;
-                                            const stdout = result.result.stdout
+                                            // Handle private test cases
+                                            if (result.isPrivate) {
+                                                let verdict = '';
+                                                let verdictColor = '';
+                                                if (
+                                                    result.status === 'passed'
+                                                ) {
+                                                    verdict = 'Correct';
+                                                    verdictColor = 'green';
+                                                } else if (
+                                                    result.status === 'failed'
+                                                ) {
+                                                    verdict = 'Incorrect';
+                                                    verdictColor = 'orange';
+                                                } else if (
+                                                    result.status === 'error'
+                                                ) {
+                                                    verdict = 'Error';
+                                                    verdictColor = 'red';
+                                                }
+
+                                                return (
+                                                    <Accordion
+                                                        key={index}
+                                                        sx={{
+                                                            background:
+                                                                '#23272f',
+                                                            color: 'white',
+                                                            mb: 1
+                                                        }}
+                                                    >
+                                                        <AccordionSummary
+                                                            expandIcon={
+                                                                <ExpandMoreIcon
+                                                                    sx={{
+                                                                        color: 'white'
+                                                                    }}
+                                                                />
+                                                            }
+                                                            aria-controls={`panel${index}-content`}
+                                                            id={`panel${index}-header`}
+                                                        >
+                                                            <strong>
+                                                                Test Case{' '}
+                                                                {index + 1}{' '}
+                                                                (Private):
+                                                            </strong>
+                                                            <span
+                                                                style={{
+                                                                    color: verdictColor,
+                                                                    fontWeight:
+                                                                        'bold',
+                                                                    marginLeft: 12
+                                                                }}
+                                                            >
+                                                                {verdict}
+                                                            </span>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails>
+                                                            <Typography
+                                                                variant='body2'
+                                                                sx={{
+                                                                    fontStyle:
+                                                                        'italic',
+                                                                    color: '#888'
+                                                                }}
+                                                            >
+                                                                This is a
+                                                                private test
+                                                                case. Input and
+                                                                output details
+                                                                are hidden.
+                                                            </Typography>
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                );
+                                            }
+
+                                            // Handle public test cases
+                                            const stdout = result.result?.stdout
                                                 ? atob(result.result.stdout)
                                                 : '';
-                                            const stderr = result.result.stderr
+                                            const stderr = result.result?.stderr
                                                 ? atob(result.result.stderr)
                                                 : '';
                                             const compileOutput = result.result
-                                                .compile_output
+                                                ?.compile_output
                                                 ? atob(
                                                       result.result
                                                           .compile_output
                                                   )
                                                 : '';
                                             const message = result.result
-                                                .message
+                                                ?.message
                                                 ? atob(result.result.message)
                                                 : '';
                                             const expected =
                                                 result.expectedOutput;
                                             let verdict = '';
                                             let verdictColor = '';
-                                            if (statusId === 3) {
+                                            if (result.status === 'passed') {
                                                 verdict = 'Correct';
                                                 verdictColor = 'green';
-                                            } else if (statusId === 4) {
+                                            } else if (
+                                                result.status === 'failed'
+                                            ) {
                                                 verdict = 'Incorrect';
                                                 verdictColor = 'orange';
-                                            } else if (statusId > 4) {
+                                            } else if (
+                                                result.status === 'error'
+                                            ) {
                                                 verdict = 'Error';
                                                 verdictColor = 'red';
                                             }
@@ -352,7 +433,8 @@ const Room: FC = () => {
                                                                 {stdout}
                                                             </pre>
                                                         </div>
-                                                        {statusId > 4 && (
+                                                        {result.status ===
+                                                            'error' && (
                                                             <>
                                                                 {stderr && (
                                                                     <div>
