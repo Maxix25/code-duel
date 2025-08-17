@@ -3,7 +3,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -11,6 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../context/ThemeContext';
+import { useTheme } from '@mui/material/styles';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import PersonIcon from '@mui/icons-material/Person';
@@ -18,63 +18,35 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import { useState, useEffect } from 'react';
+import UserAvatar from './UserAvatar';
 import getProfile from '../api/auth/getProfile';
-import getAvatar from '../api/auth/getAvatar';
 
 interface AuthNavbarProps {
     onLogout: () => void;
 }
 
-interface ProfileData {
-    id: string;
-    username: string;
-    email?: string;
-}
-
 const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
     const { mode, toggleTheme } = useThemeContext();
+    const theme = useTheme();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [profileData, setProfileData] = useState<ProfileData | null>(null);
-    const [avatarUrl, setAvatarUrl] = useState<string>('');
     const open = Boolean(anchorEl);
+    const [userId, setUserId] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
 
     useEffect(() => {
-        const fetchProfileData = async () => {
+        const fetchProfile = async () => {
             try {
-                const response = await getProfile();
-                setProfileData(response.data);
-
-                // Fetch avatar
-                if (response.data?.player.id) {
-                    try {
-                        const avatarResponse = await getAvatar(
-                            response.data.player.id
-                        );
-                        const avatarBlob = new Blob([avatarResponse.data]);
-                        const avatarObjectUrl = URL.createObjectURL(avatarBlob);
-                        setAvatarUrl(avatarObjectUrl);
-                    } catch {
-                        console.log('No avatar found, using default');
-                        // Avatar will default to first letter of username
-                    }
-                }
+                const user = await getProfile();
+                setUserId(user.id);
+                setUsername(user.username);
             } catch (error) {
                 console.error('Error fetching profile:', error);
             }
         };
 
-        fetchProfileData();
+        fetchProfile();
     }, []);
-
-    // Cleanup avatar URL when component unmounts or avatarUrl changes
-    useEffect(() => {
-        return () => {
-            if (avatarUrl) {
-                URL.revokeObjectURL(avatarUrl);
-            }
-        };
-    }, [avatarUrl]);
 
     const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -86,11 +58,8 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
 
     const handleViewProfile = () => {
         handleClose();
-        if (profileData?.id) {
-            navigate(`/profile/${profileData.id}`);
-        }
+        navigate(`/profile/${userId}`);
     };
-
     const handleSettings = () => {
         handleClose();
         navigate('/profile-update');
@@ -102,41 +71,163 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
     };
 
     return (
-        <AppBar position='static'>
-            <Toolbar>
-                <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+        <AppBar
+            position='static'
+            sx={{
+                background:
+                    mode === 'dark'
+                        ? 'linear-gradient(135deg, rgba(18, 18, 18, 0.95) 0%, rgba(33, 33, 33, 0.98) 100%)'
+                        : 'linear-gradient(135deg, rgba(25, 118, 210, 0.9) 0%, rgba(21, 101, 192, 0.95) 100%)',
+                backdropFilter: 'blur(10px)',
+                boxShadow:
+                    mode === 'dark'
+                        ? '0 8px 32px rgba(0, 0, 0, 0.4)'
+                        : '0 8px 32px rgba(0, 0, 0, 0.1)',
+                borderBottom:
+                    mode === 'dark'
+                        ? '1px solid rgba(255, 255, 255, 0.08)'
+                        : '1px solid rgba(255, 255, 255, 0.1)',
+                color: theme.palette.text.primary
+            }}
+        >
+            <Toolbar
+                sx={{ px: { xs: 2, md: 4 }, minHeight: '70px !important' }}
+            >
+                <Typography
+                    variant='h6'
+                    component='div'
+                    sx={{
+                        flexGrow: 1,
+                        fontWeight: 700,
+                        fontSize: { xs: '1.2rem', md: '1.5rem' },
+                        background:
+                            mode === 'dark'
+                                ? 'linear-gradient(45deg, #ffffff 30%, #90caf9 90%)'
+                                : 'linear-gradient(45deg, #ffffff 30%, #e3f2fd 90%)',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        letterSpacing: '0.5px'
+                    }}
+                >
                     Code Duel
                 </Typography>
-                <Box>
-                    <Button color='inherit' component={RouterLink} to='/'>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Button
+                        color='inherit'
+                        component={RouterLink}
+                        to='/'
+                        sx={{
+                            px: 3,
+                            py: 1,
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            fontSize: '0.95rem',
+                            transition: 'all 0.3s ease',
+                            color: mode === 'dark' ? '#ffffff' : 'inherit',
+                            '&:hover': {
+                                backgroundColor:
+                                    mode === 'dark'
+                                        ? 'rgba(255, 255, 255, 0.08)'
+                                        : 'rgba(255, 255, 255, 0.1)',
+                                transform: 'translateY(-2px)',
+                                boxShadow:
+                                    mode === 'dark'
+                                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                                        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+                            }
+                        }}
+                    >
                         Home
                     </Button>
                     <Button
                         color='inherit'
                         component={RouterLink}
                         to='/dashboard'
+                        sx={{
+                            px: 3,
+                            py: 1,
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            fontSize: '0.95rem',
+                            transition: 'all 0.3s ease',
+                            color: mode === 'dark' ? '#ffffff' : 'inherit',
+                            '&:hover': {
+                                backgroundColor:
+                                    mode === 'dark'
+                                        ? 'rgba(255, 255, 255, 0.08)'
+                                        : 'rgba(255, 255, 255, 0.1)',
+                                transform: 'translateY(-2px)',
+                                boxShadow:
+                                    mode === 'dark'
+                                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                                        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+                            }
+                        }}
                     >
                         Dashboard
                     </Button>
                     <IconButton
-                        sx={{ ml: 1 }}
+                        sx={{
+                            ml: 2,
+                            p: 1.5,
+                            borderRadius: 2,
+                            transition: 'all 0.3s ease',
+                            color: mode === 'dark' ? '#ffffff' : 'inherit',
+                            '&:hover': {
+                                backgroundColor:
+                                    mode === 'dark'
+                                        ? 'rgba(255, 255, 255, 0.08)'
+                                        : 'rgba(255, 255, 255, 0.1)',
+                                transform: 'rotate(180deg)',
+                                boxShadow:
+                                    mode === 'dark'
+                                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                                        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+                            }
+                        }}
                         onClick={toggleTheme}
                         color='inherit'
                     >
                         {mode === 'dark' ? (
-                            <Brightness7Icon />
+                            <Brightness7Icon sx={{ fontSize: '1.4rem' }} />
                         ) : (
-                            <Brightness4Icon />
+                            <Brightness4Icon sx={{ fontSize: '1.4rem' }} />
                         )}
                     </IconButton>
                     <IconButton
                         onClick={handleProfileClick}
-                        sx={{ ml: 1 }}
+                        sx={{
+                            ml: 1,
+                            p: 1,
+                            borderRadius: 2,
+                            transition: 'all 0.3s ease',
+                            border: '2px solid transparent',
+                            '&:hover': {
+                                backgroundColor:
+                                    mode === 'dark'
+                                        ? 'rgba(255, 255, 255, 0.08)'
+                                        : 'rgba(255, 255, 255, 0.1)',
+                                borderColor:
+                                    mode === 'dark'
+                                        ? 'rgba(255, 255, 255, 0.2)'
+                                        : 'rgba(255, 255, 255, 0.3)',
+                                transform: 'scale(1.05)',
+                                boxShadow:
+                                    mode === 'dark'
+                                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                                        : '0 4px 12px rgba(0, 0, 0, 0.15)'
+                            }
+                        }}
                         size='small'
                     >
-                        <Avatar src={avatarUrl} sx={{ width: 40, height: 40 }}>
-                            {profileData?.username?.[0]?.toUpperCase() || 'U'}
-                        </Avatar>
+                        <UserAvatar
+                            playerId={userId}
+                            username={username}
+                            size={36}
+                        />
                     </IconButton>
                     <Menu
                         anchorEl={anchorEl}
@@ -153,52 +244,138 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                         }}
                         slotProps={{
                             paper: {
-                                elevation: 0
-                            }
-                        }}
-                        sx={{
-                            overflow: 'visible',
-                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                            mt: 1.5,
-                            minWidth: 180,
-                            '& .MuiAvatar-root': {
-                                width: 32,
-                                height: 32,
-                                ml: -0.5,
-                                mr: 1
-                            },
-                            '&:before': {
-                                content: '""',
-                                display: 'block',
-                                position: 'absolute',
-                                top: 0,
-                                right: 14,
-                                width: 10,
-                                height: 10,
-                                bgcolor: 'background.paper',
-                                transform: 'translateY(-50%) rotate(45deg)',
-                                zIndex: 0
+                                elevation: 0,
+                                sx: {
+                                    overflow: 'visible',
+                                    filter:
+                                        mode === 'dark'
+                                            ? 'drop-shadow(0px 8px 32px rgba(0,0,0,0.5))'
+                                            : 'drop-shadow(0px 8px 32px rgba(0,0,0,0.2))',
+                                    mt: 1.5,
+                                    minWidth: 200,
+                                    borderRadius: 3,
+                                    background:
+                                        mode === 'dark'
+                                            ? 'linear-gradient(145deg, rgba(33, 33, 33, 0.95) 0%, rgba(18, 18, 18, 0.98) 100%)'
+                                            : 'linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+                                    backdropFilter: 'blur(20px)',
+                                    border:
+                                        mode === 'dark'
+                                            ? '1px solid rgba(255, 255, 255, 0.1)'
+                                            : '1px solid rgba(255, 255, 255, 0.2)',
+                                    color:
+                                        mode === 'dark' ? '#ffffff' : 'inherit',
+                                    '& .MuiMenuItem-root': {
+                                        borderRadius: 2,
+                                        mx: 1,
+                                        my: 0.5,
+                                        transition: 'all 0.2s ease',
+                                        color:
+                                            mode === 'dark'
+                                                ? '#ffffff'
+                                                : 'inherit',
+                                        '&:hover': {
+                                            backgroundColor:
+                                                mode === 'dark'
+                                                    ? 'rgba(144, 202, 249, 0.08)'
+                                                    : 'rgba(25, 118, 210, 0.08)',
+                                            transform: 'translateX(4px)'
+                                        }
+                                    },
+                                    '& .MuiListItemIcon-root': {
+                                        minWidth: 36,
+                                        color:
+                                            mode === 'dark'
+                                                ? '#90caf9'
+                                                : 'primary.main'
+                                    },
+                                    '& .MuiDivider-root': {
+                                        mx: 1,
+                                        my: 1,
+                                        borderColor:
+                                            mode === 'dark'
+                                                ? 'rgba(255, 255, 255, 0.1)'
+                                                : 'rgba(0, 0, 0, 0.1)'
+                                    },
+                                    '&:before': {
+                                        content: '""',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 14,
+                                        width: 10,
+                                        height: 10,
+                                        bgcolor:
+                                            mode === 'dark'
+                                                ? '#212121'
+                                                : 'background.paper',
+                                        transform:
+                                            'translateY(-50%) rotate(45deg)',
+                                        zIndex: 0,
+                                        border:
+                                            mode === 'dark'
+                                                ? '1px solid rgba(255, 255, 255, 0.1)'
+                                                : '1px solid rgba(255, 255, 255, 0.2)',
+                                        borderBottom: 'none',
+                                        borderRight: 'none'
+                                    }
+                                }
                             }
                         }}
                     >
-                        <MenuItem onClick={handleViewProfile}>
+                        <MenuItem onClick={handleViewProfile} sx={{ py: 1.5 }}>
                             <ListItemIcon>
                                 <PersonIcon fontSize='small' />
                             </ListItemIcon>
-                            <ListItemText>View Profile</ListItemText>
+                            <ListItemText
+                                primary='Profile'
+                                sx={{
+                                    '& .MuiTypography-root': {
+                                        fontWeight: 500
+                                    }
+                                }}
+                            />
                         </MenuItem>
-                        <MenuItem onClick={handleSettings}>
+                        <MenuItem onClick={handleSettings} sx={{ py: 1.5 }}>
                             <ListItemIcon>
                                 <SettingsIcon fontSize='small' />
                             </ListItemIcon>
-                            <ListItemText>Settings</ListItemText>
+                            <ListItemText
+                                primary='Settings'
+                                sx={{
+                                    '& .MuiTypography-root': {
+                                        fontWeight: 500
+                                    }
+                                }}
+                            />
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={handleLogout}>
+                        <MenuItem
+                            onClick={handleLogout}
+                            sx={{
+                                py: 1.5,
+                                '&:hover': {
+                                    backgroundColor:
+                                        mode === 'dark'
+                                            ? 'rgba(244, 67, 54, 0.12)'
+                                            : 'rgba(244, 67, 54, 0.08)',
+                                    '& .MuiListItemIcon-root': {
+                                        color: 'error.main'
+                                    }
+                                }
+                            }}
+                        >
                             <ListItemIcon>
                                 <LogoutIcon fontSize='small' />
                             </ListItemIcon>
-                            <ListItemText>Logout</ListItemText>
+                            <ListItemText
+                                primary='Logout'
+                                sx={{
+                                    '& .MuiTypography-root': {
+                                        fontWeight: 500
+                                    }
+                                }}
+                            />
                         </MenuItem>
                     </Menu>
                 </Box>
