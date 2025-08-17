@@ -39,9 +39,11 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                 return;
             }
             const results: {
-                result: Judge0Response;
-                testCase: string;
-                expectedOutput: string;
+                result?: Judge0Response;
+                testCase?: string;
+                expectedOutput?: string;
+                status: 'passed' | 'failed' | 'error';
+                isPrivate: boolean;
             }[] = [];
             for (const testCase of question.testCases) {
                 const token = await runCode(
@@ -63,19 +65,36 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
                         );
                         submission = await getSubmission(token);
                     } else {
-                        const result = {
-                            result: submission,
-                            testCase: testCase.stdin,
-                            expectedOutput: testCase.expectedOutput
-                        };
-                        results.push(result);
+                        if (!testCase.isPrivate) {
+                            results.push({
+                                status:
+                                    submission.status_id === 3
+                                        ? 'passed'
+                                        : submission.status_id === 4
+                                          ? 'failed'
+                                          : 'error',
+                                result: submission,
+                                testCase: testCase.stdin,
+                                expectedOutput: testCase.expectedOutput,
+                                isPrivate: false
+                            });
+                            break;
+                        }
+                        // Testcase is private
+                        results.push({
+                            status:
+                                submission.status_id === 3
+                                    ? 'passed'
+                                    : 'failed',
+                            isPrivate: true
+                        });
                         break;
                     }
                 }
             }
             // Check if all test cases passed
             const allPassed = results.every(
-                (result) => result.result.status_id === 3
+                (result) => result.status === 'passed'
             );
             if (allPassed) {
                 // Add score to player
@@ -113,7 +132,7 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
             } else {
                 // Count testcases passed
                 const passedCount = results.filter(
-                    (result) => result.result.status_id === 3
+                    (result) => result.status === 'passed'
                 ).length;
                 // Update score in room
                 // Get current score and update only if passedCount is higher

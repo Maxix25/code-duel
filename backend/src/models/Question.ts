@@ -4,11 +4,13 @@ import mongoose, { Schema, Document } from 'mongoose';
  * TestCase interface represents a single test case for a coding question.
  * @member stdin - The input to be provided to the code.
  * @member expectedOutput - The expected output from the code.
+ * @member isPrivate - Indicates if the test case is private or public.
  */
 
 export interface TestCase {
     stdin: string;
     expectedOutput: string;
+    isPrivate: boolean;
 }
 
 /**
@@ -28,7 +30,8 @@ export interface QuestionDocument extends Document {
 
 const TestCaseSchema = new Schema<TestCase>({
     stdin: { type: String, required: true },
-    expectedOutput: { type: String, required: true }
+    expectedOutput: { type: String, required: true },
+    isPrivate: { type: Boolean, required: true }
 });
 
 const QuestionSchema = new Schema<QuestionDocument>({

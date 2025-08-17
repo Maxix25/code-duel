@@ -3,13 +3,13 @@ import { httpServer } from '../server';
 import mongoose from 'mongoose';
 import createTestPlayer from '../testUtils/createTestPlayer';
 import createTestQuestion from '../testUtils/createTestQuestion';
+import Question from '../models/Question';
 
 let token: string;
 let cookie: string;
 
 describe('Room Controller', () => {
     beforeAll(async () => {
-        console.time('Connecting to test database');
         await mongoose.disconnect();
         await mongoose.connect(
             process.env.MONGO_URI_TEST || 'mongodb://localhost:27017/test'
@@ -20,6 +20,8 @@ describe('Room Controller', () => {
             'testuser1@example.com'
         );
         await createTestQuestion();
+        const question = await Question.findOne();
+        expect(question).not.toBeNull();
         const response1 = await request(httpServer).post('/auth/login').send({
             username: 'testuser1',
             password: 'password1'
@@ -27,7 +29,6 @@ describe('Room Controller', () => {
         cookie = response1.headers['set-cookie'][0];
         token = cookie.split(';')[0].split('=')[1];
         expect(token).toBeDefined();
-        console.timeEnd('Connecting to test database');
     });
 
     afterAll(async () => {
