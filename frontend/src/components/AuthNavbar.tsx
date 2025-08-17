@@ -44,11 +44,13 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
             try {
                 const response = await getProfile();
                 setProfileData(response.data);
-                
+
                 // Fetch avatar
                 if (response.data?.player.id) {
                     try {
-                        const avatarResponse = await getAvatar(response.data.player.id);
+                        const avatarResponse = await getAvatar(
+                            response.data.player.id
+                        );
                         const avatarBlob = new Blob([avatarResponse.data]);
                         const avatarObjectUrl = URL.createObjectURL(avatarBlob);
                         setAvatarUrl(avatarObjectUrl);
@@ -130,12 +132,9 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                     <IconButton
                         onClick={handleProfileClick}
                         sx={{ ml: 1 }}
-                        size="small"
+                        size='small'
                     >
-                        <Avatar
-                            src={avatarUrl}
-                            sx={{ width: 40, height: 40 }}
-                        >
+                        <Avatar src={avatarUrl} sx={{ width: 40, height: 40 }}>
                             {profileData?.username?.[0]?.toUpperCase() || 'U'}
                         </Avatar>
                     </IconButton>
@@ -144,12 +143,18 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                         open={open}
                         onClose={handleClose}
                         onClick={handleClose}
-                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                        transformOrigin={{
+                            horizontal: 'right',
+                            vertical: 'top'
+                        }}
+                        anchorOrigin={{
+                            horizontal: 'right',
+                            vertical: 'bottom'
+                        }}
                         slotProps={{
                             paper: {
-                                elevation: 0,
-                            },
+                                elevation: 0
+                            }
                         }}
                         sx={{
                             overflow: 'visible',
@@ -160,7 +165,7 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                                 width: 32,
                                 height: 32,
                                 ml: -0.5,
-                                mr: 1,
+                                mr: 1
                             },
                             '&:before': {
                                 content: '""',
@@ -172,26 +177,26 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                                 height: 10,
                                 bgcolor: 'background.paper',
                                 transform: 'translateY(-50%) rotate(45deg)',
-                                zIndex: 0,
-                            },
+                                zIndex: 0
+                            }
                         }}
                     >
                         <MenuItem onClick={handleViewProfile}>
                             <ListItemIcon>
-                                <PersonIcon fontSize="small" />
+                                <PersonIcon fontSize='small' />
                             </ListItemIcon>
                             <ListItemText>View Profile</ListItemText>
                         </MenuItem>
                         <MenuItem onClick={handleSettings}>
                             <ListItemIcon>
-                                <SettingsIcon fontSize="small" />
+                                <SettingsIcon fontSize='small' />
                             </ListItemIcon>
                             <ListItemText>Settings</ListItemText>
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={handleLogout}>
                             <ListItemIcon>
-                                <LogoutIcon fontSize="small" />
+                                <LogoutIcon fontSize='small' />
                             </ListItemIcon>
                             <ListItemText>Logout</ListItemText>
                         </MenuItem>
