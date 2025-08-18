@@ -13,19 +13,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Avatar from '@mui/material/Avatar';
 import { useTheme, alpha } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import PersonIcon from '@mui/icons-material/Person';
 import updateProfile from '../api/auth/updateProfile';
 import getProfile from '../api/auth/getProfile';
-import getAvatar from '../api/auth/getAvatar';
 import uploadAvatar from '../api/auth/uploadAvatar';
+import UserAvatar from '../components/UserAvatar';
 import { isAxiosError } from 'axios';
-
-interface UserProfile {
-    id: string;
-    username: string;
-    email: string;
-    avatar?: string;
-}
 
 const ProfileUpdate: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -40,31 +32,20 @@ const ProfileUpdate: React.FC = () => {
     const [snackbarSeverity, setSnackbarSeverity] = useState<
         'success' | 'error'
     >('error');
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string>('');
+    const [avatarKey, setAvatarKey] = useState<number>(0);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string>('');
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const theme = useTheme();
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await getProfile();
-                const profile: UserProfile = response.data.player;
+                const profile = await getProfile();
                 setUsername(profile.username);
                 setEmail(profile.email);
-
-                // If user has an avatar, fetch it
-                if (profile.avatar && profile.id) {
-                    try {
-                        const avatarResponse = await getAvatar(profile.id);
-                        const avatarBlob = avatarResponse.data;
-                        const avatarObjectUrl = URL.createObjectURL(avatarBlob);
-                        setAvatarUrl(avatarObjectUrl);
-                    } catch (avatarError) {
-                        console.error('Error fetching avatar:', avatarError);
-                        // Avatar not found is not critical, so we don't show an error
-                    }
-                }
+                setUserId(profile.id);
             } catch (error) {
                 console.error('Error fetching profile:', error);
                 setSnackbarMessage('Failed to load profile');
@@ -76,14 +57,16 @@ const ProfileUpdate: React.FC = () => {
         };
 
         fetchProfile();
+    }, []);
 
-        // Cleanup function to revoke object URL
+    // Cleanup preview URL when component unmounts
+    useEffect(() => {
         return () => {
-            if (avatarUrl) {
-                URL.revokeObjectURL(avatarUrl);
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
             }
         };
-    }, [avatarUrl]);
+    }, [previewUrl]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -166,11 +149,12 @@ const ProfileUpdate: React.FC = () => {
             setSelectedFile(file);
 
             // Create preview URL
-            const previewUrl = URL.createObjectURL(file);
-            if (avatarUrl) {
-                URL.revokeObjectURL(avatarUrl);
+            const objectUrl = URL.createObjectURL(file);
+            // Clean up previous preview URL if it exists
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
             }
-            setAvatarUrl(previewUrl);
+            setPreviewUrl(objectUrl);
         }
     };
 
@@ -183,7 +167,16 @@ const ProfileUpdate: React.FC = () => {
             setSnackbarMessage('Avatar updated successfully!');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
+
+            // Clean up preview URL
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+
             setSelectedFile(null);
+            setPreviewUrl('');
+            // Force UserAvatar component to re-fetch the avatar
+            setAvatarKey((prev) => prev + 1);
         } catch (error) {
             if (isAxiosError(error) && error.response?.data.message) {
                 setSnackbarMessage(error.response.data.message);
@@ -195,6 +188,14 @@ const ProfileUpdate: React.FC = () => {
         } finally {
             setUploadingAvatar(false);
         }
+    };
+
+    const handleCancelPreview = () => {
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+        setSelectedFile(null);
+        setPreviewUrl('');
     };
 
     if (loadingProfile) {
@@ -246,34 +247,37 @@ const ProfileUpdate: React.FC = () => {
                 >
                     <CardContent>
                         <Stack spacing={3} alignItems='center'>
-                            {avatarUrl ? (
-                                <Avatar
-                                    src={avatarUrl}
-                                    sx={{
-                                        width: 64,
-                                        height: 64,
-                                        mb: 1,
-                                        boxShadow: 2
-                                    }}
-                                />
-                            ) : (
-                                <Box
-                                    sx={{
-                                        bgcolor: theme.palette.primary.main,
-                                        color: theme.palette.primary
-                                            .contrastText,
-                                        borderRadius: '50%',
-                                        width: 64,
-                                        height: 64,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        mb: 1,
-                                        boxShadow: 2
-                                    }}
-                                >
-                                    <PersonIcon fontSize='large' />
+                            {/* Show preview if file is selected, otherwise show UserAvatar */}
+                            {previewUrl ? (
+                                <Box sx={{ textAlign: 'center' }}>
+                                    <Avatar
+                                        src={previewUrl}
+                                        sx={{
+                                            width: 64,
+                                            height: 64,
+                                            mb: 1,
+                                            boxShadow: 2,
+                                            border: `2px solid ${theme.palette.primary.main}`
+                                        }}
+                                    />
+                                    <Typography
+                                        variant='caption'
+                                        color='primary'
+                                        sx={{
+                                            display: 'block',
+                                            fontWeight: 'bold'
+                                        }}
+                                    >
+                                        Preview
+                                    </Typography>
                                 </Box>
+                            ) : (
+                                <UserAvatar
+                                    key={avatarKey}
+                                    playerId={userId}
+                                    username={username}
+                                    size={64}
+                                />
                             )}
 
                             {/* Avatar Upload Section */}
@@ -301,16 +305,27 @@ const ProfileUpdate: React.FC = () => {
                                         </Button>
                                     </label>
                                     {selectedFile && (
-                                        <Button
-                                            variant='contained'
-                                            size='small'
-                                            onClick={handleAvatarUpload}
-                                            disabled={uploadingAvatar}
-                                        >
-                                            {uploadingAvatar
-                                                ? 'Uploading...'
-                                                : 'Upload'}
-                                        </Button>
+                                        <>
+                                            <Button
+                                                variant='contained'
+                                                size='small'
+                                                onClick={handleAvatarUpload}
+                                                disabled={uploadingAvatar}
+                                            >
+                                                {uploadingAvatar
+                                                    ? 'Uploading...'
+                                                    : 'Upload'}
+                                            </Button>
+                                            <Button
+                                                variant='outlined'
+                                                size='small'
+                                                color='secondary'
+                                                onClick={handleCancelPreview}
+                                                disabled={uploadingAvatar}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </>
                                     )}
                                 </Stack>
                                 {selectedFile && (

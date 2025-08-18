@@ -45,7 +45,7 @@ describe('ProfileUpdate', () => {
             </MemoryRouter>
         );
 
-        expect(screen.getByRole('progressbar')).toBeInTheDocument();
+        expect(screen.getByRole('progressbar'));
     });
 
     it('should render the profile update form after loading', async () => {
@@ -411,7 +411,7 @@ describe('ProfileUpdate', () => {
         fireEvent.click(submitButton);
 
         // Should show loading spinner
-        expect(screen.getByRole('progressbar')).toBeInTheDocument();
+        expect(screen.getAllByRole('progressbar')).toHaveLength(2);
         expect(
             screen.queryByRole('button', { name: /update profile/i })
         ).not.toBeInTheDocument();

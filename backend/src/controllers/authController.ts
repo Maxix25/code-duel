@@ -247,8 +247,7 @@ export const getProfile = async (
             player: {
                 id: player._id,
                 username: player.username,
-                email: player.email,
-                avatar: player.avatar
+                email: player.email
             }
         });
     } catch (error) {

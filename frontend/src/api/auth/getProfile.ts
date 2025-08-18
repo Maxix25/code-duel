@@ -1,10 +1,14 @@
 import api from '../api';
-import { AxiosResponse } from 'axios';
 
-const getProfile = async (): Promise<AxiosResponse> => {
+interface UserProfile {
+    id: string;
+    username: string;
+    email: string;
+}
+const getProfile = async (): Promise<UserProfile> => {
     try {
         const response = await api.get('/auth/profile');
-        return response;
+        return response.data.player;
     } catch (error) {
         console.error('Error getting profile:', error);
         throw error;
