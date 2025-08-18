@@ -20,6 +20,8 @@
         "@mui/icons-material": "^7.2.0",
         "@mui/material": "^7.2.0",
         "@mui/system": "^7.2.0",
+        "@uiw/codemirror-theme-atomone": "^4.25.1",
+        "@uiw/codemirror-theme-github": "^4.25.1",
         "@uiw/react-codemirror": "^4.24.2",
         "axios": "^1.11.0",
         "base-64": "^1.0.0",
@@ -30,6 +32,7 @@
         "socket.io-client": "^4.8.1"
     },
     "devDependencies": {
+        "@codemirror/language": "^6.11.3",
         "@eslint/js": "^9.31.0",
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/react": "^16.3.0",
