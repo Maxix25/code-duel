@@ -10,6 +10,9 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ReactMarkdown from 'react-markdown';
+import { useTheme } from '@mui/material/styles';
+import { useThemeContext } from '../context/ThemeContext';
 import socket from '../services/socket';
 import roomSetup from '../services/roomSetup';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +29,8 @@ const Room: FC = () => {
     const urlparams = new URLSearchParams(window.location.search);
     const roomId = urlparams.get('roomId');
     const navigate = useNavigate();
+    const theme = useTheme();
+    const { mode } = useThemeContext();
     const [code, setCode] = useState<string>('# Write your code here');
     const [output, setOutput] = useState<SolutionResult[] | string>([]);
 
@@ -183,13 +188,23 @@ const Room: FC = () => {
                         sx={{
                             flexGrow: 1,
                             p: 2,
-                            backgroundColor: '#1e1e1e',
-                            color: 'white',
+                            backgroundColor:
+                                mode === 'dark'
+                                    ? '#1e1e1e'
+                                    : theme.palette.background.paper,
+                            color:
+                                mode === 'dark'
+                                    ? 'white'
+                                    : theme.palette.text.primary,
                             overflowY: 'auto',
                             mt: 0,
                             minHeight: '300px',
                             fontFamily: 'monospace',
-                            whiteSpace: 'pre-wrap'
+                            whiteSpace: 'pre-wrap',
+                            border:
+                                mode === 'dark'
+                                    ? '1px solid rgba(255, 255, 255, 0.1)'
+                                    : '1px solid rgba(0, 0, 0, 0.1)'
                         }}
                     >
                         <div
@@ -199,13 +214,142 @@ const Room: FC = () => {
                             aria-labelledby='tab-statement'
                         >
                             {activeTab === 0 && (
-                                <Typography
-                                    variant='body1'
-                                    component='pre'
-                                    sx={{ whiteSpace: 'pre-wrap' }}
+                                <ReactMarkdown
+                                    components={{
+                                        p: ({ children }) => (
+                                            <Typography
+                                                variant='body1'
+                                                sx={{
+                                                    whiteSpace: 'pre-wrap',
+                                                    marginBottom: 1
+                                                }}
+                                            >
+                                                {children}
+                                            </Typography>
+                                        ),
+                                        h1: ({ children }) => (
+                                            <Typography
+                                                variant='h4'
+                                                sx={{ marginBottom: 1 }}
+                                            >
+                                                {children}
+                                            </Typography>
+                                        ),
+                                        h2: ({ children }) => (
+                                            <Typography
+                                                variant='h5'
+                                                sx={{ marginBottom: 1 }}
+                                            >
+                                                {children}
+                                            </Typography>
+                                        ),
+                                        h3: ({ children }) => (
+                                            <Typography
+                                                variant='h6'
+                                                sx={{ marginBottom: 1 }}
+                                            >
+                                                {children}
+                                            </Typography>
+                                        ),
+                                        code: ({ children, className }) => {
+                                            const isInline = !className;
+                                            return (
+                                                <Typography
+                                                    component={
+                                                        isInline
+                                                            ? 'code'
+                                                            : 'pre'
+                                                    }
+                                                    sx={{
+                                                        fontFamily: 'monospace',
+                                                        backgroundColor:
+                                                            mode === 'dark'
+                                                                ? '#23272f'
+                                                                : '#f5f5f5',
+                                                        color:
+                                                            mode === 'dark'
+                                                                ? 'white'
+                                                                : '#333',
+                                                        padding: isInline
+                                                            ? '2px 4px'
+                                                            : '8px',
+                                                        borderRadius: '4px',
+                                                        display: isInline
+                                                            ? 'inline'
+                                                            : 'block',
+                                                        marginBottom: isInline
+                                                            ? 0
+                                                            : 1,
+                                                        whiteSpace: isInline
+                                                            ? 'normal'
+                                                            : 'pre'
+                                                    }}
+                                                >
+                                                    {children}
+                                                </Typography>
+                                            );
+                                        },
+                                        ul: ({ children }) => (
+                                            <Box
+                                                component='ul'
+                                                sx={{
+                                                    marginBottom: 1,
+                                                    paddingLeft: 2
+                                                }}
+                                            >
+                                                {children}
+                                            </Box>
+                                        ),
+                                        ol: ({ children }) => (
+                                            <Box
+                                                component='ol'
+                                                sx={{
+                                                    marginBottom: 1,
+                                                    paddingLeft: 2
+                                                }}
+                                            >
+                                                {children}
+                                            </Box>
+                                        ),
+                                        li: ({ children }) => (
+                                            <Typography
+                                                component='li'
+                                                variant='body1'
+                                                sx={{ marginBottom: 0.5 }}
+                                            >
+                                                {children}
+                                            </Typography>
+                                        ),
+                                        blockquote: ({ children }) => (
+                                            <Box
+                                                component='blockquote'
+                                                sx={{
+                                                    backgroundColor:
+                                                        mode === 'dark'
+                                                            ? '#23272f'
+                                                            : '#f8f9fa',
+                                                    borderLeft:
+                                                        mode === 'dark'
+                                                            ? '4px solid #555'
+                                                            : '4px solid #ddd',
+                                                    margin: '16px 0',
+                                                    padding: '12px 16px',
+                                                    borderRadius: '0 4px 4px 0',
+                                                    fontStyle: 'italic',
+                                                    color:
+                                                        mode === 'dark'
+                                                            ? 'white'
+                                                            : theme.palette.text
+                                                                  .primary
+                                                }}
+                                            >
+                                                {children}
+                                            </Box>
+                                        )
+                                    }}
                                 >
                                     {problemStatement}
-                                </Typography>
+                                </ReactMarkdown>
                             )}
                         </div>
                         <div
@@ -250,9 +394,24 @@ const Room: FC = () => {
                                                         key={index}
                                                         sx={{
                                                             background:
-                                                                '#23272f',
-                                                            color: 'white',
-                                                            mb: 1
+                                                                mode === 'dark'
+                                                                    ? '#23272f'
+                                                                    : theme
+                                                                          .palette
+                                                                          .background
+                                                                          .default,
+                                                            color:
+                                                                mode === 'dark'
+                                                                    ? 'white'
+                                                                    : theme
+                                                                          .palette
+                                                                          .text
+                                                                          .primary,
+                                                            mb: 1,
+                                                            border:
+                                                                mode === 'dark'
+                                                                    ? '1px solid rgba(255, 255, 255, 0.1)'
+                                                                    : '1px solid rgba(0, 0, 0, 0.1)'
                                                         }}
                                                     >
                                                         <AccordionSummary
@@ -342,9 +501,23 @@ const Room: FC = () => {
                                                 <Accordion
                                                     key={index}
                                                     sx={{
-                                                        background: '#23272f',
-                                                        color: 'white',
-                                                        mb: 1
+                                                        background:
+                                                            mode === 'dark'
+                                                                ? '#23272f'
+                                                                : theme.palette
+                                                                      .background
+                                                                      .default,
+                                                        color:
+                                                            mode === 'dark'
+                                                                ? 'white'
+                                                                : theme.palette
+                                                                      .text
+                                                                      .primary,
+                                                        mb: 1,
+                                                        border:
+                                                            mode === 'dark'
+                                                                ? '1px solid rgba(255, 255, 255, 0.1)'
+                                                                : '1px solid rgba(0, 0, 0, 0.1)'
                                                     }}
                                                 >
                                                     <AccordionSummary
@@ -385,7 +558,15 @@ const Room: FC = () => {
                                                             <pre
                                                                 style={{
                                                                     background:
-                                                                        '#181c23',
+                                                                        mode ===
+                                                                        'dark'
+                                                                            ? '#181c23'
+                                                                            : '#f5f5f5',
+                                                                    color:
+                                                                        mode ===
+                                                                        'dark'
+                                                                            ? 'white'
+                                                                            : '#333',
                                                                     padding: 8,
                                                                     borderRadius: 4
                                                                 }}
@@ -406,7 +587,15 @@ const Room: FC = () => {
                                                             <pre
                                                                 style={{
                                                                     background:
-                                                                        '#181c23',
+                                                                        mode ===
+                                                                        'dark'
+                                                                            ? '#181c23'
+                                                                            : '#f5f5f5',
+                                                                    color:
+                                                                        mode ===
+                                                                        'dark'
+                                                                            ? 'white'
+                                                                            : '#333',
                                                                     padding: 8,
                                                                     borderRadius: 4
                                                                 }}
@@ -425,7 +614,15 @@ const Room: FC = () => {
                                                             <pre
                                                                 style={{
                                                                     background:
-                                                                        '#181c23',
+                                                                        mode ===
+                                                                        'dark'
+                                                                            ? '#181c23'
+                                                                            : '#f5f5f5',
+                                                                    color:
+                                                                        mode ===
+                                                                        'dark'
+                                                                            ? 'white'
+                                                                            : '#333',
                                                                     padding: 8,
                                                                     borderRadius: 4
                                                                 }}
@@ -444,7 +641,15 @@ const Room: FC = () => {
                                                                         <pre
                                                                             style={{
                                                                                 background:
-                                                                                    '#181c23',
+                                                                                    mode ===
+                                                                                    'dark'
+                                                                                        ? '#181c23'
+                                                                                        : '#f5f5f5',
+                                                                                color:
+                                                                                    mode ===
+                                                                                    'dark'
+                                                                                        ? 'white'
+                                                                                        : '#333',
                                                                                 padding: 8,
                                                                                 borderRadius: 4
                                                                             }}
@@ -464,7 +669,15 @@ const Room: FC = () => {
                                                                         <pre
                                                                             style={{
                                                                                 background:
-                                                                                    '#181c23',
+                                                                                    mode ===
+                                                                                    'dark'
+                                                                                        ? '#181c23'
+                                                                                        : '#f5f5f5',
+                                                                                color:
+                                                                                    mode ===
+                                                                                    'dark'
+                                                                                        ? 'white'
+                                                                                        : '#333',
                                                                                 padding: 8,
                                                                                 borderRadius: 4
                                                                             }}
@@ -483,7 +696,15 @@ const Room: FC = () => {
                                                                         <pre
                                                                             style={{
                                                                                 background:
-                                                                                    '#181c23',
+                                                                                    mode ===
+                                                                                    'dark'
+                                                                                        ? '#181c23'
+                                                                                        : '#f5f5f5',
+                                                                                color:
+                                                                                    mode ===
+                                                                                    'dark'
+                                                                                        ? 'white'
+                                                                                        : '#333',
                                                                                 padding: 8,
                                                                                 borderRadius: 4
                                                                             }}
