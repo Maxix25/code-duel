@@ -10,6 +10,8 @@ export interface Player extends Document {
     wins: number;
     losses: number;
     ties: number;
+    googleId?: string;
+    jwtSecureCode?: string;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -20,14 +22,21 @@ const playerSchema: Schema = new Schema({
     ties: { type: Number, default: 0 },
     roomId: { type: Schema.Types.ObjectId, ref: 'Room' },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    avatar: { type: String, default: '/uploads/avatars/default.png' }
+    password: {
+        type: String,
+        required: function (this: Player) {
+            return !this.googleId;
+        }
+    },
+    avatar: { type: String, default: '/uploads/avatars/default.png' },
+    googleId: { type: String, unique: true, sparse: true },
+    jwtSecureCode: { type: String }
 });
 
 // Hook Pre-save para hashear la contraseña
 playerSchema.pre<Player>('save', async function (next) {
-    // Solo hashear la contraseña si ha sido modificada (o es nueva)
-    if (!this.isModified('password')) return next();
+    // Skip password hashing for OAuth users or if password hasn't been modified
+    if (!this.isModified('password') || this.googleId) return next();
 
     try {
         const salt = await genSalt(10);
