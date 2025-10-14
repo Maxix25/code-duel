@@ -3,9 +3,8 @@ import {
     Profile,
     VerifyCallback
 } from 'passport-google-oauth20';
-import Player from '../models/Player';
-import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
+import OAuthPlayer from '../models/OAuthPlayer';
 dotenv.config();
 
 const options = {
@@ -22,19 +21,16 @@ async function verify(
 ) {
     try {
         // Check if user exists in our database using Mongoose syntax
-        let user = await Player.findOne({
+        let user = await OAuthPlayer.findOne({
             googleId: profile.id
         });
 
         // If user doesn't exist, create a new one
         if (!user) {
-            user = new Player({
-                googleId: profile.id,
+            user = new OAuthPlayer({
+                providerId: profile.id,
                 email: profile.emails?.[0]?.value,
-                username: profile.displayName || `user_${profile.id}`,
-                jwtSecureCode: uuidv4(),
-                // Set a default password or mark as OAuth user
-                password: 'oauth_user_' + uuidv4() // This won't be used for OAuth login
+                username: profile.displayName || `user_${profile.id}`
             });
             await user.save();
         }

@@ -7,5 +7,9 @@ module.exports = {
     testEnvironment: 'node',
     transform: {
         ...tsJestTransformCfg
-    }
+    },
+    moduleNameMapper: {
+        '^uuid$': require.resolve('uuid')
+    },
+    transformIgnorePatterns: ['/node_modules/(?!uuid)/']
 };
