@@ -14,8 +14,8 @@ const options = {
 };
 
 async function verify(
-    accessToken: string,
-    refreshToken: string,
+    _accessToken: string,
+    _refreshToken: string,
     profile: Profile,
     done: VerifyCallback
 ) {
