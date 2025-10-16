@@ -4,7 +4,7 @@ import {
     VerifyCallback
 } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
-import OAuthPlayer from '../models/OAuthPlayer';
+import Player from '../models/Player';
 dotenv.config();
 
 const options = {
@@ -21,17 +21,54 @@ async function verify(
 ) {
     try {
         // Check if user exists in our database using Mongoose syntax
-        let user = await OAuthPlayer.findOne({
-            googleId: profile.id
+        let user = await Player.findOne({
+            'accounts.providerId': profile.id,
+            'accounts.provider': 'google'
         });
-
-        // If user doesn't exist, create a new one
-        if (!user) {
-            user = new OAuthPlayer({
-                providerId: profile.id,
-                email: profile.emails?.[0]?.value,
-                username: profile.displayName || `user_${profile.id}`
+        if (user) {
+            return done(null, user);
+        }
+        // If user doesn't exist, check if it exists by email (link accounts)
+        user = await Player.findOne({ email: profile.emails?.[0]?.value });
+        if (user) {
+            // Add Google account to existing user
+            user.accounts.push({
+                provider: 'google',
+                providerId: profile.id
             });
+            await user.save();
+            return done(null, user);
+        }
+        // If user doesn't exist, create a new one
+        // Check if displayName is available, otherwise use email prefix or a default username
+        const name = await Player.findOne({ username: profile.displayName });
+        if (name) {
+            profile.displayName = `user_${profile.id}`;
+        }
+        if (!user) {
+            try {
+                user = new Player({
+                    email: profile.emails?.[0]?.value,
+                    username: profile.displayName || `user_${profile.id}`,
+                    accounts: [
+                        {
+                            provider: 'google',
+                            providerId: profile.id
+                        }
+                    ]
+                });
+            } catch {
+                user = new Player({
+                    email: profile.emails?.[0]?.value,
+                    username: `user_${profile.id}`,
+                    accounts: [
+                        {
+                            provider: 'google',
+                            providerId: profile.id
+                        }
+                    ]
+                });
+            }
             await user.save();
         }
 
