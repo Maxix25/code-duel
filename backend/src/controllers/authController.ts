@@ -138,11 +138,15 @@ export const updateProfile = async (
                 return;
             }
         }
-
+        // Check if a player already has that username
+        const existingPlayer = await Player.findOne({ username });
+        if (existingPlayer && existingPlayer.id.toString() !== playerId) {
+            res.status(409).json({ message: 'That username is already taken' });
+            return;
+        }
         player.username = username;
         if (password) player.password = password;
         player.email = email;
-
         await player.save();
 
         res.status(200).json({
