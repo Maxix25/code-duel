@@ -138,11 +138,15 @@ export const updateProfile = async (
                 return;
             }
         }
-
+        // Check if a player already has that username
+        const existingPlayer = await Player.findOne({ username });
+        if (existingPlayer && existingPlayer.id.toString() !== playerId) {
+            res.status(409).json({ message: 'That username is already taken' });
+            return;
+        }
         player.username = username;
         if (password) player.password = password;
         player.email = email;
-
         await player.save();
 
         res.status(200).json({
@@ -350,4 +354,44 @@ export const logoutPlayer = async (
         secure: process.env.NODE_ENV === 'production'
     });
     res.status(200).json({ message: 'Logout successful' });
+};
+
+export const handleGoogleAuth = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        // Get the user from passport authentication
+        const user = req.user as typeof Player.prototype;
+
+        if (!user) {
+            res.status(400).json({
+                message: 'Authentication failed'
+            });
+            return;
+        }
+
+        // Generate JWT token
+        const token = generateToken(
+            user._id as mongoose.Types.ObjectId,
+            user.username
+        );
+
+        // Set token as httpOnly cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 60 * 60 * 1000 // 1 hour
+        });
+
+        // Redirect to frontend dashboard
+        const redirectUrl = `${process.env.FE_BASE_URL}/dashboard`;
+        res.redirect(redirectUrl);
+    } catch (error) {
+        console.error('Google OAuth callback error:', error);
+        res.status(500).json({
+            message: 'An error occurred during authentication',
+            error
+        });
+    }
 };

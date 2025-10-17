@@ -1,45 +1,33 @@
 import request from 'supertest';
-import { httpServer } from '../server';
-import mongoose from 'mongoose';
+import { getTestServer } from '../jest/setupTestServer';
+import { clearDatabase } from '../testUtils/clearDatabase';
+import { getAuthenticatedRequest } from '../testUtils/getAuthenticatedRequest';
 import createTestPlayer from '../testUtils/createTestPlayer';
 import createTestQuestion from '../testUtils/createTestQuestion';
-import Question from '../models/Question';
+import { getRandomQuestion } from '../models/Question';
 
-let token: string;
 let cookie: string;
 
 describe('Room Controller', () => {
     beforeAll(async () => {
-        await mongoose.disconnect();
-        await mongoose.connect(
-            process.env.MONGO_URI_TEST || 'mongodb://localhost:27017/test'
-        );
+        await clearDatabase();
+
         await createTestPlayer(
             'testuser1',
             'password1',
             'testuser1@example.com'
         );
         await createTestQuestion();
-        const question = await Question.findOne();
-        expect(question).not.toBeNull();
-        const response1 = await request(httpServer).post('/auth/login').send({
-            username: 'testuser1',
-            password: 'password1'
-        });
-        cookie = response1.headers['set-cookie'][0];
-        token = cookie.split(';')[0].split('=')[1];
-        expect(token).toBeDefined();
-    });
 
-    afterAll(async () => {
-        console.time('Disconnecting from test database');
-        await mongoose.connection.dropDatabase();
-        await mongoose.disconnect();
-        console.timeEnd('Disconnecting from test database');
+        const question = await getRandomQuestion();
+        expect(question).not.toBeNull();
+
+        const auth = await getAuthenticatedRequest('testuser1', 'password1');
+        cookie = auth.cookie;
     });
 
     it('should create a new room', async () => {
-        const response = await request(httpServer)
+        const response = await request(getTestServer())
             .post('/room/start')
             .send({ password: '' })
             .set('Cookie', cookie);

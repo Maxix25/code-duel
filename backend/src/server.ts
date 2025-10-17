@@ -13,9 +13,7 @@ export let httpServer: http.Server;
 
 const startServer = async () => {
     try {
-        if (process.env.NODE_ENV !== 'test') {
-            await connectDB();
-        }
+        await connectDB();
         httpServer = http.createServer(app);
 
         const io = new SocketIOServer(httpServer, {
