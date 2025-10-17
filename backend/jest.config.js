@@ -8,8 +8,5 @@ module.exports = {
     transform: {
         ...tsJestTransformCfg
     },
-    moduleNameMapper: {
-        '^uuid$': require.resolve('uuid')
-    },
-    transformIgnorePatterns: ['/node_modules/(?!uuid)/']
+    setupFilesAfterEnv: ['./src/jest/setupTests.ts']
 };

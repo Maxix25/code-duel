@@ -48,6 +48,7 @@
         "globals": "^16.3.0",
         "jest": "^30.0.5",
         "jiti": "^2.5.1",
+        "mongodb-memory-server": "^10.2.3",
         "prettier": "^3.6.2",
         "supertest": "^7.1.4",
         "ts-jest": "^29.4.0",
