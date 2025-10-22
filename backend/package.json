@@ -9,6 +9,7 @@
         "dev": "tsx watch ./src/server.ts",
         "lint": "eslint .",
         "build": "tsc",
+        "build:tsgo": "tsgo",
         "typecheck": "tsc --noEmit",
         "checkFormat": "prettier . --check",
         "format": "prettier . --write"
@@ -44,6 +45,7 @@
         "@types/passport": "^1.0.17",
         "@types/passport-google-oauth20": "^2.0.16",
         "@types/supertest": "^6.0.3",
+        "@typescript/native-preview": "7.0.0-dev.20251021.1",
         "eslint": "^9.38.0",
         "globals": "^16.4.0",
         "jest": "^30.2.0",
