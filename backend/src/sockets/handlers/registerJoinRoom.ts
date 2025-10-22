@@ -90,19 +90,49 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                 }
             }
             if (appendPlayer) {
-                room.players.push({
-                    player: userId as mongoose.Schema.Types.ObjectId,
-                    score: 0,
-                    ready: false,
-                    current_code: question.startingCode
-                });
-                await room.save();
+                try {
+                    room.players.push({
+                        player: userId as mongoose.Schema.Types.ObjectId,
+                        score: 0,
+                        ready: false,
+                        current_code: question.startingCode
+                    });
+                    await room.save();
+                } catch (error) {
+                    if (
+                        error &&
+                        typeof error === 'object' &&
+                        'code' in error &&
+                        (error as { code: number }).code === 11000
+                    ) {
+                        console.error(
+                            'Error adding player to room on the db, probably because the player is already in the room'
+                        );
+                    }
+                }
             }
-            // Join the room in socket.io
+            // Join the room in socket.io and store userId in socket data
+            socket.data.userId = userId.toString();
             socket.join(data.roomId);
             if (room.status === 'waiting' && room.players.length >= 2) {
                 console.log(`Room ${data.roomId} is ready to start`);
-                io.to(data.roomId).emit('add_ready_button');
+                // Emit add_ready_button only to players who are not ready
+                const socketsInRoom = await io.in(data.roomId).fetchSockets();
+                for (const player of room.players) {
+                    if (!player.ready) {
+                        // Find the socket for this player and emit to them
+                        for (const clientSocket of socketsInRoom) {
+                            // Store player ID in socket data when they join
+                            if (
+                                clientSocket.data.userId ===
+                                player.player.toString()
+                            ) {
+                                clientSocket.emit('add_ready_button');
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             console.log(`Player ${socket.id} joined room ${data.roomId}`);
         }

@@ -23,7 +23,8 @@ const RoomSchema: Schema = new Schema({
         {
             player: {
                 type: Schema.Types.ObjectId,
-                ref: 'Player'
+                ref: 'Player',
+                required: true
             },
             score: {
                 type: Number,
@@ -67,6 +68,15 @@ const RoomSchema: Schema = new Schema({
         max: 10
     }
 });
+
+// Ensure no duplicate players in a room
+RoomSchema.index(
+    { 'players.player': 1 },
+    {
+        unique: true,
+        partialFilterExpression: { 'players.player': { $exists: true } }
+    }
+);
 
 RoomSchema.pre<Room>('save', async function (next) {
     // Don't hash empty passwords (for public rooms)
