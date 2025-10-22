@@ -98,10 +98,17 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
                         current_code: question.startingCode
                     });
                     await room.save();
-                } catch {
-                    console.error(
-                        'Error adding player to room on the db, probably because the player is already in the room'
-                    );
+                } catch (error) {
+                    if (
+                        error &&
+                        typeof error === 'object' &&
+                        'code' in error &&
+                        (error as { code: number }).code === 11000
+                    ) {
+                        console.error(
+                            'Error adding player to room on the db, probably because the player is already in the room'
+                        );
+                    }
                 }
             }
             // Join the room in socket.io and store userId in socket data
@@ -110,12 +117,10 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
             if (room.status === 'waiting' && room.players.length >= 2) {
                 console.log(`Room ${data.roomId} is ready to start`);
                 // Emit add_ready_button only to players who are not ready
+                const socketsInRoom = await io.in(data.roomId).fetchSockets();
                 for (const player of room.players) {
                     if (!player.ready) {
                         // Find the socket for this player and emit to them
-                        const socketsInRoom = await io
-                            .in(data.roomId)
-                            .fetchSockets();
                         for (const clientSocket of socketsInRoom) {
                             // Store player ID in socket data when they join
                             if (
