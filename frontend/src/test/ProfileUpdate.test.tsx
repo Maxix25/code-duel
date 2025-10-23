@@ -12,7 +12,7 @@ const mockUserProfile = {
 
 const server = setupServer(
     // Mock getProfile endpoint
-    http.get('/auth/profile', () => {
+    http.get('/profile', () => {
         return HttpResponse.json(
             {
                 message: 'Profile retrieved successfully',
@@ -22,7 +22,7 @@ const server = setupServer(
         );
     }),
     // Mock updateProfile endpoint
-    http.put('/auth/update', () => {
+    http.put('/profile/update', () => {
         return HttpResponse.json(
             {
                 message: 'Profile updated successfully',
@@ -283,7 +283,7 @@ describe('ProfileUpdate', () => {
 
     it('should handle profile fetch error', async () => {
         server.use(
-            http.get('/auth/profile', () => {
+            http.get('/profile', () => {
                 return HttpResponse.json(
                     { message: 'Unauthorized' },
                     { status: 401 }
@@ -306,7 +306,7 @@ describe('ProfileUpdate', () => {
 
     it('should handle update profile error', async () => {
         server.use(
-            http.put('/auth/update', () => {
+            http.put('/profile/update', () => {
                 return HttpResponse.json(
                     { message: 'Invalid credentials' },
                     { status: 401 }
@@ -343,7 +343,7 @@ describe('ProfileUpdate', () => {
 
     it('should handle update profile error without specific message', async () => {
         server.use(
-            http.put('/auth/update', () => {
+            http.put('/profile/update', () => {
                 return HttpResponse.json({}, { status: 500 });
             })
         );
@@ -378,7 +378,7 @@ describe('ProfileUpdate', () => {
     it('should show loading spinner when submitting', async () => {
         // Delay the response to test loading state
         server.use(
-            http.put('/auth/update', async () => {
+            http.put('/profile/update', async () => {
                 await new Promise((resolve) => setTimeout(resolve, 100));
                 return HttpResponse.json(
                     {

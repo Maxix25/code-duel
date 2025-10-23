@@ -242,7 +242,6 @@ export const userIsInRoom = async (
             players: { $elemMatch: { player: userId } },
             status: { $in: ['playing', 'waiting'] }
         });
-        console.log('Found room for user:', room?.id);
         if (room) {
             res.status(200).json({ inRoom: true, roomId: room.id });
             return;

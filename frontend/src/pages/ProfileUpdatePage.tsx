@@ -13,9 +13,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Avatar from '@mui/material/Avatar';
 import { useTheme, alpha } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import updateProfile from '../api/auth/updateProfile';
-import getProfile from '../api/auth/getProfile';
-import uploadAvatar from '../api/auth/uploadAvatar';
+import updateProfile from '../api/profile/updateProfile';
+import getProfile from '../api/profile/getProfile';
+import uploadAvatar from '../api/profile/uploadAvatar';
 import UserAvatar from '../components/UserAvatar';
 import { isAxiosError } from 'axios';
 

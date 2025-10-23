@@ -1,6 +1,7 @@
 import express from 'express';
 import authRoutes from './routes/authRoutes';
 import roomRoutes from './routes/roomRoutes';
+import profileRoutes from './routes/profileRoutes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
@@ -20,5 +21,6 @@ app.use(
 
 app.use('/auth', authRoutes);
 app.use('/room', roomRoutes);
+app.use('/profile', profileRoutes);
 
 export default app;

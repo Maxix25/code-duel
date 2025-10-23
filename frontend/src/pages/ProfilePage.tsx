@@ -17,8 +17,8 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RemoveIcon from '@mui/icons-material/Remove';
-import getPlayerProfile from '../api/auth/getPlayerProfile';
-import getAvatar from '../api/auth/getAvatar';
+import getPlayerProfile from '../api/profile/getPlayerProfile';
+import getAvatar from '../api/profile/getAvatar';
 import { isAxiosError } from 'axios';
 
 interface PlayerProfile {
