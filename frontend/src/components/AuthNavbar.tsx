@@ -19,7 +19,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import IconButton from '@mui/material/IconButton';
 import { useState, useEffect } from 'react';
 import UserAvatar from './UserAvatar';
-import getProfile from '../api/auth/getProfile';
+import getProfile from '../api/profile/getProfile';
 
 interface AuthNavbarProps {
     onLogout: () => void;

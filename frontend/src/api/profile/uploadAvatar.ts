@@ -4,7 +4,7 @@ const uploadAvatar = async (file: File) => {
     const formData = new FormData();
     formData.append('avatar', file);
 
-    return api.put('/auth/avatar', formData, {
+    return api.post('/profile/avatar', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

@@ -1,4 +1,4 @@
-import getAvatar from '../api/auth/getAvatar';
+import getAvatar from '../api/profile/getAvatar';
 import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import CircularProgress from '@mui/material/CircularProgress';

@@ -8,7 +8,7 @@ const updateProfile = async (data: {
     old_password: string;
 }): Promise<AxiosResponse> => {
     try {
-        const response = await api.put('/auth/update', data);
+        const response = await api.put('/profile/update', data);
         return response;
     } catch (error) {
         console.error('Error during profile update:', error);
