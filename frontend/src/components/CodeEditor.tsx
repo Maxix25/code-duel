@@ -10,13 +10,13 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useNavigate } from 'react-router-dom';
 import { SolutionResult } from '../services/roomSetup';
 import handlers from '../handlers/roomPageHandlers';
-import CodeMirror, {
-    oneDark,
-    EditorView,
-    EditorState
-} from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { javascript } from '@codemirror/lang-javascript';
+import { atomone } from '@uiw/codemirror-theme-atomone';
+import { indentUnit } from '@codemirror/language';
+import { githubLight } from '@uiw/codemirror-theme-github';
+import { useThemeContext } from '../context/ThemeContext';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', codemirror: python() },
@@ -58,6 +58,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
     const [selectedLanguage, setSelectedLanguage] =
         useState<LanguageName>('python');
     const [copied, setCopied] = useState<boolean>(false);
+    const { mode } = useThemeContext();
 
     return (
         <Box
@@ -178,9 +179,9 @@ const CodeEditor: FC<CodeEditorProps> = ({
                     extensions={[
                         EditorView.editable.of(canSubmit),
                         LANGUAGES[selectedLanguage].codemirror,
-                        EditorState.tabSize.of(6)
+                        indentUnit.of('    ')
                     ]}
-                    theme={oneDark}
+                    theme={mode === 'dark' ? atomone : githubLight}
                     style={{ height: '100%' }}
                 />
             </Box>
