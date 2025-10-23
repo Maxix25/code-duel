@@ -9,7 +9,7 @@ global.URL.createObjectURL = vi.fn(() => 'mocked-object-url');
 global.URL.revokeObjectURL = vi.fn();
 
 const server = setupServer(
-    http.get('/auth/profile/:playerId', () => {
+    http.get('/profile/:playerId', () => {
         console.log('Mocked profile request');
         return HttpResponse.json({
             player: {
@@ -22,7 +22,7 @@ const server = setupServer(
             }
         });
     }),
-    http.get('/auth/avatar/:playerId', () => {
+    http.get('/profile/avatar/:playerId', () => {
         // Create a mock image blob
         const mockImageData = new Uint8Array([
             0x89,
