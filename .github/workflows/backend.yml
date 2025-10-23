@@ -35,9 +35,9 @@ jobs:
         run: pnpm run typecheck
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mongodb-version: [7]
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     defaults:
       run:
         working-directory: ./backend
@@ -54,9 +54,5 @@ jobs:
           version: 10
       - name: Install dependencies
         run: pnpm install
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.6.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
       - name: Run tests
         run: pnpm test

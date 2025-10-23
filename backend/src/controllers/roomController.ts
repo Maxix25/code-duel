@@ -240,7 +240,7 @@ export const userIsInRoom = async (
         }
         const room = await Room.findOne({
             players: { $elemMatch: { player: userId } },
-            status: 'playing'
+            status: { $in: ['playing', 'waiting'] }
         });
         if (room) {
             res.status(200).json({ inRoom: true, roomId: room.id });

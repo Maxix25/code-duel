@@ -7,7 +7,7 @@ interface UserProfile {
 }
 const getProfile = async (): Promise<UserProfile> => {
     try {
-        const response = await api.get('/auth/profile');
+        const response = await api.get('/profile');
         return response.data.player;
     } catch (error) {
         console.error('Error getting profile:', error);

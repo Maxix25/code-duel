@@ -1,7 +1,7 @@
 import api from '../api';
 
 const getAvatar = async (playerId: string) => {
-    return api.get(`/auth/avatar/${playerId}`, {
+    return api.get(`/profile/avatar/${playerId}`, {
         responseType: 'blob'
     });
 };
