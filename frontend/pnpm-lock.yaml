@@ -30,19 +30,14 @@ importers:
         specifier: ^7.3.4
         version: 7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mui/system':
-        specifier: ^7.2.0
-        version: 7.2.0(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0))(@types/react@19.1.8)(react@19.1.0)
-      '@uiw/codemirror-theme-atomone':
-        specifier: ^4.25.1
-        version: 4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
-      '@uiw/codemirror-theme-github':
-        specifier: ^4.25.1
-        version: 4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
-      '@uiw/react-codemirror':
-        specifier: ^4.24.2
-        version: 4.24.2(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.3)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.1)(codemirror@6.0.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
         specifier: ^7.3.3
         version: 7.3.3(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0)
+      '@uiw/codemirror-theme-atomone':
+        specifier: ^4.25.1
+        version: 4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)
+      '@uiw/codemirror-theme-github':
+        specifier: ^4.25.1
+        version: 4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)
       '@uiw/react-codemirror':
         specifier: ^4.25.2
         version: 4.25.2(@babel/runtime@7.28.4)(@codemirror/autocomplete@6.19.0)(@codemirror/language@6.11.3)(@codemirror/lint@6.9.0)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.6)(codemirror@6.0.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1224,21 +1219,19 @@ packages:
       '@codemirror/state': '>=6.0.0'
       '@codemirror/view': '>=6.0.0'
 
-  '@uiw/codemirror-theme-atomone@4.25.1':
-    resolution: {integrity: sha512-nZtl/TTid8y6qI+t+gwgWqWA6nWmiDf+L+RhlJJs9CU+ykGdu031sTWZm97sn7w10IGZoTJsTuA9Ufx/vt20Yw==}
+  '@uiw/codemirror-theme-atomone@4.25.2':
+    resolution: {integrity: sha512-Zv4Q03d/PeEs96Y4UajxrzWmo32PgzQ8SeBHN3EcmHnPN8bCCHfB8NxL8f14OOMydg0geI/R2wRBargW3VcQxA==}
 
-  '@uiw/codemirror-theme-github@4.25.1':
-    resolution: {integrity: sha512-l70gUrYAxHlpMWmG8A/I4PN5h5zzPxV+c9pRtsw+VtdmdgVWMh3JaSsuFZlf6h311s+/WB2FMZKdFw5SwrFWaA==}
+  '@uiw/codemirror-theme-github@4.25.2':
+    resolution: {integrity: sha512-9g3ujmYCNU2VQCp0+XzI1NS5hSZGgXRtH+5yWli5faiPvHGYZUVke+5Pnzdn/1tkgW6NpTQ7U/JHsyQkgbnZ/w==}
 
-  '@uiw/codemirror-themes@4.25.1':
-    resolution: {integrity: sha512-6o8tQ8bdq14RuVFpZ7l9u8KnuPq824uG3U1VV933Uhv8mfaxaoaOQSjv6T2bQUPhjH6ZlEu5+tAMkOfIL21eIQ==}
+  '@uiw/codemirror-themes@4.25.2':
+    resolution: {integrity: sha512-WFYxW3OlCkMomXQBlQdGj1JZ011UNCa7xYdmgYqywVc4E8f5VgIzRwCZSBNVjpWGGDBOjc+Z6F65l7gttP16pg==}
     peerDependencies:
       '@codemirror/language': '>=6.0.0'
       '@codemirror/state': '>=6.0.0'
       '@codemirror/view': '>=6.0.0'
 
-  '@uiw/react-codemirror@4.24.2':
-    resolution: {integrity: sha512-kp7DhTq4RR+M2zJBQBrHn1dIkBrtOskcwJX4vVsKGByReOvfMrhqRkGTxYMRDTX6x75EG2mvBJPDKYcUQcHWBw==}
   '@uiw/react-codemirror@4.25.2':
     resolution: {integrity: sha512-XP3R1xyE0CP6Q0iR0xf3ed+cJzJnfmbLelgJR6osVVtMStGGZP3pGQjjwDRYptmjGHfEELUyyBLdY25h0BQg7w==}
     peerDependencies:
@@ -3292,11 +3285,6 @@ snapshots:
 
   '@codemirror/autocomplete@6.19.0':
     dependencies:
-      '@types/tough-cookie': 4.0.5
-      tough-cookie: 4.1.4
-
-  '@codemirror/autocomplete@6.18.6':
-    dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.6
@@ -3311,9 +3299,6 @@ snapshots:
 
   '@codemirror/lang-javascript@6.2.4':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
-      '@codemirror/language': 6.11.3
-      '@codemirror/lint': 6.8.5
       '@codemirror/autocomplete': 6.19.0
       '@codemirror/language': 6.11.3
       '@codemirror/lint': 6.9.0
@@ -3324,7 +3309,6 @@ snapshots:
 
   '@codemirror/lang-python@6.2.1':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
       '@codemirror/autocomplete': 6.19.0
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
@@ -4178,12 +4162,6 @@ snapshots:
       '@typescript-eslint/types': 8.46.2
       eslint-visitor-keys: 4.2.1
 
-  '@uiw/codemirror-extensions-basic-setup@4.24.2(@codemirror/autocomplete@6.18.6)(@codemirror/commands@6.8.1)(@codemirror/language@6.11.3)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)':
-    dependencies:
-      '@codemirror/autocomplete': 6.18.6
-      '@codemirror/commands': 6.8.1
-      '@codemirror/language': 6.11.3
-      '@codemirror/lint': 6.8.5
   '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251021.1':
     optional: true
 
@@ -4225,37 +4203,34 @@ snapshots:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.6
 
-  '@uiw/codemirror-theme-atomone@4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)':
+  '@uiw/codemirror-theme-atomone@4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)':
     dependencies:
-      '@uiw/codemirror-themes': 4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
+      '@uiw/codemirror-themes': 4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)
     transitivePeerDependencies:
       - '@codemirror/language'
       - '@codemirror/state'
       - '@codemirror/view'
 
-  '@uiw/codemirror-theme-github@4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)':
+  '@uiw/codemirror-theme-github@4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)':
     dependencies:
-      '@uiw/codemirror-themes': 4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
+      '@uiw/codemirror-themes': 4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)
     transitivePeerDependencies:
       - '@codemirror/language'
       - '@codemirror/state'
       - '@codemirror/view'
 
-  '@uiw/codemirror-themes@4.25.1(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)':
+  '@uiw/codemirror-themes@4.25.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.1
+      '@codemirror/view': 6.38.6
 
-  '@uiw/react-codemirror@4.24.2(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.3)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.1)(codemirror@6.0.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
   '@uiw/react-codemirror@4.25.2(@babel/runtime@7.28.4)(@codemirror/autocomplete@6.19.0)(@codemirror/language@6.11.3)(@codemirror/lint@6.9.0)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.6)(codemirror@6.0.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@codemirror/commands': 6.9.0
       '@codemirror/state': 6.5.2
       '@codemirror/theme-one-dark': 6.1.3
-      '@codemirror/view': 6.38.1
-      '@uiw/codemirror-extensions-basic-setup': 4.24.2(@codemirror/autocomplete@6.18.6)(@codemirror/commands@6.8.1)(@codemirror/language@6.11.3)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
       '@codemirror/view': 6.38.6
       '@uiw/codemirror-extensions-basic-setup': 4.25.2(@codemirror/autocomplete@6.19.0)(@codemirror/commands@6.9.0)(@codemirror/language@6.11.3)(@codemirror/lint@6.9.0)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)
       codemirror: 6.0.2
@@ -4533,10 +4508,6 @@ snapshots:
 
   codemirror@6.0.2:
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
-      '@codemirror/commands': 6.8.1
-      '@codemirror/language': 6.11.3
-      '@codemirror/lint': 6.8.5
       '@codemirror/autocomplete': 6.19.0
       '@codemirror/commands': 6.9.0
       '@codemirror/language': 6.11.3
