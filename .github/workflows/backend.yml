@@ -26,13 +26,13 @@ jobs:
         with:
           version: 10
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --freeze-lockfile
       - name: Check formatting
         run: pnpm run checkFormat
       - name: Run linter
         run: pnpm lint
       - name: Run type check
-        run: pnpm run typecheck
+        run: pnpm run typecheck:tsgo
   test:
     runs-on: ubuntu-latest
     env:
@@ -53,6 +53,6 @@ jobs:
         with:
           version: 10
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --freeze-lockfile
       - name: Run tests
         run: pnpm test

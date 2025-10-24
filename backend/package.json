@@ -11,6 +11,7 @@
         "build": "tsc",
         "build:tsgo": "tsgo",
         "typecheck": "tsc --noEmit",
+        "typecheck:tsgo": "tsgo --noEmit",
         "checkFormat": "prettier . --check",
         "format": "prettier . --write"
     },
