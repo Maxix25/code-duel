@@ -9,10 +9,17 @@ import { Judge0Response } from '../../api/getSubmission';
 import runCode from '../../api/runCode';
 import getSubmission from '../../api/getSubmission';
 import getQuestionById from '../../utils/getQuestionById';
+import { LANGUAGES } from '../../api/runCode';
+
 const registerSubmitSolution = (io: Server, socket: Socket) => {
     socket.on(
         'submit_solution',
-        async (data: { code: string; roomId: string; user_token: string }) => {
+        async (data: {
+            code: string;
+            roomId: string;
+            user_token: string;
+            language: keyof typeof LANGUAGES;
+        }) => {
             const username = getUsernameByToken(data.user_token);
             const userId = getUserIdByToken(data.user_token);
             let room;
@@ -48,48 +55,41 @@ const registerSubmitSolution = (io: Server, socket: Socket) => {
             for (const testCase of question.testCases) {
                 const token = await runCode(
                     data.code,
-                    'python',
+                    data.language,
                     data.roomId,
                     testCase.stdin,
                     testCase.expectedOutput
                 );
                 let submission = await getSubmission(token);
                 // Only for cloud
-                await new Promise((resolve) => setTimeout(resolve, 1500));
+                await new Promise((resolve) => setTimeout(resolve, 1000));
 
                 // Still processing
-                while (true) {
-                    if (submission.status_id <= 2) {
-                        await new Promise((resolve) =>
-                            setTimeout(resolve, 2000)
-                        );
-                        submission = await getSubmission(token);
-                    } else {
-                        if (!testCase.isPrivate) {
-                            results.push({
-                                status:
-                                    submission.status_id === 3
-                                        ? 'passed'
-                                        : submission.status_id === 4
-                                          ? 'failed'
-                                          : 'error',
-                                result: submission,
-                                testCase: testCase.stdin,
-                                expectedOutput: testCase.expectedOutput,
-                                isPrivate: false
-                            });
-                            break;
-                        }
-                        // Testcase is private
-                        results.push({
-                            status:
-                                submission.status_id === 3
-                                    ? 'passed'
-                                    : 'failed',
-                            isPrivate: true
-                        });
-                        break;
-                    }
+                while (submission.status_id <= 2) {
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    submission = await getSubmission(token);
+                }
+
+                if (!testCase.isPrivate) {
+                    results.push({
+                        status:
+                            submission.status_id === 3
+                                ? 'passed'
+                                : submission.status_id === 4
+                                  ? 'failed'
+                                  : 'error',
+                        result: submission,
+                        testCase: testCase.stdin,
+                        expectedOutput: testCase.expectedOutput,
+                        isPrivate: false
+                    });
+                } else {
+                    // Testcase is private
+                    results.push({
+                        status:
+                            submission.status_id === 3 ? 'passed' : 'failed',
+                        isPrivate: true
+                    });
                 }
             }
             // Check if all test cases passed

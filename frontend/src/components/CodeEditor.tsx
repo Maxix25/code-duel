@@ -13,6 +13,7 @@ import handlers from '../handlers/roomPageHandlers';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { javascript } from '@codemirror/lang-javascript';
+import { cpp } from '@codemirror/lang-cpp';
 import { atomone } from '@uiw/codemirror-theme-atomone';
 import { indentUnit } from '@codemirror/language';
 import { githubLight } from '@uiw/codemirror-theme-github';
@@ -20,7 +21,8 @@ import { useThemeContext } from '../context/ThemeContext';
 
 const LANGUAGES = {
     python: { id: 71, name: 'Python', codemirror: python() },
-    javascript: { id: 63, name: 'JavaScript', codemirror: javascript() }
+    javascript: { id: 63, name: 'JavaScript', codemirror: javascript() },
+    cpp: { id: 54, name: 'C++', codemirror: cpp() }
 };
 
 export type LanguageName = keyof typeof LANGUAGES;
@@ -107,10 +109,9 @@ const CodeEditor: FC<CodeEditorProps> = ({
                                 )
                             }
                         >
-                            {Object.entries(LANGUAGES).map(([name]) => (
-                                <MenuItem key={name} value={name}>
-                                    {name.charAt(0).toUpperCase() +
-                                        name.slice(1)}
+                            {Object.entries(LANGUAGES).map(([key, lang]) => (
+                                <MenuItem key={key} value={key}>
+                                    {lang.name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -198,6 +199,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
                         setActiveTab,
                         roomId,
                         code,
+                        selectedLanguage,
                         token
                     );
                 }}

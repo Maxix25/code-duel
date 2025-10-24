@@ -12,9 +12,6 @@ const getDefaultComment = (lang: LanguageName) => {
     switch (lang) {
         case 'python':
             return '# Write your code here';
-        case 'javascript':
-            return '// Write your code here';
-        // Add more languages as needed
         default:
             return '// Write your code here';
     }
@@ -73,6 +70,7 @@ const handleSubmitCode = (
     setActiveTab: React.Dispatch<React.SetStateAction<number>>,
     roomId: string,
     code: string,
+    language: LanguageName,
     token: string
 ) => {
     setIsRunning(true);
@@ -81,6 +79,7 @@ const handleSubmitCode = (
     socket.emit('submit_solution', {
         roomId,
         code,
+        language,
         user_token: token
     });
 };

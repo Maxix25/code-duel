@@ -11,13 +11,14 @@
         "build": "tsc",
         "build:tsgo": "tsgo",
         "typecheck": "tsc --noEmit",
+        "typecheck:tsgo": "tsgo --noEmit",
         "checkFormat": "prettier . --check",
         "format": "prettier . --write"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "packageManager": "pnpm@10.13.1",
+    "packageManager": "pnpm@10.19.0",
     "dependencies": {
         "axios": "^1.12.2",
         "bcryptjs": "^3.0.2",
