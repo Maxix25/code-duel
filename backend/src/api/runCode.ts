@@ -3,7 +3,8 @@ import compiler from './compiler';
 
 export const LANGUAGES = {
     python: { id: 71, name: 'Python' },
-    javascript: { id: 63, name: 'JavaScript' }
+    javascript: { id: 63, name: 'JavaScript' },
+    cpp: { id: 54, name: 'C++' }
 };
 
 interface Judge0Submission {

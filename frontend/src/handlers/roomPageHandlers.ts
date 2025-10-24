@@ -12,9 +12,6 @@ const getDefaultComment = (lang: LanguageName) => {
     switch (lang) {
         case 'python':
             return '# Write your code here';
-        case 'javascript':
-            return '// Write your code here';
-        // Add more languages as needed
         default:
             return '// Write your code here';
     }
