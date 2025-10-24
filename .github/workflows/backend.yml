@@ -26,7 +26,7 @@ jobs:
         with:
           version: 10
       - name: Install dependencies
-        run: pnpm install --freeze-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Check formatting
         run: pnpm run checkFormat
       - name: Run linter
@@ -53,6 +53,6 @@ jobs:
         with:
           version: 10
       - name: Install dependencies
-        run: pnpm install --freeze-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Run tests
         run: pnpm test
