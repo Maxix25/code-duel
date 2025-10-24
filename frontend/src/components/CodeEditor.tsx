@@ -197,6 +197,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
                         setActiveTab,
                         roomId,
                         code,
+                        selectedLanguage,
                         token
                     );
                 }}
