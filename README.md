@@ -1,5 +1,7 @@
 # Code Duel
 
+<img src="https://skillicons.dev/icons?i=typescript,vite,vitest,jest,react,materialui,express,mongodb,pnpm" />
+
 Code Duel is a TypeScript-based project designed to provide a competitive coding experience, where users can challenge each other to solve programming problems in real time. This repository is written primarily in TypeScript and aims to deliver an interactive and engaging coding platform.
 
 ## Features
@@ -7,13 +9,14 @@ Code Duel is a TypeScript-based project designed to provide a competitive coding
 - Real-time coding challenges between users
 - Problem library for a variety of programming tasks
 - Live code editor with syntax highlighting
+- Google OAuth
 
 ## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v14 or higher recommended)
-- [pnpm](https://pnpm.io/) (instead of npm or yarn)
+- [pnpm](https://pnpm.io/) (recommended)
 
 ### Installation
 
@@ -71,18 +74,4 @@ pnpm build
 ```bash
 cd backend
 pnpm build
-```
-
----
-
-## Project Structure
-
-```
-/src              # Main TypeScript source files
-/frontend         # Frontend application (if applicable)
-/backend          # Backend server (if applicable)
-/public           # Static assets
-/tests            # Test files
-README.md         # Project documentation
-...
 ```
