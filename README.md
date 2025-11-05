@@ -64,6 +64,7 @@ cd code-duel
    FE_BASE_URL=http://localhost:5173 # Change this if you need
    GOOGLE_CLIENT_ID=your-google-client-id
    GOOGLE_CLIENT_SECRET=your-google-client-secret
+   MONGODB_URI=mongodb://your-mongo-uri
    ```
    You can get a judge0 api key using [rapidapi](https://rapidapi.com/judge0-official/api/judge0-ce)
 6. Start the backend server:
