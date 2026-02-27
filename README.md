@@ -38,15 +38,15 @@ cd code-duel
     ```bash
     pnpm install
     ```
-3. Setup the ,env file with this variables:
+3. Setup the .env file with this variables:
    ```env
    VITE_BACKEND_URL=http://localhost:3000 # The env variable has to start with VITE_
    ```
-5. Start the frontend development server:
+4. Start the frontend development server:
     ```bash
     pnpm dev
     ```
-6. The frontend should now be running, and will be available at [http://localhost:5173](http://localhost:5173).
+5. The frontend should now be running, and will be available at [http://localhost:5173](http://localhost:5173).
 
 ### Backend
 
@@ -67,11 +67,11 @@ cd code-duel
    MONGODB_URI=mongodb://your-mongo-uri
    ```
    You can get a judge0 api key using [rapidapi](https://rapidapi.com/judge0-official/api/judge0-ce)
-6. Start the backend server:
+5. Start the backend server:
     ```bash
     pnpm dev
     ```
-7. The backend should now be running on [http://localhost:3000](http://localhost:3000).
+6. The backend should now be running on [http://localhost:3000](http://localhost:3000).
 
 ---
 
