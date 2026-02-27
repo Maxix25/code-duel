@@ -25,7 +25,7 @@
         "@mui/material": "^7.3.4",
         "@mui/system": "^7.3.3",
         "@uiw/react-codemirror": "^4.25.2",
-        "axios": "^1.12.2",
+        "axios": "^1.13.5",
         "base-64": "^1.0.0",
         "jsonwebtoken": "^9.0.2",
         "react": "^19.2.0",
