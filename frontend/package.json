@@ -52,7 +52,7 @@
         "eslint-plugin-react-refresh": "^0.4.24",
         "globals": "^16.4.0",
         "jsdom": "^26.1.0",
-        "minimatch": "^10.0.3",
+        "minimatch": "^10.2.3",
         "msw": "^2.11.6",
         "prettier": "^3.6.2",
         "react-markdown": "^10.1.0",
