@@ -3,7 +3,7 @@ import Question, { getRandomQuestion } from '../models/Question';
 import Room from '../models/Room';
 import mongoose from 'mongoose';
 import getUserIdByToken from '../utils/getUserIdByToken';
-import Player from '../models/Player';
+import type { Player } from '../models/Player';
 import getUsernameByToken from '../utils/getUsernameByToken';
 
 export const startRoom = async (req: Request, res: Response): Promise<void> => {
@@ -83,13 +83,12 @@ export const getRoomResults = async (
         }
 
         const results = room.players.map((p) => {
-            if (p.player instanceof Player) {
-                return {
-                    playerId: p.player.toString(),
-                    username: p.player.username,
-                    score: p.score
-                };
-            }
+            const playerDoc = p.player as unknown as Player;
+            return {
+                playerId: playerDoc?._id?.toString() || p.player?.toString(),
+                username: playerDoc?.username || 'Unknown',
+                score: p.score
+            };
         });
         res.status(200).json({ results });
     } catch (error) {
@@ -147,17 +146,11 @@ export const getUsersInRoom = async (
             res.status(404).json({ error: 'Room not found' });
             return;
         }
-        const userIds = room.players.map((p) => p.player);
-        // Turn ids into usernames if available
-        const populatedUsers = await Player.find({
-            _id: { $in: userIds }
-        })
-            .select('username')
-            .lean();
-        // Return only usernames
-        res.status(200).json(
-            populatedUsers.map((u) => u.username).filter(Boolean)
-        );
+        const usernames = room.players
+            .map((p) => (p.player as unknown as Player)?.username)
+            .filter(Boolean);
+
+        res.status(200).json(usernames);
     } catch (error) {
         console.error('Error fetching users in room:', error);
         res.status(500).json({ error: 'Internal server error' });

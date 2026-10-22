@@ -42,19 +42,18 @@ const playerSchema: Schema = new Schema({
     avatar: { type: String, default: '/uploads/avatars/default.png' }
 });
 
-playerSchema.pre<Player>('save', async function (next) {
+playerSchema.pre<Player>('save', async function () {
     // Skip password hashing for OAuth users or if password hasn't been modified
-    if (!this.isModified('password')) return next();
+    if (!this.isModified('password')) return;
 
     try {
         const salt = await genSalt(10);
         this.password = await hash(this.password, salt);
-        next();
     } catch (error) {
         if (error instanceof Error) {
-            return next(error);
+            throw error;
         }
-        return next(new Error('Error hashing password'));
+        throw new Error('Error hashing password');
     }
 });
 
@@ -64,4 +63,5 @@ playerSchema.methods.comparePassword = function (
     return compare(candidatePassword, this.password);
 };
 
-export default mongoose.model<Player>('Player', playerSchema);
+export default mongoose.models.Player ||
+    mongoose.model<Player>('Player', playerSchema);

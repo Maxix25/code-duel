@@ -23,7 +23,8 @@ const RoomSchema: Schema = new Schema({
         {
             player: {
                 type: Schema.Types.ObjectId,
-                ref: 'Player'
+                ref: 'Player',
+                required: true
             },
             score: {
                 type: Number,
@@ -68,20 +69,28 @@ const RoomSchema: Schema = new Schema({
     }
 });
 
-RoomSchema.pre<Room>('save', async function (next) {
+// Ensure no duplicate players in a room
+RoomSchema.index(
+    { 'players.player': 1 },
+    {
+        unique: true,
+        partialFilterExpression: { 'players.player': { $exists: true } }
+    }
+);
+
+RoomSchema.pre<Room>('save', async function () {
     // Don't hash empty passwords (for public rooms)
     if (!this.password || this.password === '' || !this.isModified('password'))
-        return next();
+        return;
 
     try {
         const salt = await genSalt(10);
         this.password = await hash(this.password, salt);
-        next();
     } catch (error) {
         if (error instanceof Error) {
-            return next(error);
+            throw error;
         }
-        return next(new Error('Error hashing password'));
+        throw new Error('Error hashing password');
     }
 });
 
