@@ -25,7 +25,8 @@ const Loader = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100vh'
-            }}>
+            }}
+        >
             <CircularProgress />
         </Box>
     );

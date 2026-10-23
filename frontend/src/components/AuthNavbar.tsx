@@ -190,7 +190,8 @@ const AuthNavbar = ({ onLogout }: AuthNavbarProps) => {
                         }}
                         onClick={toggleTheme}
                         color='inherit'
-                        size="large">
+                        size='large'
+                    >
                         {mode === 'dark' ? (
                             <Brightness7Icon sx={{ fontSize: '1.4rem' }} />
                         ) : (
