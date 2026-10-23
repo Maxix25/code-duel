@@ -63,5 +63,7 @@ playerSchema.methods.comparePassword = function (
     return compare(candidatePassword, this.password);
 };
 
-export default mongoose.models.Player ||
-    mongoose.model<Player>('Player', playerSchema);
+const PlayerModel =
+    mongoose.models.Player || mongoose.model<Player>('Player', playerSchema);
+
+export default PlayerModel;
