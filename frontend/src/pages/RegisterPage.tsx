@@ -44,7 +44,6 @@ const RegisterPage: React.FC = () => {
     };
 
     const handleGoogleSignup = () => {
-        // Redirect to Google OAuth endpoint (same as login since OAuth handles both)
         window.location.href = `${BACKEND_URL}/auth/google`;
     };
 
@@ -82,7 +81,7 @@ const RegisterPage: React.FC = () => {
                     sx={{ borderRadius: 4, p: { xs: 3, md: 5 }, boxShadow: 8 }}
                 >
                     <CardContent>
-                        <Stack spacing={3} alignItems='center'>
+                        <Stack spacing={3} sx={{ alignItems: 'center' }}>
                             <Box
                                 sx={{
                                     bgcolor: theme.palette.primary.main,
@@ -102,7 +101,7 @@ const RegisterPage: React.FC = () => {
                             <Typography
                                 component='h1'
                                 variant='h5'
-                                fontWeight='bold'
+                                sx={{ fontWeight: 'bold' }}
                             >
                                 Sign up
                             </Typography>
@@ -230,7 +229,7 @@ const RegisterPage: React.FC = () => {
                                     startIcon={
                                         <Box
                                             component='img'
-                                            src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTTE3LjY0IDkuMjA0NTQ1NGMwLS42MzgxODE4LS4wNTczMjczLS45NTQ1NDU0LS4xNjQzNjM2LS45NTQ1NDU0SC45djMuNzcyNzI3M0g1LjQ4Yy0uMjMzNjM2NCAxLjI1NTQ1NDUtLjkyNTQ1NDUgMi4zMTgtMS44MzQwOTA5IDMuMDI5MDkwOXY2LjM1NDU0NTVoMi45Nzc0NTQ1QzE2LjUxODYzNjQgMTAuNjMgMTcuNjQgOS45NTQ1NDU0IDE3LjY0IDkuMjA0NTQ1NHoiIGZpbGw9IiM0Mjg1RjQiLz4KICAgIDxwYXRoIGQ9Ik05IDIyYzIuNDMgMCA0LjQ2NzI3MjctLjggNS45NTYzNjM2LTIuMTUyNzI3M2wtMi45Nzc0NTQ1LTYuMzU0NTQ1NUMxMC43MjM2MzY0IDEzLjYgMTAuMDA2MzY0IDEzLjg1NDU0NTQgOSAxMy44NTQ1NDU0Yy0yLjE5NTQ1NDUgMC00LjA2MTgxODE4LTEuNDc4MTgxOC00LjcyMzYzNjM2LTMuNDc3MjcyN0gwLjExNTQ1NDU1djYuNzEwOTA5MUMxLjU5NDU0NTQ1IDIwLjAyMDkwOTEgNS4yNzI3MjcyNSAyMiA5IDIyeiIgZmlsbD0iIzM0QTg1MyIvPgogICAgPHBhdGggZD0iTTQuMjc2MzYzNjQgMTAuMzc3MjcyN0MzLjkzIDkuNDggMy45MyA4LjUyIDQuMjc2MzYzNjQgNy42MjI3MjcyN1YwLjkxMTgxODE4MDBIMS4xMTU0NTQ1NUM0LjMxODU0NTQ1IDE4LjIwOTA5MDkgOS40ODM2MzY0IDE4IDkuNDgzNjM2NCAxOGMzLjc1OTk5OTk2IDAgNy4xMTgxODE4IDIuMjMwOTA5MDkgOS4wNDU0NTQ1IDUuODExODE4MThsLTYuOTgzNjM2NCA1LjU2NTQ1NDU0QzkuMDEzNjM2MzYgOC41NzI3MjcyNyA6Ljc4NTQ1NDU0IDcuNDU0NTQ1NDUgNC4yNzYzNjM2NCAxMC4zNzcyNzI3eiIgZmlsbD0iI0ZCQkMwNCIvPgogICAgPHBhdGggZD0iTTkgMy42NzI3MjcyOGMyLjIwNzI3MjcgMCA0LjIwOTA5MDkuNzY3MjcyNzMgNS43NDkwOTA5IDIuMjkwOTA5MDlsMS42MzI3MjczLTEuNjMyNzI3M0MxNC40ODM2MzY0IDIuMTYgMTEuODc0NTQ1NCAwIDkgMGMtNC45NDU0NTQ1NCAwLTkuMjQgMy4xNDA5MDkwOS0xMC44ODQ1NDU0NSA3LjY5MDkwOTA5bDUuMTYxODE4MTcgNC4wNDE4MjczQzQuMDYxODE4MTggNy45NzA5MDkwOSA2LjMxNjM2MzY0IDMuNjcyNzI3MjggOSAzLjY3MjcyNzI4eiIgZmlsbD0iI0VBNDMzNSIvPgogIDwvZz4KPC9zdmc+'
+                                            src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTTE3LjY0IDkuMjA0NTQ1NGMwLS42MzgxODE4LS4wNTczMjczLS45NTQ1NDU0LS4xNjQzNjM2LS45NTQ1NDU0SC45djMuNzcyNzI3M0g1LjQ4Yy0uMjMzNjM2NCAxLjI1NTQ1NDUtLjkyNTQ1NDUgMi4zMTgtMS44MzQwOTA5IDMuMDI5MDkwOXY2LjM1NDU0NTVoMi45Nzc0NTQ1QzE2LjUxODYzNjQgMTAuNjMgMTcuNjQgOS45NTQ1NDU0IDE3LjY0IDkuMjA0NTQ1NHoiIGZpbGw9IiM0Mjg1RjQiLz4KICAgIDxwYXRoIGQ9Ik05IDIyYzIuNDMgMCA0LjQ2NzI3MjctLjggNS45NTYzNjM2LTIuMTUyNzI3M2wtMi45Nzc0NTQ1LTYuMzU0NTQ1NUMxMC43MjM2MzY0IDEzLjYgMTAuMDA2MzY0IDEzLjg1NDU0NTQgOSAxMy44NTQ1NDU0Yy0yLjE5NTQ1NDUgMC00LjA2MTgxODE4LTEuNDc4MTgxOC00LjcyMzYzNjM2LTMuNDc3MjcyN0gwLjExNTQ1NDU1djYuNzEwOTA5MUMxLjU5NDU0NTQ1IDIwLjAy0iA1LjI3Mj3MjcyNSAyMiA5IDIyeiIgZmlsbD0iIzM0QTg1MyIvPgogICAgPHBhdGggZD0iTTQuMjc2YzYzNjQgMTAuMzc3MjcyN0MzLjkzIDkuNDggMy45MyA4LjUyIDQuMjc2YzYzNjQgNy42MjI3MjcyN1YwLjkxMTgxODE4MDBIMS4xMTU0NTQ1NUM0LjE4NTQ1NDUgMTguMjA5MDkwOSA5LjQ4MzYzNjQgMTggOS40ODM2MzY0IDE4YzMuNzU5OTk5OTYgMCA3LjExODE4MTggMi4yMzA0OTA5IDkuMDQ1NDU0NSA1LjgxMTgxODE4bC02Ljk4MzYzNjQgNS41NjU0NTQ1NEM5LjAxMzYzNjM2IDguNTcyNzI3MjcgNi43ODU0NTQ1NDUgNy40NTQ1NDU0NSA0LjI3NjYzNjM2IDEwLjM3NzcyNzJ6IiBmaWxsPSIjRkJCQzA0Ii8+Cjwvc3ZnPg=='
                                             alt='Google logo'
                                             sx={{ width: 18, height: 18 }}
                                         />

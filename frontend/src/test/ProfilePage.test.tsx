@@ -5,8 +5,8 @@ import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 
 // Mock URL.createObjectURL and URL.revokeObjectURL since they're used for avatar display
-global.URL.createObjectURL = vi.fn(() => 'mocked-object-url');
-global.URL.revokeObjectURL = vi.fn();
+globalThis.URL.createObjectURL = vi.fn(() => 'mocked-object-url');
+globalThis.URL.revokeObjectURL = vi.fn();
 
 const server = setupServer(
     http.get('/profile/:playerId', () => {
@@ -143,6 +143,6 @@ describe('ProfilePage', () => {
         expect(screen.getByText('Ties')).toBeInTheDocument();
 
         // Check if URL.createObjectURL was called for the avatar
-        expect(global.URL.createObjectURL).toHaveBeenCalled();
+        expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
     });
 });

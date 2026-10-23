@@ -94,8 +94,8 @@ const HomePage: React.FC = () => {
             >
                 <Stack
                     spacing={3}
-                    alignItems='center'
                     sx={{
+                        alignItems: 'center',
                         opacity: heroVisible ? 1 : 0,
                         transform: heroVisible ? 'none' : 'translateY(40px)',
                         transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.1s'
@@ -104,8 +104,8 @@ const HomePage: React.FC = () => {
                     <Typography
                         variant='h2'
                         component='h1'
-                        fontWeight='bold'
                         sx={{
+                            fontWeight: 'bold',
                             background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
@@ -117,8 +117,7 @@ const HomePage: React.FC = () => {
                     <Typography
                         variant='h5'
                         color='text.secondary'
-                        paragraph
-                        sx={{ maxWidth: 600 }}
+                        sx={{ maxWidth: 600, mb: 2 }}
                     >
                         The ultimate platform for competitive programming.
                         Sharpen your skills, challenge your peers, and climb to
@@ -161,7 +160,10 @@ const HomePage: React.FC = () => {
                 >
                     <CardHeader
                         title={
-                            <Typography variant='h4' fontWeight='bold'>
+                            <Typography
+                                variant='h4'
+                                sx={{ fontWeight: 'bold' }}
+                            >
                                 Why Code Duel?
                             </Typography>
                         }
@@ -198,10 +200,10 @@ const HomePage: React.FC = () => {
                 <Typography
                     variant='h4'
                     component='h2'
-                    fontWeight='bold'
-                    textAlign='center'
+                    align='center'
                     gutterBottom
                     sx={{
+                        fontWeight: 'bold',
                         mb: 6,
                         opacity: featuresVisible ? 1 : 0,
                         transform: featuresVisible
@@ -212,7 +214,7 @@ const HomePage: React.FC = () => {
                 >
                     Features
                 </Typography>
-                <Grid container spacing={5} justifyContent='center'>
+                <Grid container spacing={5} sx={{ justifyContent: 'center' }}>
                     {features.map((feature, index) => {
                         const cardRef = featureRefs[index];
                         const cardVisible = featureVisibles[index];
@@ -249,8 +251,7 @@ const HomePage: React.FC = () => {
                                     <Typography
                                         variant='h6'
                                         component='h3'
-                                        fontWeight='bold'
-                                        sx={{ mb: 1 }}
+                                        sx={{ mb: 1, fontWeight: 'bold' }}
                                     >
                                         {feature.title}
                                     </Typography>
@@ -298,8 +299,8 @@ const HomePage: React.FC = () => {
                         transition: 'all 0.8s cubic-bezier(.4,1.3,.6,1) 0.5s'
                     }}
                 >
-                    <Stack spacing={2} alignItems='center'>
-                        <Typography variant='h5' fontWeight='bold'>
+                    <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                        <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
                             Ready to start your coding journey?
                         </Typography>
                         <Typography variant='body1' sx={{ opacity: 0.9 }}>

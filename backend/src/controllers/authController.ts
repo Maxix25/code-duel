@@ -13,6 +13,7 @@ export const loginPlayer = async (
 
     if (!username || !password) {
         res.status(400).json({ message: 'Username and password are required' });
+        return;
     }
 
     try {
@@ -27,6 +28,7 @@ export const loginPlayer = async (
 
         if (!isMatch) {
             res.status(401).json({ message: 'Invalid credentials' });
+            return;
         }
 
         const token = generateToken(
@@ -89,7 +91,8 @@ export const registerPlayer = async (
             message: 'Registration successful',
             token: token
         });
-    } catch {
+    } catch (error) {
+        console.error('Registration error:', error);
         res.status(500).json({ message: 'Server error during registration' });
         return;
     }

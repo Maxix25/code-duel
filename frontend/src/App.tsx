@@ -20,11 +20,12 @@ const EnterPasswordPage = lazy(() => import('./pages/EnterPasswordPage'));
 const Loader = () => {
     return (
         <Box
-            display='flex'
-            alignItems='center'
-            justifyContent='center'
-            height='100vh'
-        >
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh'
+            }}>
             <CircularProgress />
         </Box>
     );
