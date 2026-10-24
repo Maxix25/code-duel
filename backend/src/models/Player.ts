@@ -1,9 +1,10 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 import { hash, genSalt, compare } from 'bcryptjs';
-export interface Player extends Document {
+
+export interface IPlayer {
     username: string;
     score: number;
-    roomId: mongoose.Types.ObjectId;
+    roomId: Types.ObjectId;
     email: string;
     password: string;
     avatar: string;
@@ -11,6 +12,9 @@ export interface Player extends Document {
     losses: number;
     ties: number;
     accounts: { provider: string; providerId: string }[];
+}
+
+export interface Player extends IPlayer, Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 

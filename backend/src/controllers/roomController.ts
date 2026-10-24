@@ -37,6 +37,7 @@ export const startRoom = async (req: Request, res: Response): Promise<void> => {
             return;
         }
         const question = await getRandomQuestion();
+        console.log(question);
         if (!question) {
             res.status(404).json({ error: 'No question found' });
             return;

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './jwtHelper';
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 /**
  * Retrieves the user id from a JWT token.
@@ -9,9 +9,9 @@ import { ObjectId } from 'mongoose';
  * @throws Will throw an error if the token is invalid or expired.
  */
 
-export default function getUserIdByToken(token: string): ObjectId | null {
+export default function getUserIdByToken(token: string): Types.ObjectId | null {
     try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { id: ObjectId };
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: Types.ObjectId };
         return decoded.id;
     } catch (error) {
         console.error('Invalid token:', error);
