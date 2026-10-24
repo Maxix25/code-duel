@@ -9,7 +9,7 @@
         "lint": "eslint .",
         "preview": "vite preview",
         "test": "vitest",
-        "test:ci": "vitest run --maxWorkers=1 --pool=threads",
+        "test:ci": "vitest run --fileParallelism=false --maxWorkers=1",
         "format": "prettier . --write",
         "checkFormat": "prettier . --check"
     },
