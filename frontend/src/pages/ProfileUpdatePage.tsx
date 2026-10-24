@@ -71,7 +71,6 @@ const ProfileUpdate: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // If user wants to change password, both old and new password are required
         if (password || oldPassword) {
             if (!oldPassword) {
                 setSnackbarMessage(
@@ -109,7 +108,6 @@ const ProfileUpdate: React.FC = () => {
                 setSnackbarMessage('Profile updated successfully!');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
-                // Clear password fields after successful update
                 setOldPassword('');
                 setPassword('');
                 setConfirmPassword('');
@@ -130,7 +128,6 @@ const ProfileUpdate: React.FC = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            // Validate file type
             if (!file.type.startsWith('image/')) {
                 setSnackbarMessage('Please select a valid image file');
                 setSnackbarSeverity('error');
@@ -138,7 +135,6 @@ const ProfileUpdate: React.FC = () => {
                 return;
             }
 
-            // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 setSnackbarMessage('File size must be less than 5MB');
                 setSnackbarSeverity('error');
@@ -148,9 +144,7 @@ const ProfileUpdate: React.FC = () => {
 
             setSelectedFile(file);
 
-            // Create preview URL
             const objectUrl = URL.createObjectURL(file);
-            // Clean up previous preview URL if it exists
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
             }
@@ -168,14 +162,12 @@ const ProfileUpdate: React.FC = () => {
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
 
-            // Clean up preview URL
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
             }
 
             setSelectedFile(null);
             setPreviewUrl('');
-            // Force UserAvatar component to re-fetch the avatar
             setAvatarKey((prev) => prev + 1);
         } catch (error) {
             if (isAxiosError(error) && error.response?.data.message) {
@@ -246,8 +238,7 @@ const ProfileUpdate: React.FC = () => {
                     sx={{ borderRadius: 4, p: { xs: 3, md: 5 }, boxShadow: 8 }}
                 >
                     <CardContent>
-                        <Stack spacing={3} alignItems='center'>
-                            {/* Show preview if file is selected, otherwise show UserAvatar */}
+                        <Stack spacing={3} sx={{ alignItems: 'center' }}>
                             {previewUrl ? (
                                 <Box sx={{ textAlign: 'center' }}>
                                     <Avatar
@@ -292,8 +283,10 @@ const ProfileUpdate: React.FC = () => {
                                 <Stack
                                     direction='row'
                                     spacing={1}
-                                    justifyContent='center'
-                                    alignItems='center'
+                                    sx={{
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}
                                 >
                                     <label htmlFor='avatar-upload'>
                                         <Button
@@ -342,7 +335,7 @@ const ProfileUpdate: React.FC = () => {
                             <Typography
                                 component='h1'
                                 variant='h5'
-                                fontWeight='bold'
+                                sx={{ fontWeight: 'bold' }}
                             >
                                 Update Profile
                             </Typography>

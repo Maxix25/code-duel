@@ -192,6 +192,7 @@ const Layout: React.FC = () => {
                                 }}
                                 onClick={toggleTheme}
                                 color='inherit'
+                                size='large'
                             >
                                 {mode === 'dark' ? (
                                     <Brightness7Icon

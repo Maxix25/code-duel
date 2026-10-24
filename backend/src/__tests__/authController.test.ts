@@ -21,6 +21,13 @@ describe('Auth Controller', () => {
     });
 
     it('should log in an existing user', async () => {
+        // First, register the user
+        await request(getTestServer()).post('/auth/register').send({
+            email: 'test@example.com',
+            password: 'password',
+            username: 'testuser'
+        });
+
         const response = await request(getTestServer())
             .post('/auth/login')
             .send({

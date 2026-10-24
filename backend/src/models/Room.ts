@@ -1,16 +1,16 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import type { Player } from './Player';
+import mongoose, { Schema, Document, Types } from 'mongoose';
+import type { IPlayer } from './Player';
 import { hash, genSalt, compare } from 'bcryptjs';
 
 export interface Room extends Document {
     players: {
-        player: Player | Schema.Types.ObjectId;
+        player: IPlayer | Types.ObjectId;
         score: number;
         ready: boolean;
         current_code: string;
     }[];
     status: 'waiting' | 'playing' | 'finished';
-    problemId: Schema.Types.ObjectId;
+    problemId: Types.ObjectId;
     createdAt: Date;
     name: string;
     password: string;
@@ -78,20 +78,19 @@ RoomSchema.index(
     }
 );
 
-RoomSchema.pre<Room>('save', async function (next) {
+RoomSchema.pre<Room>('save', async function () {
     // Don't hash empty passwords (for public rooms)
     if (!this.password || this.password === '' || !this.isModified('password'))
-        return next();
+        return;
 
     try {
         const salt = await genSalt(10);
         this.password = await hash(this.password, salt);
-        next();
     } catch (error) {
         if (error instanceof Error) {
-            return next(error);
+            throw error;
         }
-        return next(new Error('Error hashing password'));
+        throw new Error('Error hashing password');
     }
 });
 
