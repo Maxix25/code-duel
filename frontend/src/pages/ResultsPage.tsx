@@ -35,11 +35,7 @@ const ResultsPage = () => {
     const theme = useTheme();
 
     useEffect(() => {
-        if (!roomId) {
-            setError('No room ID provided.');
-            setLoading(false);
-            return;
-        }
+        if (!roomId) return;
         getResult(roomId)
             .then((data) => {
                 setResults(data.results);
@@ -51,6 +47,23 @@ const ResultsPage = () => {
                 setLoading(false);
             });
     }, [roomId]);
+
+    if (!roomId) {
+        return (
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Typography variant='h6' color='text.secondary'>
+                    No room selected. Please go back to the dashboard.
+                </Typography>
+            </Box>
+        );
+    }
 
     const sortedResults = (results ?? [])
         .slice()
