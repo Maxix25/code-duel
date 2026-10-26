@@ -1,16 +1,16 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import type { Player } from './Player';
+import mongoose, { Schema, Document, Types } from 'mongoose';
+import type { IPlayer } from './Player';
 import { hash, genSalt, compare } from 'bcryptjs';
 
 export interface Room extends Document {
     players: {
-        player: Player | Schema.Types.ObjectId;
+        player: IPlayer | Types.ObjectId;
         score: number;
         ready: boolean;
         current_code: string;
     }[];
     status: 'waiting' | 'playing' | 'finished';
-    problemId: Schema.Types.ObjectId;
+    problemId: Types.ObjectId;
     createdAt: Date;
     name: string;
     password: string;
