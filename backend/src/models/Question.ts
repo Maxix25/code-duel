@@ -29,8 +29,7 @@ const questionSchemaDefinition = {
  * @property startingCode - The starting code.
  */
 export interface QuestionDocument
-    extends InferRawDocType<typeof questionSchemaDefinition>,
-        Document {}
+    extends InferRawDocType<typeof questionSchemaDefinition>, Document {}
 
 const QuestionSchema = new Schema<QuestionDocument>(questionSchemaDefinition);
 const Question = mongoose.model<QuestionDocument>('Question', QuestionSchema);
