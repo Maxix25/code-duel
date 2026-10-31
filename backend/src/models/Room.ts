@@ -1,24 +1,7 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
-import type { IPlayer } from './Player';
+import mongoose, { Schema, Document, InferRawDocType, Types } from 'mongoose';
 import { hash, genSalt, compare } from 'bcryptjs';
 
-export interface Room extends Document {
-    players: {
-        player: IPlayer | Types.ObjectId;
-        score: number;
-        ready: boolean;
-        current_code: string;
-    }[];
-    status: 'waiting' | 'playing' | 'finished';
-    problemId: Types.ObjectId;
-    createdAt: Date;
-    name: string;
-    password: string;
-    maxCapacity: number;
-    comparePassword(candidatePassword: string): Promise<boolean>;
-}
-
-const RoomSchema: Schema = new Schema({
+const roomSchemaDefinition = {
     players: [
         {
             player: {
@@ -67,7 +50,27 @@ const RoomSchema: Schema = new Schema({
         default: 4,
         max: 10
     }
-});
+};
+
+type InferredRoom = InferRawDocType<typeof roomSchemaDefinition>;
+type IRoom = Omit<InferredRoom, 'players' | 'problemId'> & {
+    players: Omit<InferredRoom['players'][number], '_id'>[];
+    problemId: Types.ObjectId;
+};
+
+/**
+ * Room document.
+ * @property players - Players in the room.
+ * @property status - The room status.
+ * @property problemId - The room question.
+ * @property name - The room name.
+ * @property maxCapacity - The player limit.
+ */
+export interface Room extends IRoom, Document {
+    comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+const RoomSchema = new Schema(roomSchemaDefinition);
 
 // Ensure no duplicate players in a room
 RoomSchema.index(
