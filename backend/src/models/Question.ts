@@ -1,53 +1,41 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, InferRawDocType } from 'mongoose';
 
-/**
- * TestCase interface represents a single test case for a coding question.
- * @member stdin - The input to be provided to the code.
- * @member expectedOutput - The expected output from the code.
- * @member isPrivate - Indicates if the test case is private or public.
- */
-
-export interface TestCase {
-    stdin: string;
-    expectedOutput: string;
-    isPrivate: boolean;
-}
-
-/**
- * QuestionDocument interface represents a coding question document in the database.
- * @member question - The coding question text.
- * @member testCases - An array of test cases for the question.
- * @member difficulty - The difficulty level of the question (1 to 5).
- * @member startingCode - The initial code provided to the user.
- */
-
-export interface QuestionDocument extends Document {
-    question: string;
-    testCases: TestCase[];
-    difficulty: number;
-    startingCode: string;
-}
-
-const TestCaseSchema = new Schema<TestCase>({
+const testCaseSchemaDefinition = {
     stdin: { type: String, required: true },
     expectedOutput: { type: String, required: true },
     isPrivate: { type: Boolean, required: true }
-});
+};
 
-const QuestionSchema = new Schema<QuestionDocument>({
+type TestCaseDocument = InferRawDocType<typeof testCaseSchemaDefinition>;
+
+/** Test case for a question. */
+export type TestCase = TestCaseDocument;
+
+const questionSchemaDefinition = {
     question: { type: String, required: true },
-    testCases: { type: [TestCaseSchema], required: true },
+    testCases: {
+        type: [testCaseSchemaDefinition],
+        required: true
+    },
     difficulty: { type: Number, required: true, min: 1, max: 5 },
     startingCode: { type: String, required: true }
-});
+};
 
+/**
+ * Question document.
+ * @property question - The question text.
+ * @property testCases - The test cases.
+ * @property difficulty - The difficulty level.
+ * @property startingCode - The starting code.
+ */
+export interface QuestionDocument
+    extends InferRawDocType<typeof questionSchemaDefinition>, Document {}
+
+const QuestionSchema = new Schema<QuestionDocument>(questionSchemaDefinition);
 const Question = mongoose.model<QuestionDocument>('Question', QuestionSchema);
 export default Question;
 
-/**
- * Fetch a random coding question from the database.
- * @returns A random coding question document.
- */
+/** Fetch a random question. */
 
 export async function getRandomQuestion() {
     const result = await Question.aggregate([{ $sample: { size: 1 } }]);
