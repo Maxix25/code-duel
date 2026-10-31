@@ -1,6 +1,8 @@
-ignoredBuiltDependencies:
-  - unrs-resolver
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  mongodb-memory-server: false
+  unrs-resolver: false
 
-onlyBuiltDependencies:
-  - esbuild
-  - mongodb-memory-server
+minimumReleaseAgeExclude:
+  - multer@2.5.0

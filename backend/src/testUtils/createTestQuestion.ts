@@ -2,7 +2,7 @@ import Question from '../models/Question';
 import { QuestionDocument } from '../models/Question';
 
 const createTestQuestion = async () => {
-    const question = await Question.create<Partial<QuestionDocument>>({
+    const question = await Question.create({
         question: 'Write a function that returns the sum of two numbers.',
         testCases: [
             {
@@ -24,7 +24,7 @@ const createTestQuestion = async () => {
         difficulty: 1,
         startingCode:
             'def sum_two_numbers(a, b):\n    # Write your code\n\nprint(sum_two_numbers(int(input()), int(input())))'
-    });
+    } as Partial<QuestionDocument>);
     return question;
 };
 

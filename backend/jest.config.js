@@ -8,5 +8,14 @@ module.exports = {
     transform: {
         ...tsJestTransformCfg
     },
-    setupFilesAfterEnv: ['./src/jest/setupTests.ts']
+    setupFilesAfterEnv: ['./src/jest/setupTests.ts'],
+
+    // 1. Ignora la carpeta dist para evitar importar modelos duplicados o antiguos
+    modulePathIgnorePatterns: ['<rootDir>/dist/'],
+
+    // 2. Asegura que los tests se busquen únicamente en src/
+    testMatch: [
+        '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
+        '<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)'
+    ]
 };

@@ -137,7 +137,7 @@ const ProfilePage: React.FC = () => {
                 <Container maxWidth='sm'>
                     <Card elevation={6} sx={{ borderRadius: 4, p: 3 }}>
                         <CardContent>
-                            <Stack spacing={3} alignItems='center'>
+                            <Stack spacing={3} sx={{ alignItems: 'center' }}>
                                 <Alert severity='error' sx={{ width: '100%' }}>
                                     {error}
                                 </Alert>
@@ -175,7 +175,7 @@ const ProfilePage: React.FC = () => {
                     sx={{ borderRadius: 4, p: { xs: 3, md: 5 }, boxShadow: 8 }}
                 >
                     <CardContent>
-                        <Stack spacing={4} alignItems='center'>
+                        <Stack spacing={4} sx={{ alignItems: 'center' }}>
                             {/* Back Button */}
                             <Box sx={{ alignSelf: 'flex-start' }}>
                                 <Button
@@ -222,8 +222,8 @@ const ProfilePage: React.FC = () => {
                                 <Typography
                                     variant='h4'
                                     component='h1'
-                                    fontWeight='bold'
                                     align='center'
+                                    sx={{ fontWeight: 'bold' }}
                                 >
                                     {profile?.username}
                                 </Typography>
@@ -253,7 +253,7 @@ const ProfilePage: React.FC = () => {
                                             </Typography>
                                             <Typography
                                                 variant='body1'
-                                                fontWeight='medium'
+                                                sx={{ fontWeight: 'medium' }}
                                             >
                                                 {profile?.username}
                                             </Typography>
@@ -265,9 +265,8 @@ const ProfilePage: React.FC = () => {
                                 <Box>
                                     <Typography
                                         variant='h6'
-                                        fontWeight='bold'
                                         align='center'
-                                        sx={{ mb: 2 }}
+                                        sx={{ mb: 2, fontWeight: 'bold' }}
                                     >
                                         Game Statistics
                                     </Typography>
@@ -305,8 +304,8 @@ const ProfilePage: React.FC = () => {
                                             />
                                             <Typography
                                                 variant='h5'
-                                                fontWeight='bold'
                                                 color='success.main'
+                                                sx={{ fontWeight: 'bold' }}
                                             >
                                                 {profile?.wins || 0}
                                             </Typography>
@@ -347,8 +346,8 @@ const ProfilePage: React.FC = () => {
                                             />
                                             <Typography
                                                 variant='h5'
-                                                fontWeight='bold'
                                                 color='error.main'
+                                                sx={{ fontWeight: 'bold' }}
                                             >
                                                 {profile?.losses || 0}
                                             </Typography>
@@ -389,8 +388,8 @@ const ProfilePage: React.FC = () => {
                                             />
                                             <Typography
                                                 variant='h5'
-                                                fontWeight='bold'
                                                 color='text.primary'
+                                                sx={{ fontWeight: 'bold' }}
                                             >
                                                 {profile?.draws || 0}
                                             </Typography>
@@ -422,7 +421,6 @@ const ProfilePage: React.FC = () => {
                                                     Win Rate:{' '}
                                                     <Typography
                                                         component='span'
-                                                        fontWeight='bold'
                                                         color={
                                                             profile.wins /
                                                                 (profile.wins +
@@ -432,6 +430,9 @@ const ProfilePage: React.FC = () => {
                                                                 ? 'success.main'
                                                                 : 'text.primary'
                                                         }
+                                                        sx={{
+                                                            fontWeight: 'bold'
+                                                        }}
                                                     >
                                                         {(
                                                             (profile.wins /

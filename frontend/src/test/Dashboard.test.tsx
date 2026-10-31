@@ -130,7 +130,7 @@ describe('DashboardPage', () => {
             });
 
             // Mock alert
-            global.alert = vi.fn();
+            globalThis.alert = vi.fn();
 
             render(
                 <BrowserRouter>
@@ -144,7 +144,7 @@ describe('DashboardPage', () => {
             fireEvent.click(createButton);
 
             await waitFor(() => {
-                expect(global.alert).toHaveBeenCalledWith(
+                expect(globalThis.alert).toHaveBeenCalledWith(
                     'Error creating room: Already in room with ID existing-room-456'
                 );
             });
@@ -156,7 +156,7 @@ describe('DashboardPage', () => {
                 roomId: undefined
             });
 
-            global.alert = vi.fn();
+            globalThis.alert = vi.fn();
 
             render(
                 <BrowserRouter>
@@ -170,7 +170,7 @@ describe('DashboardPage', () => {
             fireEvent.click(createButton);
 
             await waitFor(() => {
-                expect(global.alert).toHaveBeenCalledWith(
+                expect(globalThis.alert).toHaveBeenCalledWith(
                     'Unexpected error occurred while creating room'
                 );
             });

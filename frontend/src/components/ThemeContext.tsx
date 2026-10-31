@@ -1,7 +1,8 @@
 import React, { useState, useMemo, ReactNode } from 'react';
 import {
     createTheme,
-    ThemeProvider as MuiThemeProvider
+    ThemeProvider as MuiThemeProvider,
+    StyledEngineProvider
 } from '@mui/material/styles';
 import { ThemeContext } from '../context/ThemeContext';
 
@@ -92,7 +93,9 @@ export const CustomThemeProvider: React.FC<CustomThemeProviderProps> = ({
 
     return (
         <ThemeContext.Provider value={{ toggleTheme, mode }}>
-            <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+            </StyledEngineProvider>
         </ThemeContext.Provider>
     );
 };

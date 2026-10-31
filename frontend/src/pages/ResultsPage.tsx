@@ -35,11 +35,7 @@ const ResultsPage = () => {
     const theme = useTheme();
 
     useEffect(() => {
-        if (!roomId) {
-            setError('No room ID provided.');
-            setLoading(false);
-            return;
-        }
+        if (!roomId) return;
         getResult(roomId)
             .then((data) => {
                 setResults(data.results);
@@ -52,7 +48,23 @@ const ResultsPage = () => {
             });
     }, [roomId]);
 
-    // Derive leaderboard info
+    if (!roomId) {
+        return (
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Typography variant='h6' color='text.secondary'>
+                    No room selected. Please go back to the dashboard.
+                </Typography>
+            </Box>
+        );
+    }
+
     const sortedResults = (results ?? [])
         .slice()
         .sort((a, b) => b.score - a.score);
@@ -146,8 +158,7 @@ const ResultsPage = () => {
                         title={
                             <Typography
                                 variant='h4'
-                                fontWeight={800}
-                                sx={{ letterSpacing: 0.5 }}
+                                sx={{ fontWeight: 800, letterSpacing: 0.5 }}
                             >
                                 Room Results
                             </Typography>
@@ -165,9 +176,8 @@ const ResultsPage = () => {
                     <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                         {loading && (
                             <Stack
-                                alignItems='center'
                                 spacing={2}
-                                sx={{ py: 6 }}
+                                sx={{ alignItems: 'center', py: 6 }}
                             >
                                 <CircularProgress size={56} />
                                 <Typography color='text.secondary'>
@@ -184,9 +194,8 @@ const ResultsPage = () => {
 
                         {!loading && !error && sortedResults.length === 0 && (
                             <Stack
-                                alignItems='center'
                                 spacing={2}
-                                sx={{ py: 4 }}
+                                sx={{ alignItems: 'center', py: 4 }}
                             >
                                 <Typography>
                                     No results found for this room.
@@ -225,16 +234,18 @@ const ResultsPage = () => {
                                                     sm: 'row'
                                                 }}
                                                 spacing={2}
-                                                alignItems={{
-                                                    xs: 'flex-start',
-                                                    sm: 'center'
+                                                sx={{
+                                                    alignItems: {
+                                                        xs: 'flex-start',
+                                                        sm: 'center'
+                                                    }
                                                 }}
                                             >
                                                 <Stack
                                                     direction='row'
                                                     spacing={2}
-                                                    alignItems='center'
                                                     sx={{
+                                                        alignItems: 'center',
                                                         minWidth: 0,
                                                         flex: 1
                                                     }}
@@ -261,8 +272,11 @@ const ResultsPage = () => {
                                                         <Stack
                                                             direction='row'
                                                             spacing={1}
-                                                            alignItems='center'
-                                                            sx={{ minWidth: 0 }}
+                                                            sx={{
+                                                                alignItems:
+                                                                    'center',
+                                                                minWidth: 0
+                                                            }}
                                                         >
                                                             {idx === 0 && (
                                                                 <EmojiEventsIcon
@@ -327,8 +341,11 @@ const ResultsPage = () => {
                                                 />
                                                 <Stack
                                                     direction='row'
-                                                    justifyContent='space-between'
-                                                    sx={{ mt: 0.5 }}
+                                                    sx={{
+                                                        justifyContent:
+                                                            'space-between',
+                                                        mt: 0.5
+                                                    }}
                                                 >
                                                     <Typography
                                                         variant='caption'

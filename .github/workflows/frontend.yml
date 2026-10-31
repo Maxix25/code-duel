@@ -1,4 +1,6 @@
 name: Frontend CI
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
 on:
   push:
     branches:
@@ -18,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 26
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -40,7 +42,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 26
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -60,7 +62,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 26
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -68,4 +70,4 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build application
-        run: pnpm build:tsgo
+        run: pnpm build

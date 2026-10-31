@@ -47,7 +47,10 @@ export const updateProfile = async (
         }
         // Check if a player already has that username
         const existingPlayer = await Player.findOne({ username });
-        if (existingPlayer && existingPlayer.id.toString() !== playerId) {
+        if (
+            existingPlayer &&
+            existingPlayer._id.toString() !== playerId.toString()
+        ) {
             res.status(409).json({ message: 'That username is already taken' });
             return;
         }
@@ -107,7 +110,7 @@ export const updateAvatar = async (
 export const getAvatar = async (req: Request, res: Response): Promise<void> => {
     const { playerId } = req.params;
 
-    if (!playerId || !mongoose.Types.ObjectId.isValid(playerId)) {
+    if (!playerId || !mongoose.Types.ObjectId.isValid(String(playerId))) {
         res.status(400).json({ message: 'Invalid player ID' });
         return;
     }
@@ -175,7 +178,7 @@ export const getUserProfile = async (
 ): Promise<void> => {
     const playerId = req.params.playerId;
 
-    if (!playerId || !mongoose.Types.ObjectId.isValid(playerId)) {
+    if (!playerId || !mongoose.Types.ObjectId.isValid(String(playerId))) {
         res.status(400).json({ message: 'Invalid player ID' });
         return;
     }

@@ -6,7 +6,7 @@ import { NavigateFunction } from 'react-router-dom';
 import getUsersInRoom from '../api/room/getUsersInRoom';
 import { SolutionResult } from '../services/roomSetup';
 
-let saveTimeout: NodeJS.Timeout | null = null;
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const getDefaultComment = (lang: LanguageName) => {
     switch (lang) {

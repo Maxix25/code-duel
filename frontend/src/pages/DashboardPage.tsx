@@ -9,7 +9,7 @@ import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import { useTheme, alpha } from '@mui/material/styles';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
@@ -77,13 +77,12 @@ const DashboardPage: React.FC = () => {
                 <Typography
                     variant='h3'
                     component='h1'
-                    fontWeight='bold'
                     align='center'
-                    sx={{ mb: 5 }}
+                    sx={{ mb: 5, fontWeight: 'bold' }}
                 >
                     Dashboard
                 </Typography>
-                <Grid container spacing={5} justifyContent='center'>
+                <Grid container spacing={5} sx={{ justifyContent: 'center' }}>
                     {/* First Row: Create Room and Find Room */}
                     <Grid size={{ xs: 12, sm: 6, md: 6 }}>
                         <Card
@@ -91,7 +90,10 @@ const DashboardPage: React.FC = () => {
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
                         >
                             <CardContent>
-                                <Stack spacing={2} alignItems='center'>
+                                <Stack
+                                    spacing={2}
+                                    sx={{ alignItems: 'center' }}
+                                >
                                     <Box
                                         sx={{
                                             bgcolor: theme.palette.primary.main,
@@ -112,7 +114,7 @@ const DashboardPage: React.FC = () => {
                                     <Typography
                                         variant='h6'
                                         component='h2'
-                                        fontWeight='bold'
+                                        sx={{ fontWeight: 'bold' }}
                                     >
                                         Create New Room
                                     </Typography>
@@ -160,7 +162,10 @@ const DashboardPage: React.FC = () => {
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
                         >
                             <CardContent>
-                                <Stack spacing={2} alignItems='center'>
+                                <Stack
+                                    spacing={2}
+                                    sx={{ alignItems: 'center' }}
+                                >
                                     <Box
                                         sx={{
                                             bgcolor: theme.palette.info.main,
@@ -181,7 +186,7 @@ const DashboardPage: React.FC = () => {
                                     <Typography
                                         variant='h6'
                                         component='h2'
-                                        fontWeight='bold'
+                                        sx={{ fontWeight: 'bold' }}
                                     >
                                         Find Room
                                     </Typography>
@@ -232,8 +237,8 @@ const DashboardPage: React.FC = () => {
                             >
                                 <Stack
                                     spacing={2}
-                                    alignItems='center'
                                     sx={{
+                                        alignItems: 'center',
                                         flex: 1,
                                         justifyContent: 'space-between'
                                     }}
@@ -261,8 +266,7 @@ const DashboardPage: React.FC = () => {
                                         <Typography
                                             variant='h6'
                                             component='h2'
-                                            fontWeight='bold'
-                                            sx={{ mb: 1 }}
+                                            sx={{ mb: 1, fontWeight: 'bold' }}
                                         >
                                             Join Existing Room
                                         </Typography>
@@ -356,7 +360,10 @@ const DashboardPage: React.FC = () => {
                             sx={{ borderRadius: 4, p: 3, boxShadow: 8 }}
                         >
                             <CardContent>
-                                <Stack spacing={2} alignItems='center'>
+                                <Stack
+                                    spacing={2}
+                                    sx={{ alignItems: 'center' }}
+                                >
                                     <Box
                                         sx={{
                                             bgcolor: theme.palette.success.main,
@@ -377,7 +384,7 @@ const DashboardPage: React.FC = () => {
                                     <Typography
                                         variant='h6'
                                         component='h2'
-                                        fontWeight='bold'
+                                        sx={{ fontWeight: 'bold' }}
                                     >
                                         Update Profile
                                     </Typography>

@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import Room from '../../models/Room';
 import Question from '../../models/Question';
 import getUserIdByToken from '../../utils/getUserIdByToken';
@@ -10,7 +10,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
     socket.on(
         'join_room',
         async (data: { roomId: string; user_token: string }) => {
-            if (!mongoose.isValidObjectId(data.roomId)) {
+            if (!Types.ObjectId.isValid(data.roomId)) {
                 socket.emit('error', 'Invalid room id');
                 return;
             }
@@ -92,7 +92,7 @@ const registerJoinRoom = (io: Server, socket: Socket) => {
             if (appendPlayer) {
                 try {
                     room.players.push({
-                        player: userId as mongoose.Schema.Types.ObjectId,
+                        player: userId as Types.ObjectId,
                         score: 0,
                         ready: false,
                         current_code: question.startingCode
