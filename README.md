@@ -15,7 +15,7 @@ Code Duel is a TypeScript-based project designed to provide a competitive coding
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v14 or higher recommended)
+- [Node.js](https://nodejs.org/) (v26 or higher recommended)
 - [pnpm](https://pnpm.io/) (recommended)
 
 ### Installation
