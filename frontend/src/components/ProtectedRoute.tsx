@@ -1,35 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { ReactNode } from 'react';
-import getToken from '../api/auth/getToken';
+import useAuth from '../hooks/useAuth';
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-    useEffect(() => {
-        let isActive = true;
+    const { isAuthenticated, isLoading } = useAuth();
 
-        getToken()
-            .then((token) => {
-                if (isActive) {
-                    setIsAuthorized(Boolean(token));
-                }
-            })
-            .catch((error) => {
-                console.error('Token is not valid', error);
-                if (isActive) {
-                    setIsAuthorized(false);
-                }
-            });
-
-        return () => {
-            isActive = false;
-        };
-    }, []);
-
-    if (isAuthorized === null) {
+    if (isLoading) {
         return <div>Loading...</div>;
     }
-    return isAuthorized ? children : <Navigate to='/login' />;
+    return isAuthenticated ? children : <Navigate to='/login' />;
 };
 
 export default ProtectedRoute;
