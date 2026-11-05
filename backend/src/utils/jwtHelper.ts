@@ -1,7 +1,13 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'Some secret key';
+const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+    throw new Error('JWT_SECRET must be configured');
+}
+
+export const JWT_SECRET = jwtSecret;
 export const JWT_EXPIRATION = '1h';
 
 /**
