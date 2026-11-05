@@ -56,12 +56,17 @@ export const registerPlayer = async (
 ): Promise<void> => {
     const { username, password, email } = req.body;
 
-    if (!username || !password) {
-        res.status(400).json({ message: 'Username and password are required' });
+    if (!username || !password || !email) {
+        res.status(400).json({
+            message: 'Username, password and email are required'
+        });
+        return;
     }
 
     try {
-        const existingPlayer = await Player.findOne({ username, email });
+        const existingPlayer = await Player.findOne({
+            $or: [{ username }, { email }]
+        });
 
         if (existingPlayer) {
             res.status(409).json({
@@ -91,8 +96,19 @@ export const registerPlayer = async (
             message: 'Registration successful',
             token: token
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Registration error:', error);
+        if (
+            typeof error === 'object' &&
+            error !== null &&
+            'code' in error &&
+            error.code === 11000
+        ) {
+            res.status(409).json({
+                message: 'Username or email already registered'
+            });
+            return;
+        }
         res.status(500).json({ message: 'Server error during registration' });
         return;
     }
