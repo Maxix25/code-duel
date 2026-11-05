@@ -6,6 +6,7 @@ interface AuthProviderProps {
 }
 const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         api.post('/auth/verify')
@@ -14,6 +15,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             })
             .catch(() => {
                 setIsAuthenticated(false);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     }, []);
 
@@ -30,7 +34,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
     return (
         <AuthContext.Provider
-            value={{ isAuthenticated, logout, setIsAuthenticated }}
+            value={{
+                isAuthenticated,
+                isLoading,
+                logout,
+                setIsAuthenticated
+            }}
         >
             {children}
         </AuthContext.Provider>

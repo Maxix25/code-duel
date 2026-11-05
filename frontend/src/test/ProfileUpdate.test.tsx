@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import ProfileUpdate from '../pages/ProfileUpdatePage';
 import { MemoryRouter } from 'react-router-dom';
@@ -20,6 +20,15 @@ const server = setupServer(
             },
             { status: 200 }
         );
+    }),
+    http.get('/profile/avatar/:playerId', async () => {
+        await delay(100);
+        return new HttpResponse(new Uint8Array([0]), {
+            status: 200,
+            headers: {
+                'Content-Type': 'image/png'
+            }
+        });
     }),
     // Mock updateProfile endpoint
     http.put('/profile/update', () => {
